@@ -1,0 +1,235 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-sans: 'Plus Jakarta Sans', 'Noto Sans Tamil', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-display: 'Outfit', 'Noto Sans Tamil', 'Plus Jakarta Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* Theme Tokens - Dark Mode Default */
+    --theme-bg-main: #070B14;
+    --theme-bg-surface: #0D1527;
+    --theme-bg-card: rgba(16, 25, 53, 0.7);
+    --theme-bg-card-solid: #0F1A36;
+    --theme-bg-elevated: #111C3A;
+    --theme-text-primary: #F8FAFC;
+    --theme-text-secondary: #94A3B8;
+    --theme-text-muted: #64748B;
+    --theme-border-subtle: rgba(51, 65, 85, 0.7);
+    --theme-border-gold: rgba(212, 175, 55, 0.25);
+    --theme-gold-accent: #D4AF37;
+    --theme-ruby-accent: #EF4444;
+  }
+
+  html.light {
+    /* Theme Tokens - Light Mode */
+    --theme-bg-main: #F8FAFC;
+    --theme-bg-surface: #FFFFFF;
+    --theme-bg-card: #FFFFFF;
+    --theme-bg-card-solid: #FFFFFF;
+    --theme-bg-elevated: #F1F5F9;
+    --theme-text-primary: #0F172A;
+    --theme-text-secondary: #475569;
+    --theme-text-muted: #64748B;
+    --theme-border-subtle: #E2E8F0;
+    --theme-border-gold: rgba(184, 134, 11, 0.35);
+    --theme-gold-accent: #B8860B;
+    --theme-ruby-accent: #DC2626;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--theme-bg-main);
+    color: var(--theme-text-primary);
+    overflow-x: hidden;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display);
+  }
+}
+
+/* Custom subtle gold gradient glow and hairline utilities */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #FFF0BD 0%, #D4AF37 50%, #AA820A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+html.light .gold-gradient-text {
+  background: linear-gradient(135deg, #B8860B 0%, #996515 50%, #7A4E00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-border {
+  border-color: rgba(212, 175, 55, 0.25);
+}
+
+html.light .gold-border {
+  border-color: rgba(184, 134, 11, 0.35);
+}
+
+.gold-border-focus:focus-visible {
+  outline: 2px solid rgba(212, 175, 55, 0.6);
+  outline-offset: 2px;
+}
+
+.gold-card {
+  background: linear-gradient(180deg, rgba(16, 25, 53, 0.7) 0%, rgba(11, 18, 36, 0.9) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.18);
+  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.5);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.light .gold-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(184, 134, 11, 0.22);
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.07), 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.gold-card-hover {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gold-card-hover:hover {
+  border-color: rgba(212, 175, 55, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.65), 0 0 16px -2px rgba(212, 175, 55, 0.12);
+}
+
+html.light .gold-card-hover:hover {
+  border-color: rgba(184, 134, 11, 0.5);
+  box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.12), 0 0 16px -2px rgba(212, 175, 55, 0.18);
+}
+
+/* Light Mode Comprehensive Typography, Backgrounds, and Borders */
+html.light {
+  /* Common Dark Navy backgrounds adapted to soft crisp Ivory/White */
+  & .bg-\[\#070B14\] {
+    background-color: #F8FAFC !important;
+  }
+  & .bg-\[\#070B14\]\/95 {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+  }
+  & .bg-\[\#070B14\]\/90 {
+    background-color: rgba(255, 255, 255, 0.92) !important;
+  }
+  & .bg-\[\#0A1020\] {
+    background-color: #FFFFFF !important;
+  }
+  & .bg-\[\#0B132B\] {
+    background-color: #F1F5F9 !important;
+  }
+  & .bg-\[\#0B1224\] {
+    background-color: #FFFFFF !important;
+  }
+  & .bg-\[\#101935\] {
+    background-color: #F1F5F9 !important;
+  }
+  & .bg-\[\#0D1527\] {
+    background-color: #FFFFFF !important;
+  }
+  & .bg-\[\#0F172A\] {
+    background-color: #FFFFFF !important;
+  }
+  & .bg-slate-900 {
+    background-color: #F8FAFC !important;
+  }
+  & .bg-slate-900\/60,
+  & .bg-slate-900\/80,
+  & .bg-slate-900\/90 {
+    background-color: #FFFFFF !important;
+  }
+  & .bg-slate-950 {
+    background-color: #F1F5F9 !important;
+  }
+
+  /* Text readability */
+  & .text-white {
+    color: #0F172A !important;
+  }
+  & .text-slate-100 {
+    color: #0F172A !important;
+  }
+  & .text-slate-200 {
+    color: #1E293B !important;
+  }
+  & .text-slate-300 {
+    color: #334155 !important;
+  }
+  & .text-slate-400 {
+    color: #475569 !important;
+  }
+
+  /* Borders */
+  & .border-slate-800,
+  & .border-slate-800\/80,
+  & .border-slate-800\/60 {
+    border-color: #E2E8F0 !important;
+  }
+  & .border-slate-700,
+  & .border-slate-700\/80 {
+    border-color: #CBD5E1 !important;
+  }
+
+  /* Header and Navigation */
+  & header {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border-bottom-color: #E2E8F0 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Subtle card inner elements */
+  & .bg-black {
+    background-color: #0F172A !important;
+  }
+
+  /* Form Inputs in light mode */
+  & input:not([type="checkbox"]):not([type="radio"]),
+  & select,
+  & textarea {
+    background-color: #FFFFFF !important;
+    color: #0F172A !important;
+    border-color: #CBD5E1 !important;
+  }
+  & input::placeholder,
+  & textarea::placeholder {
+    color: #94A3B8 !important;
+  }
+
+  /* Code / Pre blocks */
+  & pre, & code {
+    background-color: #F1F5F9 !important;
+    color: #0F172A !important;
+  }
+}
+
+/* Ensure Logo container remains crisp and framed in both themes */
+.rtp-logo-container {
+  background-color: #000000;
+  border: 1px solid rgba(212, 175, 55, 0.6);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+/* Printable Invoice / Receipt Styling */
+@media print {
+  body {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+  }
+  header, footer, .no-print, [role="group"], button.no-print {
+    display: none !important;
+  }
+  .printable-area {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #FFFFFF !important;
+    color: #000000 !important;
+  }
+}

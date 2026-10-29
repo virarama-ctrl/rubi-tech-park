@@ -1,0 +1,312 @@
+export type Language = 'ta' | 'en';
+
+export interface TranslationDictionary {
+  brand: {
+    name: string;
+    tagline: string;
+    location: string;
+    fullLocation: string;
+    email: string;
+    phone: string;
+    phoneFormatted: string;
+    whatsAppNumber: string;
+    ownershipGuarantee: string;
+  };
+  header: {
+    services: string;
+    pricing: string;
+    work: string;
+    about: string;
+    contact: string;
+    ctaButton: string;
+    languageToggle: string;
+    currentLanguageName: string;
+    switchPrompt: string;
+    adminLink: string;
+  };
+  home: {
+    heroBadge: string;
+    heroHeadline: string;
+    heroSubtitle: string;
+    primaryCta: string;
+    secondaryCta: string;
+    quickStats: {
+      pricingStart: string;
+      pricingStartLabel: string;
+      ownership: string;
+      ownershipLabel: string;
+      deployment: string;
+      deploymentLabel: string;
+      support: string;
+      supportLabel: string;
+    };
+    servicesSectionTitle: string;
+    servicesSectionSubtitle: string;
+    viewAllServices: string;
+    startingFrom: string;
+    processSectionTitle: string;
+    processSectionSubtitle: string;
+    projectsSectionTitle: string;
+    projectsSectionSubtitle: string;
+    viewAllProjects: string;
+    pricingSectionTitle: string;
+    pricingSectionSubtitle: string;
+    faqSectionTitle: string;
+    faqSectionSubtitle: string;
+    finalCtaTitle: string;
+    finalCtaSubtitle: string;
+    finalCtaButton: string;
+    finalCtaWhatsApp: string;
+  };
+  services: {
+    overviewTitle: string;
+    overviewSubtitle: string;
+    whoItIsFor: string;
+    problemsSolved: string;
+    deliverables: string;
+    process: string;
+    pricingGuidance: string;
+    quotationFactors: string;
+    requestQuotation: string;
+    exploreCaseStudies: string;
+    items: {
+      businessWebsites: {
+        title: string;
+        tagline: string;
+        price: string;
+      };
+      ecommerce: {
+        title: string;
+        tagline: string;
+        price: string;
+      };
+      customCrm: {
+        title: string;
+        tagline: string;
+        price: string;
+      };
+      crmIntegration: {
+        title: string;
+        tagline: string;
+        price: string;
+      };
+      aiAutomation: {
+        title: string;
+        tagline: string;
+        price: string;
+      };
+    };
+  };
+  pricing: {
+    title: string;
+    subtitle: string;
+    disclaimer: string;
+    startingAt: string;
+    calculatorTitle: string;
+    calculatorSubtitle: string;
+    basePackage: string;
+    scopeAddons: string;
+    estimatedStartingInvestment: string;
+    getFormalProposal: string;
+    plans: {
+      businessWeb: string;
+      ecommerce: string;
+      crm: string;
+      suite: string;
+    };
+  };
+  portfolio: {
+    title: string;
+    subtitle: string;
+    filterAll: string;
+    challengeLabel: string;
+    solutionLabel: string;
+    deliverablesLabel: string;
+    techLabel: string;
+    requestSimilar: string;
+    verifiedNote: string;
+  };
+  about: {
+    title: string;
+    subtitle: string;
+    philosophyTitle: string;
+    philosophyDesc: string;
+    principles: {
+      codeOwnershipTitle: string;
+      codeOwnershipDesc: string;
+      transparentPricingTitle: string;
+      transparentPricingDesc: string;
+      regionalExcellenceTitle: string;
+      regionalExcellenceDesc: string;
+      directEngineeringTitle: string;
+      directEngineeringDesc: string;
+    };
+    coimbatoreHubTitle: string;
+    coimbatoreHubDesc: string;
+    contactCta: string;
+  };
+  contact: {
+    title: string;
+    subtitle: string;
+    directChannels: string;
+    phoneLabel: string;
+    emailLabel: string;
+    addressLabel: string;
+    whatsAppDirectLabel: string;
+    whatsAppDirectDesc: string;
+    openWhatsAppBtn: string;
+    formTitle: string;
+    formSubtitle: string;
+  };
+  form: {
+    fullName: string;
+    fullNamePlaceholder: string;
+    businessName: string;
+    businessNamePlaceholder: string;
+    optional: string;
+    email: string;
+    emailPlaceholder: string;
+    phone: string;
+    phonePlaceholder: string;
+    businessType: string;
+    requiredService: string;
+    budgetRange: string;
+    preferredContact: string;
+    projectDesc: string;
+    projectDescPlaceholder: string;
+    consentText: string;
+    privacyLink: string;
+    submitBtn: string;
+    submittingBtn: string;
+    successTitle: string;
+    successDesc: string;
+    refCodeLabel: string;
+    copyRefBtn: string;
+    copiedBtn: string;
+    prospectSummary: string;
+    selectedService: string;
+    budget: string;
+    dbConfirmed: string;
+    dbConfirmedDesc: string;
+    sendViaWhatsAppBtn: string;
+    submitAnotherBtn: string;
+    errors: {
+      fullName: string;
+      email: string;
+      phone: string;
+      businessType: string;
+      requiredService: string;
+      budgetRange: string;
+      projectDesc: string;
+      consent: string;
+    };
+    contactMethods: {
+      whatsApp: string;
+      phoneCall: string;
+      email: string;
+    };
+    businessTypes: {
+      retailJewellery: string;
+      manufacturing: string;
+      wholesale: string;
+      professional: string;
+      healthcare: string;
+      education: string;
+      realEstate: string;
+      other: string;
+    };
+    servicesList: {
+      businessWebsite: string;
+      ecommerceStore: string;
+      customCrm: string;
+      websiteCrmIntegration: string;
+      aiWorkflowAutomation: string;
+      consultation: string;
+    };
+  };
+  footer: {
+    description: string;
+    panIndiaScope: string;
+    ownershipNote: string;
+    solutionsHeading: string;
+    navHeading: string;
+    legalHeading: string;
+    privacy: string;
+    terms: string;
+    adminCrm: string;
+    copyright: string;
+    pricingNote: string;
+    crmActive: string;
+    crmActiveDesc: string;
+  };
+  whatsApp: {
+    tooltip: string;
+    prefilledMessage: string;
+    modalTitle: string;
+    modalSubtitle: string;
+    noticeTitle: string;
+    noticeText: string;
+    directChatAction: string;
+  };
+  admin: {
+    loginTitle: string;
+    loginSubtitle: string;
+    emailLabel: string;
+    passwordLabel: string;
+    loginBtn: string;
+    dashboardTitle: string;
+    logoutBtn: string;
+    leadsCount: string;
+    exportCsv: string;
+    systemBackup: string;
+  };
+  theme: {
+    switchToLight: string;
+    switchToDark: string;
+    lightMode: string;
+    darkMode: string;
+  };
+  checkout: {
+    pageTitle: string;
+    pageSubtitle: string;
+    checkoutHeading: string;
+    paymentMethod: string;
+    payWithUpi: string;
+    netBanking: string;
+    debitCard: string;
+    creditCard: string;
+    amountPayable: string;
+    paymentSuccessful: string;
+    paymentPending: string;
+    paymentVerificationRequired: string;
+    paymentFailed: string;
+    retryPayment: string;
+    paymentReceipt: string;
+    businessUpiId: string;
+    copyUpiId: string;
+    upiCopied: string;
+    scanQrCode: string;
+    openInUpiApp: string;
+    upiInstructions: string;
+    enterUtr: string;
+    utrPlaceholder: string;
+    submitUtr: string;
+    basePrice: string;
+    gstTax: string;
+    totalAmount: string;
+    customerDetails: string;
+    fullName: string;
+    email: string;
+    phone: string;
+    businessName: string;
+    selectPackage: string;
+    payNow: string;
+    orderReference: string;
+    transactionId: string;
+    serviceName: string;
+    printReceipt: string;
+    returnHome: string;
+    manualVerificationNotice: string;
+    secureNotice: string;
+  };
+}

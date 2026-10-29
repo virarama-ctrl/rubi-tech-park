@@ -1,0 +1,18 @@
+[
+  {
+    "id": "usr_admin_rtp",
+    "email": "admin@rubitechpark.com",
+    "name": "RUBI TECH PARK Admin",
+    "role": "super_admin",
+    "passwordHash": "3bb88656ca2471ffa77d8c1028f75332:4b863eca24525edbfcbb63598b029fcdf082c012d98b43fcc3c7d23e097032bf641822ae4ca73cde2526300b10cd4116f63c64d4848c41a515dfafb23c16b737",
+    "createdAt": "2026-10-29T15:15:56.967Z"
+  },
+  {
+    "id": "usr_admin_01",
+    "email": "admin@elloradigital.in",
+    "name": "Executive Admin",
+    "role": "super_admin",
+    "passwordHash": "3bb88656ca2471ffa77d8c1028f75332:4b863eca24525edbfcbb63598b029fcdf082c012d98b43fcc3c7d23e097032bf641822ae4ca73cde2526300b10cd4116f63c64d4848c41a515dfafb23c16b737",
+    "createdAt": "2026-10-29T15:15:56.967Z"
+  }
+]

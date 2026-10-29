@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ta" class="scroll-smooth dark">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      (function() {
+        try {
+          var t = localStorage.getItem('rtp_theme');
+          if (t === 'light') {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+            document.documentElement.setAttribute('data-theme', 'light');
+            document.documentElement.style.colorScheme = 'light';
+          } else {
+            document.documentElement.classList.remove('light');
+            document.documentElement.classList.add('dark');
+            document.documentElement.setAttribute('data-theme', 'dark');
+            document.documentElement.style.colorScheme = 'dark';
+          }
+        } catch(e) {}
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RUBI TECH PARK – Digital Solutions That Help Your Business Grow | உங்கள் வணிக வளர்ச்சிக்கான டிஜிட்டல் தீர்வுகள்</title>
+    <meta name="description" content="RUBI TECH PARK provides professional business websites, e-commerce platforms, custom CRM systems, and AI-assisted workflow automation for enterprises across India. Based in Gandhipuram, Coimbatore, Tamil Nadu." />
+    <meta name="keywords" content="RUBI TECH PARK, website development Coimbatore, custom CRM Tamil Nadu, ecommerce development India, software consultancy Coimbatore, Gandhipuram technology company" />
+    <meta name="author" content="RUBI TECH PARK" />
+    <link rel="icon" type="image/png" href="/assets/aistudio/Ruby_Tech_Park_Luxury_Emblem_3b5d2b3d.png" />
+    <link rel="apple-touch-icon" href="/assets/aistudio/Ruby_Tech_Park_Luxury_Emblem_3b5d2b3d.png" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="RUBI TECH PARK" />
+    <meta property="og:title" content="RUBI TECH PARK – Digital Solutions That Help Your Business Grow" />
+    <meta property="og:description" content="Professional business websites, e-commerce platforms, custom CRM systems, and AI-assisted workflow automation for enterprises across India." />
+    <meta property="og:image" content="/assets/aistudio/Ruby_Tech_Park_Luxury_Emblem_3b5d2b3d.png" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="RUBI TECH PARK – Enterprise Web & Software Solutions" />
+    <meta name="twitter:description" content="Custom business websites, e-commerce development, and CRM software built for ambitious Indian enterprises." />
+    <meta name="twitter:image" content="/assets/aistudio/Ruby_Tech_Park_Luxury_Emblem_3b5d2b3d.png" />
+
+    <!-- Google Fonts: Noto Sans Tamil + Outfit + Plus Jakarta Sans + JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+    <!-- Schema.org JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "name": "RUBI TECH PARK",
+      "description": "Technology consultancy providing business websites, e-commerce solutions, custom CRM software, and AI-assisted workflow automation.",
+      "url": "https://rubitechpark.com",
+      "logo": "/assets/aistudio/Ruby_Tech_Park_Luxury_Emblem_3b5d2b3d.png",
+      "image": "/assets/aistudio/Ruby_Tech_Park_Luxury_Emblem_3b5d2b3d.png",
+      "telephone": "+918220550829",
+      "email": "rubienterprisesgst@gmail.com",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Gandhipuram",
+        "addressLocality": "Coimbatore",
+        "addressRegion": "Tamil Nadu",
+        "postalCode": "641012",
+        "addressCountry": "IN"
+      },
+      "priceRange": "₹5,000 - ₹1,50,000+",
+      "areaServed": [
+        {
+          "@type": "AdministrativeArea",
+          "name": "Tamil Nadu"
+        },
+        {
+          "@type": "Country",
+          "name": "India"
+        }
+      ],
+      "knowsAbout": [
+        "Business Website Development",
+        "E-commerce Platforms",
+        "Custom CRM Systems",
+        "Website + CRM Integration",
+        "AI and Workflow Automation"
+      ],
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Business Website Development",
+          "price": "5000",
+          "priceCurrency": "INR",
+          "description": "Custom business websites for service providers, manufacturers, and professional firms."
+        },
+        {
+          "@type": "Offer",
+          "name": "E-commerce Website Development",
+          "price": "15000",
+          "priceCurrency": "INR",
+          "description": "Online storefronts with payment gateways, catalog management, and order tracking."
+        },
+        {
+          "@type": "Offer",
+          "name": "Custom CRM and Business Software",
+          "price": "20000",
+          "priceCurrency": "INR",
+          "description": "Tailored customer relationship management and operational software for Indian businesses."
+        },
+        {
+          "@type": "Offer",
+          "name": "Website + CRM Integration",
+          "price": "30000",
+          "priceCurrency": "INR",
+          "description": "Unified web frontend connected to centralized lead capture and operational pipelines."
+        }
+      ]
+    }
+    </script>
+  </head>
+  <body class="bg-[#070B14] text-slate-100 font-sans antialiased selection:bg-[#D4AF37]/20 selection:text-[#F2D06B]">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
