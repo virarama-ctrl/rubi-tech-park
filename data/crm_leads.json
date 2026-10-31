@@ -1,5 +1,134 @@
 [
   {
+    "id": "lead_1793461808632_617406d0",
+    "referenceNumber": "RTP-2026-8376",
+    "enquiryId": "RTP-2026-8376",
+    "createdAt": "2026-10-31T15:50:08.632Z",
+    "updatedAt": "2026-10-31T15:50:08.632Z",
+    "status": "New",
+    "fullName": "Murugan S",
+    "customerName": "Murugan S",
+    "businessName": "",
+    "email": "murugan@example.com",
+    "phone": "9840198401",
+    "mobileNumber": "9840198401",
+    "whatsappNumber": "9840198401",
+    "customerType": "Business / Individual",
+    "serviceCategory": "E-Services (Citizen Services)",
+    "selectedService": "PAN Card Application / Correction Assistance",
+    "customerRequirement": "Change of address in PAN card",
+    "enquiryDate": "31/10/2026, 3:50:08 pm",
+    "source": "Website",
+    "businessType": "other",
+    "requiredService": "PAN Card Application / Correction Assistance",
+    "budgetRange": "₹236",
+    "projectDescription": "Change of address in PAN card",
+    "preferredContactMethod": "WhatsApp",
+    "consentAgreed": true,
+    "bookingPaymentStatus": "Pending",
+    "bookingAmount": 236,
+    "notes": [],
+    "activityHistory": [
+      {
+        "id": "act_1793461808643",
+        "leadId": "lead_1793461808632_617406d0",
+        "performedBy": "System Webhook",
+        "action": "STATUS_CHANGE",
+        "details": "Enquiry [RTP-2026-8376] recorded from 127.0.0.1 via Website.",
+        "timestamp": "2026-10-31T15:50:08.632Z"
+      }
+    ]
+  },
+  {
+    "id": "lead_1793461631544_ccdec244",
+    "referenceNumber": "RTP-2026-2312",
+    "createdAt": "2026-10-31T15:47:11.544Z",
+    "updatedAt": "2026-10-31T15:47:11.544Z",
+    "status": "New",
+    "fullName": "Anand Kumar",
+    "businessName": "",
+    "email": "test.client.1793461631537@rubitechpark.com",
+    "phone": "9845112233",
+    "businessType": "other",
+    "requiredService": "ecommerce-store",
+    "budgetRange": "₹15,000 - ₹35,000",
+    "projectDescription": "Online jewellery catalog with WhatsApp integration.",
+    "preferredContactMethod": "WhatsApp",
+    "consentAgreed": true,
+    "notes": [],
+    "activityHistory": [
+      {
+        "id": "act_1793461631544",
+        "leadId": "lead_1793461631544_ccdec244",
+        "performedBy": "System Webhook",
+        "action": "STATUS_CHANGE",
+        "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+        "timestamp": "2026-10-31T15:47:11.544Z"
+      }
+    ]
+  },
+  {
+    "id": "lead_1793461630649_6b5dda23",
+    "referenceNumber": "RTP-2026-2018",
+    "createdAt": "2026-10-31T15:47:10.649Z",
+    "updatedAt": "2026-10-31T15:47:10.808Z",
+    "status": "Contacted",
+    "fullName": "Integration Test Client 1793461630645",
+    "businessName": "Test Enterprises Ltd",
+    "email": "integration@testenterprise.in",
+    "phone": "9876543210",
+    "businessType": "other",
+    "requiredService": "custom-crm",
+    "budgetRange": "₹15,000 - ₹35,000",
+    "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+    "preferredContactMethod": "WhatsApp",
+    "consentAgreed": true,
+    "notes": [
+      {
+        "id": "note_1793461630803",
+        "authorId": "admin",
+        "authorName": "Executive Admin",
+        "content": "Discovery call scheduled with Managing Director.",
+        "createdAt": "2026-10-31T15:47:10.803Z"
+      }
+    ],
+    "activityHistory": [
+      {
+        "id": "act_1793461630809",
+        "leadId": "lead_1793461630649_6b5dda23",
+        "performedBy": "Executive Admin",
+        "action": "FOLLOWUP_SCHEDULED",
+        "details": "Follow-up scheduled for 2026-11-10",
+        "timestamp": "2026-10-31T15:47:10.808Z"
+      },
+      {
+        "id": "act_1793461630803",
+        "leadId": "lead_1793461630649_6b5dda23",
+        "performedBy": "Executive Admin",
+        "action": "NOTE_ADDED",
+        "details": "Internal note added: \"Discovery call scheduled with Managing Director.\"",
+        "timestamp": "2026-10-31T15:47:10.803Z"
+      },
+      {
+        "id": "act_1793461630751",
+        "leadId": "lead_1793461630649_6b5dda23",
+        "performedBy": "Executive Admin",
+        "action": "STATUS_CHANGE",
+        "details": "Status changed from \"New\" to \"Contacted\"",
+        "timestamp": "2026-10-31T15:47:10.751Z"
+      },
+      {
+        "id": "act_1793461630649",
+        "leadId": "lead_1793461630649_6b5dda23",
+        "performedBy": "System Webhook",
+        "action": "STATUS_CHANGE",
+        "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+        "timestamp": "2026-10-31T15:47:10.649Z"
+      }
+    ],
+    "followUpDate": "2026-11-10"
+  },
+  {
     "id": "lead_1793375017384_91b0c058",
     "referenceNumber": "RTP-2026-7020",
     "createdAt": "2026-10-30T15:43:37.384Z",

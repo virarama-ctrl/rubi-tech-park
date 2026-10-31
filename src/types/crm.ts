@@ -11,10 +11,22 @@ import { BusinessType, RequiredService, BudgetRange, ContactMethod } from './ind
 export type LeadStatus =
   | 'New'
   | 'Contacted'
+  | 'Requirement Collected'
+  | 'Quotation Sent'
+  | 'Awaiting Customer Approval'
+  | 'Booking Confirmed'
+  | 'Work In Progress'
+  | 'Work Completed'
+  | 'Payment Pending'
+  | 'Closed'
+  | 'Cancelled'
   | 'Qualified'
   | 'Proposal Sent'
   | 'Won'
-  | 'Lost';
+  | 'Lost'
+  | 'Interested'
+  | 'Converted'
+  | 'Not Interested';
 
 export type UserRole = 'super_admin' | 'crm_manager' | 'sales_executive' | 'developer';
 
@@ -37,20 +49,33 @@ export interface CRMActivityLog {
 
 export interface StoredLead {
   id: string;
-  referenceNumber: string; // e.g. EDH-2026-0042
+  referenceNumber: string; // e.g. RTP-2026-0042
+  enquiryId?: string;
   createdAt: string;
   updatedAt: string;
   status: LeadStatus;
   fullName: string;
+  customerName?: string;
   businessName?: string;
   email: string;
   phone: string;
-  businessType: BusinessType;
-  requiredService: RequiredService;
-  budgetRange: BudgetRange;
-  projectDescription: string;
-  preferredContactMethod: ContactMethod;
+  mobileNumber?: string;
+  whatsappNumber?: string;
+  customerType?: 'Individual' | 'Business' | 'Startup' | string;
+  serviceCategory?: string;
+  selectedService?: string;
+  customerRequirement?: string;
+  enquiryDate?: string;
+  source?: 'Chatbot' | 'Website Form' | 'WhatsApp' | string;
+  businessType?: BusinessType;
+  requiredService?: RequiredService | string;
+  budgetRange?: BudgetRange | string;
+  projectDescription?: string;
+  preferredContactMethod?: ContactMethod | string;
   consentAgreed: boolean;
+  bookingPaymentStatus?: 'None' | 'Pending' | 'Verified Paid' | 'Failed';
+  bookingAmount?: number;
+  balanceAmount?: number;
   followUpDate?: string;
   assignedTo?: string;
   internalEstimatedValueINR?: number;

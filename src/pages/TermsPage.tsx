@@ -82,7 +82,29 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onNavigate }) => {
 
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-white font-display">
-            {language === 'ta' ? '5. சட்ட அதிகார வரம்பு' : '5. Jurisdiction & Dispute Resolution'}
+            {language === 'ta' ? '5. சட்டப்பூர்வ மற்றும் ஒழுங்குமுறை இணக்க சேவைகள் அறிவிப்பு' : '5. Statutory, Compliance & Regulatory Services Disclaimer'}
+          </h2>
+          <p>
+            {language === 'ta'
+              ? 'RUBI TECH PARK ஒரு தனியார் தொழில்நுட்ப மற்றும் ஆவண வசதி ஆலோசனை நிறுவனமாகும்; இது எந்தவொரு அரசு துறையையும் சாராதது. ஜிஎஸ்டி (GST), வருமான வரி (ITR), MSME, FSSAI, வர்த்தக முத்திரை (TM) மற்றும் பிற உரிமங்கள் தொடர்பான சேவைகள் வாடிக்கையாளரின் ஆவணங்களின் உண்மைத்தன்மை மற்றும் அரசின் விதிகளுக்கு உட்பட்டவை. ஒப்புதல் உத்தரவாதம் அளிக்கப்படாது. அரசு கட்டணங்கள் மற்றும் எங்கள் தொழில்முறை சேவை கட்டணங்கள் தனித்தனியானவை.'
+              : 'RUBI TECH PARK operates as an independent private software consultancy and professional document facilitation agency. We are NOT a government department, ministry, or statutory authority. All statutory registrations (including GST, ITR, MSME/Udyam, FSSAI, Trademarks, Patents, and Trade Licences) are strictly subject to client eligibility, authentic documentation, and prevailing government regulations. Approval or grant of any licence is at the sole discretion of respective government authorities; no guaranteed approval is represented or implied. Official statutory fees levied by the government and professional facilitation fees are billed separately.'}
+          </p>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-lg font-bold text-white font-display">
+            {language === 'ta' ? '6. குடிமக்கள் இ-சேவைகள் மற்றும் ₹236 முன்பதிவுக் கட்டண விதிமுறை' : '6. Citizen E-Services & ₹236 Initial Booking Deposit'}
+          </h2>
+          <p>
+            {language === 'ta'
+              ? 'அனைத்து குடிமக்கள் இ-சேவைகளுக்கும் (பான் கார்டு, வாக்காளர் அடையாள அட்டை, பாஸ்போர்ட், குடும்ப அட்டை, மின் இணைப்பு சேவைகள்), முன்பதிவு கட்டணமாக ₹236 (அடிப்படை கட்டணம் ₹200 + 18% ஜிஎஸ்டி ₹36) செலுத்த வேண்டும். மீதமுள்ள சேவை கட்டணங்கள் வாடிக்கையாளரின் தேவைகளை மதிப்பாய்வு செய்த பின்னர் தெரிவிக்கப்பட்டு பணி நிறைவடைந்த பின் வசூலிக்கப்படும்.'
+              : 'For all citizen e-services (including PAN Card assistance, Voter ID, Passport application support, Ration Card assistance, and EB electricity connection support), the initial booking charge is ₹236 (₹200 base charge + 18% GST ₹36). The remaining service charges will be communicated after reviewing your specific requirements and collected strictly after completion of the work. Applicable statutory government fees and additional portal charges, if any, will be informed separately.'}
+          </p>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-lg font-bold text-white font-display">
+            {language === 'ta' ? '7. சட்ட அதிகார வரம்பு' : '7. Jurisdiction & Dispute Resolution'}
           </h2>
           <p>
             {language === 'ta'

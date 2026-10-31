@@ -1,0 +1,3098 @@
+{
+  "timestamp": "2026-10-31T15:47:10.854Z",
+  "leads": [
+    {
+      "id": "lead_1793461630649_6b5dda23",
+      "referenceNumber": "RTP-2026-2018",
+      "createdAt": "2026-10-31T15:47:10.649Z",
+      "updatedAt": "2026-10-31T15:47:10.808Z",
+      "status": "Contacted",
+      "fullName": "Integration Test Client 1793461630645",
+      "businessName": "Test Enterprises Ltd",
+      "email": "integration@testenterprise.in",
+      "phone": "9876543210",
+      "businessType": "other",
+      "requiredService": "custom-crm",
+      "budgetRange": "₹15,000 - ₹35,000",
+      "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+      "preferredContactMethod": "WhatsApp",
+      "consentAgreed": true,
+      "notes": [
+        {
+          "id": "note_1793461630803",
+          "authorId": "admin",
+          "authorName": "Executive Admin",
+          "content": "Discovery call scheduled with Managing Director.",
+          "createdAt": "2026-10-31T15:47:10.803Z"
+        }
+      ],
+      "activityHistory": [
+        {
+          "id": "act_1793461630809",
+          "leadId": "lead_1793461630649_6b5dda23",
+          "performedBy": "Executive Admin",
+          "action": "FOLLOWUP_SCHEDULED",
+          "details": "Follow-up scheduled for 2026-11-10",
+          "timestamp": "2026-10-31T15:47:10.808Z"
+        },
+        {
+          "id": "act_1793461630803",
+          "leadId": "lead_1793461630649_6b5dda23",
+          "performedBy": "Executive Admin",
+          "action": "NOTE_ADDED",
+          "details": "Internal note added: \"Discovery call scheduled with Managing Director.\"",
+          "timestamp": "2026-10-31T15:47:10.803Z"
+        },
+        {
+          "id": "act_1793461630751",
+          "leadId": "lead_1793461630649_6b5dda23",
+          "performedBy": "Executive Admin",
+          "action": "STATUS_CHANGE",
+          "details": "Status changed from \"New\" to \"Contacted\"",
+          "timestamp": "2026-10-31T15:47:10.751Z"
+        },
+        {
+          "id": "act_1793461630649",
+          "leadId": "lead_1793461630649_6b5dda23",
+          "performedBy": "System Webhook",
+          "action": "STATUS_CHANGE",
+          "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+          "timestamp": "2026-10-31T15:47:10.649Z"
+        }
+      ],
+      "followUpDate": "2026-11-10"
+    },
+    {
+      "id": "lead_1793375017384_91b0c058",
+      "referenceNumber": "RTP-2026-7020",
+      "createdAt": "2026-10-30T15:43:37.384Z",
+      "updatedAt": "2026-10-30T15:43:37.384Z",
+      "status": "New",
+      "fullName": "Anand Kumar",
+      "businessName": "",
+      "email": "test.client.1793375017376@rubitechpark.com",
+      "phone": "9845112233",
+      "businessType": "other",
+      "requiredService": "ecommerce-store",
+      "budgetRange": "₹15,000 - ₹35,000",
+      "projectDescription": "Online jewellery catalog with WhatsApp integration.",
+      "preferredContactMethod": "WhatsApp",
+      "consentAgreed": true,
+      "notes": [],
+      "activityHistory": [
+        {
+          "id": "act_1793375017384",
+          "leadId": "lead_1793375017384_91b0c058",
+          "performedBy": "System Webhook",
+          "action": "STATUS_CHANGE",
+          "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+          "timestamp": "2026-10-30T15:43:37.384Z"
+        }
+      ]
+    },
+    {
+      "id": "lead_1793375016944_3cde2a5b",
+      "referenceNumber": "RTP-2026-8756",
+      "createdAt": "2026-10-30T15:43:36.944Z",
+      "updatedAt": "2026-10-30T15:43:37.103Z",
+      "status": "Contacted",
+      "fullName": "Integration Test Client 1793375016936",
+      "businessName": "Test Enterprises Ltd",
+      "email": "integration@testenterprise.in",
+      "phone": "9876543210",
+      "businessType": "other",
+      "requiredService": "custom-crm",
+      "budgetRange": "₹15,000 - ₹35,000",
+      "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+      "preferredContactMethod": "WhatsApp",
+      "consentAgreed": true,
+      "notes": [
+        {
+          "id": "note_1793375017097",
+          "authorId": "admin",
+          "authorName": "Executive Admin",
+          "content": "Discovery call scheduled with Managing Director.",
+          "createdAt": "2026-10-30T15:43:37.097Z"
+        }
+      ],
+      "activityHistory": [
+        {
+          "id": "act_1793375017103",
+          "leadId": "lead_1793375016944_3cde2a5b",
+          "performedBy": "Executive Admin",
+          "action": "FOLLOWUP_SCHEDULED",
+          "details": "Follow-up scheduled for 2026-11-10",
+          "timestamp": "2026-10-30T15:43:37.103Z"
+        },
+        {
+          "id": "act_1793375017097",
+          "leadId": "lead_1793375016944_3cde2a5b",
+          "performedBy": "Executive Admin",
+          "action": "NOTE_ADDED",
+          "details": "Internal note added: \"Discovery call scheduled with Managing Director.\"",
+          "timestamp": "2026-10-30T15:43:37.097Z"
+        },
+        {
+          "id": "act_1793375017091",
+          "leadId": "lead_1793375016944_3cde2a5b",
+          "performedBy": "Executive Admin",
+          "action": "STATUS_CHANGE",
+          "details": "Status changed from \"New\" to \"Contacted\"",
+          "timestamp": "2026-10-30T15:43:37.091Z"
+        },
+        {
+          "id": "act_1793375016944",
+          "leadId": "lead_1793375016944_3cde2a5b",
+          "performedBy": "System Webhook",
+          "action": "STATUS_CHANGE",
+          "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+          "timestamp": "2026-10-30T15:43:36.944Z"
+        }
+      ],
+      "followUpDate": "2026-11-10"
+    },
+    {
+      "id": "lead_1793374717293_96027135",
+      "referenceNumber": "RTP-2026-6242",
+      "createdAt": "2026-10-30T15:38:37.293Z",
+      "updatedAt": "2026-10-30T15:38:37.293Z",
+      "status": "New",
+      "fullName": "Anand Kumar",
+      "businessName": "",
+      "email": "test.client.1793374717286@rubitechpark.com",
+      "phone": "9845112233",
+      "businessType": "other",
+      "requiredService": "ecommerce-store",
+      "budgetRange": "₹15,000 - ₹35,000",
+      "projectDescription": "Online jewellery catalog with WhatsApp integration.",
+      "preferredContactMethod": "WhatsApp",
+      "consentAgreed": true,
+      "notes": [],
+      "activityHistory": [
+        {
+          "id": "act_1793374717294",
+          "leadId": "lead_1793374717293_96027135",
+          "performedBy": "System Webhook",
+          "action": "STATUS_CHANGE",
+          "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+          "timestamp": "2026-10-30T15:38:37.293Z"
+        }
+      ]
+    },
+    {
+      "id": "lead_1793374716849_b612c056",
+      "referenceNumber": "RTP-2026-6877",
+      "createdAt": "2026-10-30T15:38:36.849Z",
+      "updatedAt": "2026-10-30T15:38:36.984Z",
+      "status": "Contacted",
+      "fullName": "Integration Test Client 1793374716840",
+      "businessName": "Test Enterprises Ltd",
+      "email": "integration@testenterprise.in",
+      "phone": "9876543210",
+      "businessType": "other",
+      "requiredService": "custom-crm",
+      "budgetRange": "₹15,000 - ₹35,000",
+      "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+      "preferredContactMethod": "WhatsApp",
+      "consentAgreed": true,
+      "notes": [
+        {
+          "id": "note_1793374716976",
+          "authorId": "admin",
+          "authorName": "Executive Admin",
+          "content": "Discovery call scheduled with Managing Director.",
+          "createdAt": "2026-10-30T15:38:36.976Z"
+        }
+      ],
+      "activityHistory": [
+        {
+          "id": "act_1793374716984",
+          "leadId": "lead_1793374716849_b612c056",
+          "performedBy": "Executive Admin",
+          "action": "FOLLOWUP_SCHEDULED",
+          "details": "Follow-up scheduled for 2026-11-10",
+          "timestamp": "2026-10-30T15:38:36.984Z"
+        },
+        {
+          "id": "act_1793374716976",
+          "leadId": "lead_1793374716849_b612c056",
+          "performedBy": "Executive Admin",
+          "action": "NOTE_ADDED",
+          "details": "Internal note added: \"Discovery call scheduled with Managing Director.\"",
+          "timestamp": "2026-10-30T15:38:36.976Z"
+        },
+        {
+          "id": "act_1793374716929",
+          "leadId": "lead_1793374716849_b612c056",
+          "performedBy": "Executive Admin",
+          "action": "STATUS_CHANGE",
+          "details": "Status changed from \"New\" to \"Contacted\"",
+          "timestamp": "2026-10-30T15:38:36.929Z"
+        },
+        {
+          "id": "act_1793374716849",
+          "leadId": "lead_1793374716849_b612c056",
+          "performedBy": "System Webhook",
+          "action": "STATUS_CHANGE",
+          "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+          "timestamp": "2026-10-30T15:38:36.849Z"
+        }
+      ],
+      "followUpDate": "2026-11-10"
+    },
+    {
+      "id": "lead_1793374673731_276cd302",
+      "referenceNumber": "RTP-2026-5084",
+      "createdAt": "2026-10-30T15:37:53.731Z",
+      "updatedAt": "2026-10-30T15:37:53.877Z",
+      "status": "Contacted",
+      "fullName": "Integration Test Client 1793374673726",
+      "businessName": "Test Enterprises Ltd",
+      "email": "integration@testenterprise.in",
+      "phone": "9876543210",
+      "businessType": "manufacturing",
+      "requiredService": "custom-crm",
+      "budgetRange": "₹35,000 - ₹75,000",
+      "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+      "preferredContactMethod": "WhatsApp",
+      "consentAgreed": true,
+      "notes": [
+        {
+          "id": "note_1793374673870",
+          "authorId": "usr_admin_01",
+          "authorName": "Executive Admin",
+          "content": "Discovery call scheduled with Managing Director.",
+          "createdAt": "2026-10-30T15:37:53.870Z"
+        }
+      ],
+      "activityHistory": [
+        {
+          "id": "act_1793374673877",
+          "leadId": "lead_1793374673731_276cd302",
+          "performedBy": "Executive Admin",
+          "action": "FOLLOWUP_SCHEDULED",
+          "details": "Follow-up scheduled for 2026-11-10",
+          "timestamp": "2026-10-30T15:37:53.877Z"
+        },
+        {
+          "id": "act_1793374673870",
+          "leadId": "lead_1793374673731_276cd302",
+          "performedBy": "Executive Admin",
+          "action": "NOTE_ADDED",
+          "details": "Internal note added: \"Discovery call scheduled with Managing Director.\"",
+          "timestamp": "2026-10-30T15:37:53.870Z"
+        },
+        {
+          "id": "act_1793374673865",
+          "leadId": "lead_1793374673731_276cd302",
+          "performedBy": "Executive Admin",
+          "action": "STATUS_CHANGE",
+          "details": "Status changed from \"New\" to \"Contacted\"",
+          "timestamp": "2026-10-30T15:37:53.865Z"
+        },
+        {
+          "id": "act_1793374673731",
+          "leadId": "lead_1793374673731_276cd302",
+          "performedBy": "System Webhook",
+          "action": "STATUS_CHANGE",
+          "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+          "timestamp": "2026-10-30T15:37:53.731Z"
+        }
+      ],
+      "followUpDate": "2026-11-10"
+    },
+    {
+      "id": "lead_1793374488904_8edf9d6b",
+      "referenceNumber": "RTP-2026-5050",
+      "createdAt": "2026-10-30T15:34:48.904Z",
+      "updatedAt": "2026-10-30T15:34:49.001Z",
+      "status": "Contacted",
+      "fullName": "Integration Test Client 1793374488898",
+      "businessName": "Test Enterprises Ltd",
+      "email": "integration@testenterprise.in",
+      "phone": "9876543210",
+      "businessType": "manufacturing",
+      "requiredService": "custom-crm",
+      "budgetRange": "₹35,000 - ₹75,000",
+      "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+      "preferredContactMethod": "WhatsApp",
+      "consentAgreed": true,
+      "notes": [
+        {
+          "id": "note_1793374488997",
+          "authorId": "usr_admin_01",
+          "authorName": "Executive Admin",
+          "content": "Discovery call scheduled with Managing Director.",
+          "createdAt": "2026-10-30T15:34:48.997Z"
+        }
+      ],
+      "activityHistory": [
+        {
+          "id": "act_1793374489001",
+          "leadId": "lead_1793374488904_8edf9d6b",
+          "performedBy": "Executive Admin",
+          "action": "FOLLOWUP_SCHEDULED",
+          "details": "Follow-up scheduled for 2026-11-10",
+          "timestamp": "2026-10-30T15:34:49.001Z"
+        },
+        {
+          "id": "act_1793374488997",
+          "leadId": "lead_1793374488904_8edf9d6b",
+          "performedBy": "Executive Admin",
+          "action": "NOTE_ADDED",
+          "details": "Internal note added: \"Discovery call scheduled with Managing Director.\"",
+          "timestamp": "2026-10-30T15:34:48.997Z"
+        },
+        {
+          "id": "act_1793374488959",
+          "leadId": "lead_1793374488904_8edf9d6b",
+          "performedBy": "Executive Admin",
+          "action": "STATUS_CHANGE",
+          "details": "Status changed from \"New\" to \"Contacted\"",
+          "timestamp": "2026-10-30T15:34:48.959Z"
+        },
+        {
+          "id": "act_1793374488904",
+          "leadId": "lead_1793374488904_8edf9d6b",
+          "performedBy": "System Webhook",
+          "action": "STATUS_CHANGE",
+          "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+          "timestamp": "2026-10-30T15:34:48.904Z"
+        }
+      ],
+      "followUpDate": "2026-11-10"
+    },
+    {
+      "id": "lead_1793372599197_812d12ca",
+      "referenceNumber": "RTP-2026-3917",
+      "createdAt": "2026-10-30T15:03:19.197Z",
+      "updatedAt": "2026-10-30T15:03:19.294Z",
+      "status": "Contacted",
+      "fullName": "Integration Test Client 1793372599158",
+      "businessName": "Test Enterprises Ltd",
+      "email": "integration@testenterprise.in",
+      "phone": "9876543210",
+      "businessType": "manufacturing",
+      "requiredService": "custom-crm",
+      "budgetRange": "₹35,000 - ₹75,000",
+      "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+      "preferredContactMethod": "WhatsApp",
+      "consentAgreed": true,
+      "notes": [
+        {
+          "id": "note_1793372599286",
+          "authorId": "usr_admin_01",
+          "authorName": "Executive Admin",
+          "content": "Discovery call scheduled with Managing Director.",
+          "createdAt": "2026-10-30T15:03:19.286Z"
+        }
+      ],
+      "activityHistory": [
+        {
+          "id": "act_1793372599294",
+          "leadId": "lead_1793372599197_812d12ca",
+          "performedBy": "Executive Admin",
+          "action": "FOLLOWUP_SCHEDULED",
+          "details": "Follow-up scheduled for 2026-11-10",
+          "timestamp": "2026-10-30T15:03:19.294Z"
+        },
+        {
+          "id": "act_1793372599286",
+          "leadId": "lead_1793372599197_812d12ca",
+          "performedBy": "Executive Admin",
+          "action": "NOTE_ADDED",
+          "details": "Internal note added: \"Discovery call scheduled with Managing Director.\"",
+          "timestamp": "2026-10-30T15:03:19.286Z"
+        },
+        {
+          "id": "act_1793372599281",
+          "leadId": "lead_1793372599197_812d12ca",
+          "performedBy": "Executive Admin",
+          "action": "STATUS_CHANGE",
+          "details": "Status changed from \"New\" to \"Contacted\"",
+          "timestamp": "2026-10-30T15:03:19.281Z"
+        },
+        {
+          "id": "act_1793372599197",
+          "leadId": "lead_1793372599197_812d12ca",
+          "performedBy": "System Webhook",
+          "action": "STATUS_CHANGE",
+          "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+          "timestamp": "2026-10-30T15:03:19.197Z"
+        }
+      ],
+      "followUpDate": "2026-11-10"
+    },
+    {
+      "id": "lead_1793371862211_369a12fc",
+      "referenceNumber": "RTP-2026-9664",
+      "createdAt": "2026-10-30T14:51:02.211Z",
+      "updatedAt": "2026-10-30T14:51:02.334Z",
+      "status": "Contacted",
+      "fullName": "Integration Test Client 1793371862207",
+      "businessName": "Test Enterprises Ltd",
+      "email": "integration@testenterprise.in",
+      "phone": "9876543210",
+      "businessType": "manufacturing",
+      "requiredService": "custom-crm",
+      "budgetRange": "₹35,000 - ₹75,000",
+      "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+      "preferredContactMethod": "WhatsApp",
+      "consentAgreed": true,
+      "notes": [
+        {
+          "id": "note_1793371862331",
+          "authorId": "usr_admin_01",
+          "authorName": "Executive Admin",
+          "content": "Discovery call scheduled with Managing Director.",
+          "createdAt": "2026-10-30T14:51:02.331Z"
+        }
+      ],
+      "activityHistory": [
+        {
+          "id": "act_1793371862334",
+          "leadId": "lead_1793371862211_369a12fc",
+          "performedBy": "Executive Admin",
+          "action": "FOLLOWUP_SCHEDULED",
+          "details": "Follow-up scheduled for 2026-11-10",
+          "timestamp": "2026-10-30T14:51:02.334Z"
+        },
+        {
+          "id": "act_1793371862331",
+          "leadId": "lead_1793371862211_369a12fc",
+          "performedBy": "Executive Admin",
+          "action": "NOTE_ADDED",
+          "details": "Internal note added: \"Discovery call scheduled with Managing Director.\"",
+          "timestamp": "2026-10-30T14:51:02.331Z"
+        },
+        {
+          "id": "act_1793371862324",
+          "leadId": "lead_1793371862211_369a12fc",
+          "performedBy": "Executive Admin",
+          "action": "STATUS_CHANGE",
+          "details": "Status changed from \"New\" to \"Contacted\"",
+          "timestamp": "2026-10-30T14:51:02.324Z"
+        },
+        {
+          "id": "act_1793371862211",
+          "leadId": "lead_1793371862211_369a12fc",
+          "performedBy": "System Webhook",
+          "action": "STATUS_CHANGE",
+          "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+          "timestamp": "2026-10-30T14:51:02.211Z"
+        }
+      ],
+      "followUpDate": "2026-11-10"
+    },
+    {
+      "id": "lead_1793371106261_5600337c",
+      "referenceNumber": "RTP-2026-8514",
+      "createdAt": "2026-10-30T14:38:26.261Z",
+      "updatedAt": "2026-10-30T14:38:26.395Z",
+      "status": "Contacted",
+      "fullName": "Integration Test Client 1793371106249",
+      "businessName": "Test Enterprises Ltd",
+      "email": "integration@testenterprise.in",
+      "phone": "9876543210",
+      "businessType": "manufacturing",
+      "requiredService": "custom-crm",
+      "budgetRange": "₹35,000 - ₹75,000",
+      "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+      "preferredContactMethod": "WhatsApp",
+      "consentAgreed": true,
+      "notes": [
+        {
+          "id": "note_1793371106388",
+          "authorId": "usr_admin_01",
+          "authorName": "Executive Admin",
+          "content": "Discovery call scheduled with Managing Director.",
+          "createdAt": "2026-10-30T14:38:26.388Z"
+        }
+      ],
+      "activityHistory": [
+        {
+          "id": "act_1793371106395",
+          "leadId": "lead_1793371106261_5600337c",
+          "performedBy": "Executive Admin",
+          "action": "FOLLOWUP_SCHEDULED",
+          "details": "Follow-up scheduled for 2026-11-10",
+          "timestamp": "2026-10-30T14:38:26.395Z"
+        },
+        {
+          "id": "act_1793371106388",
+          "leadId": "lead_1793371106261_5600337c",
+          "performedBy": "Executive Admin",
+          "action": "NOTE_ADDED",
+          "details": "Internal note added: \"Discovery call scheduled with Managing Director.\"",
+          "timestamp": "2026-10-30T14:38:26.388Z"
+        },
+        {
+          "id": "act_1793371106341",
+          "leadId": "lead_1793371106261_5600337c",
+          "performedBy": "Executive Admin",
+          "action": "STATUS_CHANGE",
+          "details": "Status changed from \"New\" to \"Contacted\"",
+          "timestamp": "2026-10-30T14:38:26.341Z"
+        },
+        {
+          "id": "act_1793371106261",
+          "leadId": "lead_1793371106261_5600337c",
+          "performedBy": "System Webhook",
+          "action": "STATUS_CHANGE",
+          "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+          "timestamp": "2026-10-30T14:38:26.261Z"
+        }
+      ],
+      "followUpDate": "2026-11-10"
+    },
+    {
+      "id": "lead_1793293275641_2d5e993d",
+      "referenceNumber": "RTP-2026-7385",
+      "createdAt": "2026-10-29T17:01:15.641Z",
+      "updatedAt": "2026-10-29T17:01:15.761Z",
+      "status": "Contacted",
+      "fullName": "Integration Test Client 1793293275634",
+      "businessName": "Test Enterprises Ltd",
+      "email": "integration@testenterprise.in",
+      "phone": "9876543210",
+      "businessType": "manufacturing",
+      "requiredService": "custom-crm",
+      "budgetRange": "₹35,000 - ₹75,000",
+      "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+      "preferredContactMethod": "WhatsApp",
+      "consentAgreed": true,
+      "notes": [
+        {
+          "id": "note_1793293275755",
+          "authorId": "usr_admin_01",
+          "authorName": "Executive Admin",
+          "content": "Discovery call scheduled with Managing Director.",
+          "createdAt": "2026-10-29T17:01:15.755Z"
+        }
+      ],
+      "activityHistory": [
+        {
+          "id": "act_1793293275761",
+          "leadId": "lead_1793293275641_2d5e993d",
+          "performedBy": "Executive Admin",
+          "action": "FOLLOWUP_SCHEDULED",
+          "details": "Follow-up scheduled for 2026-11-10",
+          "timestamp": "2026-10-29T17:01:15.761Z"
+        },
+        {
+          "id": "act_1793293275755",
+          "leadId": "lead_1793293275641_2d5e993d",
+          "performedBy": "Executive Admin",
+          "action": "NOTE_ADDED",
+          "details": "Internal note added: \"Discovery call scheduled with Managing Director.\"",
+          "timestamp": "2026-10-29T17:01:15.755Z"
+        },
+        {
+          "id": "act_1793293275748",
+          "leadId": "lead_1793293275641_2d5e993d",
+          "performedBy": "Executive Admin",
+          "action": "STATUS_CHANGE",
+          "details": "Status changed from \"New\" to \"Contacted\"",
+          "timestamp": "2026-10-29T17:01:15.748Z"
+        },
+        {
+          "id": "act_1793293275641",
+          "leadId": "lead_1793293275641_2d5e993d",
+          "performedBy": "System Webhook",
+          "action": "STATUS_CHANGE",
+          "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+          "timestamp": "2026-10-29T17:01:15.641Z"
+        }
+      ],
+      "followUpDate": "2026-11-10"
+    },
+    {
+      "id": "lead_1793293175334_48e04d02",
+      "referenceNumber": "RTP-2026-1757",
+      "createdAt": "2026-10-29T16:59:35.334Z",
+      "updatedAt": "2026-10-29T16:59:35.399Z",
+      "status": "Contacted",
+      "fullName": "Integration Test Client 1793293175330",
+      "businessName": "Test Enterprises Ltd",
+      "email": "integration@testenterprise.in",
+      "phone": "9876543210",
+      "businessType": "manufacturing",
+      "requiredService": "custom-crm",
+      "budgetRange": "₹35,000 - ₹75,000",
+      "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+      "preferredContactMethod": "WhatsApp",
+      "consentAgreed": true,
+      "notes": [
+        {
+          "id": "note_1793293175395",
+          "authorId": "usr_admin_01",
+          "authorName": "Executive Admin",
+          "content": "Discovery call scheduled with Managing Director.",
+          "createdAt": "2026-10-29T16:59:35.395Z"
+        }
+      ],
+      "activityHistory": [
+        {
+          "id": "act_1793293175399",
+          "leadId": "lead_1793293175334_48e04d02",
+          "performedBy": "Executive Admin",
+          "action": "FOLLOWUP_SCHEDULED",
+          "details": "Follow-up scheduled for 2026-11-10",
+          "timestamp": "2026-10-29T16:59:35.399Z"
+        },
+        {
+          "id": "act_1793293175395",
+          "leadId": "lead_1793293175334_48e04d02",
+          "performedBy": "Executive Admin",
+          "action": "NOTE_ADDED",
+          "details": "Internal note added: \"Discovery call scheduled with Managing Director.\"",
+          "timestamp": "2026-10-29T16:59:35.395Z"
+        },
+        {
+          "id": "act_1793293175389",
+          "leadId": "lead_1793293175334_48e04d02",
+          "performedBy": "Executive Admin",
+          "action": "STATUS_CHANGE",
+          "details": "Status changed from \"New\" to \"Contacted\"",
+          "timestamp": "2026-10-29T16:59:35.389Z"
+        },
+        {
+          "id": "act_1793293175334",
+          "leadId": "lead_1793293175334_48e04d02",
+          "performedBy": "System Webhook",
+          "action": "STATUS_CHANGE",
+          "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+          "timestamp": "2026-10-29T16:59:35.334Z"
+        }
+      ],
+      "followUpDate": "2026-11-10"
+    },
+    {
+      "id": "lead_1793290600763_0aa7ea73",
+      "referenceNumber": "RTP-2026-7948",
+      "createdAt": "2026-10-29T16:16:40.763Z",
+      "updatedAt": "2026-10-29T16:16:40.825Z",
+      "status": "Contacted",
+      "fullName": "Integration Test Client 1793290600759",
+      "businessName": "Test Enterprises Ltd",
+      "email": "integration@testenterprise.in",
+      "phone": "9876543210",
+      "businessType": "manufacturing",
+      "requiredService": "custom-crm",
+      "budgetRange": "₹35,000 - ₹75,000",
+      "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+      "preferredContactMethod": "WhatsApp",
+      "consentAgreed": true,
+      "notes": [
+        {
+          "id": "note_1793290600821",
+          "authorId": "usr_admin_01",
+          "authorName": "Executive Admin",
+          "content": "Discovery call scheduled with Managing Director.",
+          "createdAt": "2026-10-29T16:16:40.821Z"
+        }
+      ],
+      "activityHistory": [
+        {
+          "id": "act_1793290600825",
+          "leadId": "lead_1793290600763_0aa7ea73",
+          "performedBy": "Executive Admin",
+          "action": "FOLLOWUP_SCHEDULED",
+          "details": "Follow-up scheduled for 2026-11-10",
+          "timestamp": "2026-10-29T16:16:40.825Z"
+        },
+        {
+          "id": "act_1793290600821",
+          "leadId": "lead_1793290600763_0aa7ea73",
+          "performedBy": "Executive Admin",
+          "action": "NOTE_ADDED",
+          "details": "Internal note added: \"Discovery call scheduled with Managing Director.\"",
+          "timestamp": "2026-10-29T16:16:40.821Z"
+        },
+        {
+          "id": "act_1793290600816",
+          "leadId": "lead_1793290600763_0aa7ea73",
+          "performedBy": "Executive Admin",
+          "action": "STATUS_CHANGE",
+          "details": "Status changed from \"New\" to \"Contacted\"",
+          "timestamp": "2026-10-29T16:16:40.816Z"
+        },
+        {
+          "id": "act_1793290600763",
+          "leadId": "lead_1793290600763_0aa7ea73",
+          "performedBy": "System Webhook",
+          "action": "STATUS_CHANGE",
+          "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+          "timestamp": "2026-10-29T16:16:40.763Z"
+        }
+      ],
+      "followUpDate": "2026-11-10"
+    },
+    {
+      "id": "lead_1793290485290_bbc5cea1",
+      "referenceNumber": "RTP-2026-7674",
+      "createdAt": "2026-10-29T16:14:45.290Z",
+      "updatedAt": "2026-10-29T16:14:45.290Z",
+      "status": "New",
+      "fullName": "Karthik Subramanian",
+      "businessName": "",
+      "email": "karthik@rubitechpark.com",
+      "phone": "8220550829",
+      "businessType": "retail-jewellery",
+      "requiredService": "business-website",
+      "budgetRange": "₹15,000 - ₹35,000",
+      "projectDescription": "We require a custom CRM and multi-channel inventory system for our Coimbatore operations.",
+      "preferredContactMethod": "WhatsApp",
+      "consentAgreed": true,
+      "notes": [],
+      "activityHistory": [
+        {
+          "id": "act_1793290485290",
+          "leadId": "lead_1793290485290_bbc5cea1",
+          "performedBy": "System Webhook",
+          "action": "STATUS_CHANGE",
+          "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+          "timestamp": "2026-10-29T16:14:45.290Z"
+        }
+      ]
+    },
+    {
+      "id": "lead_1793290292479_d42608d0",
+      "referenceNumber": "RTP-2026-9790",
+      "createdAt": "2026-10-29T16:11:32.479Z",
+      "updatedAt": "2026-10-29T16:11:32.536Z",
+      "status": "Contacted",
+      "fullName": "Integration Test Client 1793290292475",
+      "businessName": "Test Enterprises Ltd",
+      "email": "integration@testenterprise.in",
+      "phone": "9876543210",
+      "businessType": "manufacturing",
+      "requiredService": "custom-crm",
+      "budgetRange": "₹35,000 - ₹75,000",
+      "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+      "preferredContactMethod": "WhatsApp",
+      "consentAgreed": true,
+      "notes": [
+        {
+          "id": "note_1793290292532",
+          "authorId": "usr_admin_01",
+          "authorName": "Executive Admin",
+          "content": "Discovery call scheduled with Managing Director.",
+          "createdAt": "2026-10-29T16:11:32.532Z"
+        }
+      ],
+      "activityHistory": [
+        {
+          "id": "act_1793290292536",
+          "leadId": "lead_1793290292479_d42608d0",
+          "performedBy": "Executive Admin",
+          "action": "FOLLOWUP_SCHEDULED",
+          "details": "Follow-up scheduled for 2026-11-10",
+          "timestamp": "2026-10-29T16:11:32.536Z"
+        },
+        {
+          "id": "act_1793290292532",
+          "leadId": "lead_1793290292479_d42608d0",
+          "performedBy": "Executive Admin",
+          "action": "NOTE_ADDED",
+          "details": "Internal note added: \"Discovery call scheduled with Managing Director.\"",
+          "timestamp": "2026-10-29T16:11:32.532Z"
+        },
+        {
+          "id": "act_1793290292528",
+          "leadId": "lead_1793290292479_d42608d0",
+          "performedBy": "Executive Admin",
+          "action": "STATUS_CHANGE",
+          "details": "Status changed from \"New\" to \"Contacted\"",
+          "timestamp": "2026-10-29T16:11:32.528Z"
+        },
+        {
+          "id": "act_1793290292479",
+          "leadId": "lead_1793290292479_d42608d0",
+          "performedBy": "System Webhook",
+          "action": "STATUS_CHANGE",
+          "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+          "timestamp": "2026-10-29T16:11:32.479Z"
+        }
+      ],
+      "followUpDate": "2026-11-10"
+    },
+    {
+      "id": "lead_1793290193894_2b094b8f",
+      "referenceNumber": "RTP-2026-1948",
+      "createdAt": "2026-10-29T16:09:53.894Z",
+      "updatedAt": "2026-10-29T16:09:53.894Z",
+      "status": "New",
+      "fullName": "Integration Test Client 1793290193887",
+      "businessName": "Test Enterprises Ltd",
+      "email": "integration@testenterprise.in",
+      "phone": "9876543210",
+      "businessType": "manufacturing",
+      "requiredService": "custom-crm",
+      "budgetRange": "₹35,000 - ₹75,000",
+      "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+      "preferredContactMethod": "WhatsApp",
+      "consentAgreed": true,
+      "notes": [],
+      "activityHistory": [
+        {
+          "id": "act_1793290193894",
+          "leadId": "lead_1793290193894_2b094b8f",
+          "performedBy": "System Webhook",
+          "action": "STATUS_CHANGE",
+          "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+          "timestamp": "2026-10-29T16:09:53.894Z"
+        }
+      ]
+    },
+    {
+      "id": "lead_1793289292709_229cf486",
+      "referenceNumber": "EDH-2026-5660",
+      "createdAt": "2026-10-29T15:54:52.709Z",
+      "updatedAt": "2026-10-29T15:54:52.709Z",
+      "status": "New",
+      "fullName": "Integration Test Client 1793289292706",
+      "businessName": "Test Enterprises Ltd",
+      "email": "integration@testenterprise.in",
+      "phone": "9876543210",
+      "businessType": "manufacturing",
+      "requiredService": "custom-crm",
+      "budgetRange": "₹35,000 - ₹75,000",
+      "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+      "preferredContactMethod": "WhatsApp",
+      "consentAgreed": true,
+      "notes": [],
+      "activityHistory": [
+        {
+          "id": "act_1793289292710",
+          "leadId": "lead_1793289292709_229cf486",
+          "performedBy": "System Webhook",
+          "action": "STATUS_CHANGE",
+          "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+          "timestamp": "2026-10-29T15:54:52.709Z"
+        }
+      ]
+    },
+    {
+      "id": "lead_1793289220764_9adb5123",
+      "referenceNumber": "EDH-2026-7154",
+      "createdAt": "2026-10-29T15:53:40.764Z",
+      "updatedAt": "2026-10-29T15:53:40.764Z",
+      "status": "New",
+      "fullName": "Integration Test Client 1793289220758",
+      "businessName": "Test Enterprises Ltd",
+      "email": "integration@testenterprise.in",
+      "phone": "9876543210",
+      "businessType": "manufacturing",
+      "requiredService": "custom-crm",
+      "budgetRange": "₹35,000 - ₹75,000",
+      "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+      "preferredContactMethod": "WhatsApp",
+      "consentAgreed": true,
+      "notes": [],
+      "activityHistory": [
+        {
+          "id": "act_1793289220765",
+          "leadId": "lead_1793289220764_9adb5123",
+          "performedBy": "System Webhook",
+          "action": "STATUS_CHANGE",
+          "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+          "timestamp": "2026-10-29T15:53:40.764Z"
+        }
+      ]
+    },
+    {
+      "id": "lead_1793287026931_d0c67bea",
+      "referenceNumber": "EDH-2026-2627",
+      "createdAt": "2026-10-29T15:17:06.931Z",
+      "updatedAt": "2026-10-29T15:18:47.034Z",
+      "status": "Contacted",
+      "fullName": "Integration Test Client 1793287026926",
+      "businessName": "Test Enterprises Ltd",
+      "email": "integration@testenterprise.in",
+      "phone": "9876543210",
+      "businessType": "manufacturing",
+      "requiredService": "custom-crm",
+      "budgetRange": "₹35,000 - ₹75,000",
+      "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+      "preferredContactMethod": "WhatsApp",
+      "consentAgreed": true,
+      "notes": [
+        {
+          "id": "note_1793287127034",
+          "authorId": "usr_admin_01",
+          "authorName": "Ellora Executive Admin",
+          "content": "Client requested quote with GST breakdown.",
+          "createdAt": "2026-10-29T15:18:47.034Z"
+        },
+        {
+          "id": "note_1793287026985",
+          "authorId": "usr_admin_01",
+          "authorName": "Ellora Executive Admin",
+          "content": "Discovery call scheduled with Managing Director.",
+          "createdAt": "2026-10-29T15:17:06.985Z"
+        }
+      ],
+      "activityHistory": [
+        {
+          "id": "act_1793287127034",
+          "leadId": "lead_1793287026931_d0c67bea",
+          "performedBy": "Ellora Executive Admin",
+          "action": "NOTE_ADDED",
+          "details": "Internal note added: \"Client requested quote with GST breakdown.\"",
+          "timestamp": "2026-10-29T15:18:47.034Z"
+        },
+        {
+          "id": "act_1793287026989",
+          "leadId": "lead_1793287026931_d0c67bea",
+          "performedBy": "Ellora Executive Admin",
+          "action": "FOLLOWUP_SCHEDULED",
+          "details": "Follow-up scheduled for 2026-11-10",
+          "timestamp": "2026-10-29T15:17:06.989Z"
+        },
+        {
+          "id": "act_1793287026985",
+          "leadId": "lead_1793287026931_d0c67bea",
+          "performedBy": "Ellora Executive Admin",
+          "action": "NOTE_ADDED",
+          "details": "Internal note added: \"Discovery call scheduled with Managing Director.\"",
+          "timestamp": "2026-10-29T15:17:06.985Z"
+        },
+        {
+          "id": "act_1793287026981",
+          "leadId": "lead_1793287026931_d0c67bea",
+          "performedBy": "Ellora Executive Admin",
+          "action": "STATUS_CHANGE",
+          "details": "Status changed from \"New\" to \"Contacted\"",
+          "timestamp": "2026-10-29T15:17:06.981Z"
+        },
+        {
+          "id": "act_1793287026931",
+          "leadId": "lead_1793287026931_d0c67bea",
+          "performedBy": "System Webhook",
+          "action": "STATUS_CHANGE",
+          "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+          "timestamp": "2026-10-29T15:17:06.931Z"
+        }
+      ],
+      "followUpDate": "2026-11-10"
+    },
+    {
+      "id": "lead_1793287004656_b9146ea4",
+      "referenceNumber": "EDH-2026-5313",
+      "createdAt": "2026-10-29T15:16:44.656Z",
+      "updatedAt": "2026-10-29T15:16:44.656Z",
+      "status": "New",
+      "fullName": "Integration Test Client 1793287004652",
+      "businessName": "Test Enterprises Ltd",
+      "email": "integration@testenterprise.in",
+      "phone": "9876543210",
+      "businessType": "manufacturing",
+      "requiredService": "custom-crm",
+      "budgetRange": "₹35,000 - ₹75,000",
+      "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+      "preferredContactMethod": "WhatsApp",
+      "consentAgreed": true,
+      "notes": [],
+      "activityHistory": [
+        {
+          "id": "act_1793287004656",
+          "leadId": "lead_1793287004656_b9146ea4",
+          "performedBy": "System Webhook",
+          "action": "STATUS_CHANGE",
+          "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+          "timestamp": "2026-10-29T15:16:44.656Z"
+        }
+      ]
+    },
+    {
+      "id": "lead_1793286989363_98cb5843",
+      "referenceNumber": "EDH-2026-8198",
+      "createdAt": "2026-10-29T15:16:29.363Z",
+      "updatedAt": "2026-10-29T15:16:29.424Z",
+      "status": "Contacted",
+      "fullName": "Integration Test Client 1793286989360",
+      "businessName": "Test Enterprises Ltd",
+      "email": "integration@testenterprise.in",
+      "phone": "9876543210",
+      "businessType": "manufacturing",
+      "requiredService": "custom-crm",
+      "budgetRange": "₹35,000 - ₹75,000",
+      "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+      "preferredContactMethod": "WhatsApp",
+      "consentAgreed": true,
+      "notes": [
+        {
+          "id": "note_1793286989421",
+          "authorId": "usr_admin_01",
+          "authorName": "Ellora Executive Admin",
+          "content": "Discovery call scheduled with Managing Director.",
+          "createdAt": "2026-10-29T15:16:29.421Z"
+        }
+      ],
+      "activityHistory": [
+        {
+          "id": "act_1793286989424",
+          "leadId": "lead_1793286989363_98cb5843",
+          "performedBy": "Ellora Executive Admin",
+          "action": "FOLLOWUP_SCHEDULED",
+          "details": "Follow-up scheduled for 2026-11-10",
+          "timestamp": "2026-10-29T15:16:29.424Z"
+        },
+        {
+          "id": "act_1793286989421",
+          "leadId": "lead_1793286989363_98cb5843",
+          "performedBy": "Ellora Executive Admin",
+          "action": "NOTE_ADDED",
+          "details": "Internal note added: \"Discovery call scheduled with Managing Director.\"",
+          "timestamp": "2026-10-29T15:16:29.421Z"
+        },
+        {
+          "id": "act_1793286989417",
+          "leadId": "lead_1793286989363_98cb5843",
+          "performedBy": "Ellora Executive Admin",
+          "action": "STATUS_CHANGE",
+          "details": "Status changed from \"New\" to \"Contacted\"",
+          "timestamp": "2026-10-29T15:16:29.417Z"
+        },
+        {
+          "id": "act_1793286989364",
+          "leadId": "lead_1793286989363_98cb5843",
+          "performedBy": "System Webhook",
+          "action": "STATUS_CHANGE",
+          "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+          "timestamp": "2026-10-29T15:16:29.363Z"
+        }
+      ],
+      "followUpDate": "2026-11-10"
+    },
+    {
+      "id": "lead_seed_01",
+      "referenceNumber": "EDH-2026-0042",
+      "createdAt": "2026-10-26T15:15:56.969Z",
+      "updatedAt": "2026-10-28T15:15:56.969Z",
+      "status": "Won",
+      "fullName": "Kishore Jhaveri",
+      "businessName": "RUBI Gold & Silver",
+      "email": "kishore@rubijewellery.in",
+      "phone": "9820198201",
+      "businessType": "retail-jewellery",
+      "requiredService": "ecommerce-store",
+      "budgetRange": "₹35,000 - ₹75,000",
+      "projectDescription": "Digital catalog and luxury WhatsApp inquiry portal for gold and silver ornament collections across India.",
+      "preferredContactMethod": "WhatsApp",
+      "consentAgreed": true,
+      "followUpDate": "2026-11-05",
+      "assignedTo": "Ellora Executive Admin",
+      "internalEstimatedValueINR": 55000,
+      "notes": [
+        {
+          "id": "note_1",
+          "authorId": "usr_admin_01",
+          "authorName": "Ellora Executive Admin",
+          "content": "Phase 1 deployed with positive customer feedback. SKU WhatsApp triggers working flawlessly.",
+          "createdAt": "2026-10-27T15:15:56.969Z"
+        }
+      ],
+      "activityHistory": [
+        {
+          "id": "act_1",
+          "leadId": "lead_seed_01",
+          "performedBy": "Ellora Executive Admin",
+          "action": "STATUS_CHANGE",
+          "details": "Status changed from Proposal Sent to Won",
+          "timestamp": "2026-10-28T15:15:56.969Z"
+        }
+      ]
+    },
+    {
+      "id": "lead_seed_02",
+      "referenceNumber": "EDH-2026-0089",
+      "createdAt": "2026-10-28T15:15:56.969Z",
+      "updatedAt": "2026-10-29T03:15:56.969Z",
+      "status": "Proposal Sent",
+      "fullName": "Venkatesh Rao",
+      "businessName": "Apex Fasteners & Industrial Tools",
+      "email": "v.rao@apexindustrial.co.in",
+      "phone": "9845098450",
+      "businessType": "manufacturing",
+      "requiredService": "custom-crm",
+      "budgetRange": "₹75,000 - ₹1,50,000+",
+      "projectDescription": "Multi-branch warehouse stock lookup and dispatch workflow with GST invoice generation.",
+      "preferredContactMethod": "Phone Call",
+      "consentAgreed": true,
+      "followUpDate": "2026-11-02",
+      "assignedTo": "Ellora Executive Admin",
+      "internalEstimatedValueINR": 85000,
+      "notes": [
+        {
+          "id": "note_2",
+          "authorId": "usr_admin_01",
+          "authorName": "Ellora Executive Admin",
+          "content": "Formal milestone proposal sent for review. Follow-up scheduled with director on Monday.",
+          "createdAt": "2026-10-29T03:15:56.969Z"
+        }
+      ],
+      "activityHistory": [
+        {
+          "id": "act_2",
+          "leadId": "lead_seed_02",
+          "performedBy": "Ellora Executive Admin",
+          "action": "STATUS_CHANGE",
+          "details": "Status changed from Qualified to Proposal Sent",
+          "timestamp": "2026-10-29T03:15:56.969Z"
+        }
+      ]
+    }
+  ],
+  "audit": [
+    {
+      "id": "audit_1793461630812_843255",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "CSV_EXPORT",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEADS_CSV",
+      "timestamp": "2026-10-31T15:47:10.813Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793461630738_e37516",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-31T15:47:10.738Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793461630650",
+      "userId": "public_lead_form",
+      "userEmail": "integration@testenterprise.in",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:RTP-2026-2018",
+      "timestamp": "2026-10-31T15:47:10.649Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793461630638_756b1b",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-31T15:47:10.638Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793461630539_a8e525",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-31T15:47:10.539Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793375089881_75d570",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:44:49.882Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793375017438_eb8cdd",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LEAD_DELETE",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD_lead_1793375017395_b219f138",
+      "timestamp": "2026-10-30T15:43:37.438Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793375017433_f98a13",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:43:37.433Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793375017395",
+      "userId": "public_lead_form",
+      "userEmail": "todelete.1793375017391@example.com",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:RTP-2026-3120",
+      "timestamp": "2026-10-30T15:43:37.395Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793375017384",
+      "userId": "public_lead_form",
+      "userEmail": "test.client.1793375017376@rubitechpark.com",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:RTP-2026-7020",
+      "timestamp": "2026-10-30T15:43:37.384Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793375017118_504766",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "SYSTEM_BACKUP",
+      "ipAddress": "127.0.0.1",
+      "resource": "crm_backup_2026-10-30T15-43-37-116Z.json",
+      "timestamp": "2026-10-30T15:43:37.118Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793375017106_51c4c3",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "CSV_EXPORT",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEADS_CSV",
+      "timestamp": "2026-10-30T15:43:37.106Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793375017086_8d472e",
+      "userId": "RUBI TECH PARK Admin",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "super_admin",
+      "action": "ADMIN_MANUAL_PAYMENT_VERIFIED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-FFD54C | Receipt: RTP-REC-2026-A0D5A4",
+      "timestamp": "2026-10-30T15:43:37.086Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793375017080_cc4b11",
+      "userId": "usr_admin_rtp",
+      "userEmail": "admin@rubitechpark.com",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:43:37.080Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793375017035_a49a51",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:43:37.035Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793375016952_7b40e2",
+      "userId": "customer",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "developer",
+      "action": "MANUAL_UPI_UTR_SUBMITTED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-FFD54C:987654321098",
+      "timestamp": "2026-10-30T15:43:36.952Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793375016945",
+      "userId": "public_lead_form",
+      "userEmail": "integration@testenterprise.in",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:RTP-2026-8756",
+      "timestamp": "2026-10-30T15:43:36.944Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793375016941_3a0e4c",
+      "userId": "public_customer",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-FFD54C",
+      "timestamp": "2026-10-30T15:43:36.941Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793375016929_95b037",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:43:36.929Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793375016876_852c47",
+      "userId": "customer",
+      "userEmail": "anitha@silks.in",
+      "userRole": "developer",
+      "action": "MANUAL_UPI_UTR_SUBMITTED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-13571D:429182371920",
+      "timestamp": "2026-10-30T15:43:36.876Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793375016868_3a33f1",
+      "userId": "public_customer",
+      "userEmail": "anitha@silks.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-13571D",
+      "timestamp": "2026-10-30T15:43:36.868Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793375016865_abec65",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:43:36.866Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793375016827_da3cee",
+      "userId": "public_customer",
+      "userEmail": "karthik@kovai.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-05D3A2",
+      "timestamp": "2026-10-30T15:43:36.827Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374717354_90b579",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LEAD_DELETE",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD_lead_1793374717308_e7345f92",
+      "timestamp": "2026-10-30T15:38:37.354Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374717349_f837ed",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:38:37.349Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374717308",
+      "userId": "public_lead_form",
+      "userEmail": "todelete.1793374717301@example.com",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:RTP-2026-3282",
+      "timestamp": "2026-10-30T15:38:37.308Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374717294",
+      "userId": "public_lead_form",
+      "userEmail": "test.client.1793374717286@rubitechpark.com",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:RTP-2026-6242",
+      "timestamp": "2026-10-30T15:38:37.293Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374717005_a8be76",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "SYSTEM_BACKUP",
+      "ipAddress": "127.0.0.1",
+      "resource": "crm_backup_2026-10-30T15-38-37-003Z.json",
+      "timestamp": "2026-10-30T15:38:37.005Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374716993_a8b609",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "CSV_EXPORT",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEADS_CSV",
+      "timestamp": "2026-10-30T15:38:36.993Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374716982_6d663a",
+      "userId": "RUBI TECH PARK Admin",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "super_admin",
+      "action": "ADMIN_MANUAL_PAYMENT_VERIFIED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-081D10 | Receipt: RTP-REC-2026-0198F4",
+      "timestamp": "2026-10-30T15:38:36.982Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374716974_972284",
+      "userId": "usr_admin_rtp",
+      "userEmail": "admin@rubitechpark.com",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:38:36.974Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374716924_35ebd3",
+      "userId": "customer",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "developer",
+      "action": "MANUAL_UPI_UTR_SUBMITTED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-081D10:987654321098",
+      "timestamp": "2026-10-30T15:38:36.924Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374716917_afeba7",
+      "userId": "public_customer",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-081D10",
+      "timestamp": "2026-10-30T15:38:36.917Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374716915_e8d594",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:38:36.915Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374716849",
+      "userId": "public_lead_form",
+      "userEmail": "integration@testenterprise.in",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:RTP-2026-6877",
+      "timestamp": "2026-10-30T15:38:36.849Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374716841_21c4de",
+      "userId": "customer",
+      "userEmail": "anitha@silks.in",
+      "userRole": "developer",
+      "action": "MANUAL_UPI_UTR_SUBMITTED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-D70974:429182371920",
+      "timestamp": "2026-10-30T15:38:36.841Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374716831_c4c2ab",
+      "userId": "public_customer",
+      "userEmail": "anitha@silks.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-D70974",
+      "timestamp": "2026-10-30T15:38:36.831Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374716828_49cf9a",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:38:36.828Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374716779_9a6450",
+      "userId": "public_customer",
+      "userEmail": "karthik@kovai.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-CBA018",
+      "timestamp": "2026-10-30T15:38:36.779Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374716775_73a885",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:38:36.775Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793374673892_417e2f",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "SYSTEM_BACKUP",
+      "ipAddress": "127.0.0.1",
+      "resource": "crm_backup_2026-10-30T15-37-53-890Z.json",
+      "timestamp": "2026-10-30T15:37:53.892Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374673883_df930c",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "CSV_EXPORT",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEADS_CSV",
+      "timestamp": "2026-10-30T15:37:53.883Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374673860_6e02e7",
+      "userId": "RUBI TECH PARK Admin",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "super_admin",
+      "action": "ADMIN_MANUAL_PAYMENT_VERIFIED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-8A00BD | Receipt: RTP-REC-2026-088531",
+      "timestamp": "2026-10-30T15:37:53.860Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374673855_70453f",
+      "userId": "usr_admin_rtp",
+      "userEmail": "admin@rubitechpark.com",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:37:53.855Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374673817_d04f2b",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:37:53.817Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374673740_626810",
+      "userId": "customer",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "developer",
+      "action": "MANUAL_UPI_UTR_SUBMITTED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-8A00BD:987654321098",
+      "timestamp": "2026-10-30T15:37:53.740Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374673734_e43731",
+      "userId": "public_customer",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-8A00BD",
+      "timestamp": "2026-10-30T15:37:53.734Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374673732",
+      "userId": "public_lead_form",
+      "userEmail": "integration@testenterprise.in",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:RTP-2026-5084",
+      "timestamp": "2026-10-30T15:37:53.731Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374673721_0cbe52",
+      "userId": "customer",
+      "userEmail": "anitha@silks.in",
+      "userRole": "developer",
+      "action": "MANUAL_UPI_UTR_SUBMITTED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-1D2B15:429182371920",
+      "timestamp": "2026-10-30T15:37:53.721Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374673719_8d1680",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:37:53.719Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374673675_7b6275",
+      "userId": "public_customer",
+      "userEmail": "anitha@silks.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-1D2B15",
+      "timestamp": "2026-10-30T15:37:53.675Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374673672_49ee2c",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:37:53.672Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793374673634_463b52",
+      "userId": "public_customer",
+      "userEmail": "karthik@kovai.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-76E274",
+      "timestamp": "2026-10-30T15:37:53.634Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374489023_9328f0",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "SYSTEM_BACKUP",
+      "ipAddress": "127.0.0.1",
+      "resource": "crm_backup_2026-10-30T15-34-49-022Z.json",
+      "timestamp": "2026-10-30T15:34:49.023Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374489003_f5890f",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "CSV_EXPORT",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEADS_CSV",
+      "timestamp": "2026-10-30T15:34:49.003Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374488999_25a8e3",
+      "userId": "RUBI TECH PARK Admin",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "super_admin",
+      "action": "ADMIN_MANUAL_PAYMENT_VERIFIED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-4D4C38 | Receipt: RTP-REC-2026-AB2AB9",
+      "timestamp": "2026-10-30T15:34:48.999Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374488995_bc4766",
+      "userId": "usr_admin_rtp",
+      "userEmail": "admin@rubitechpark.com",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:34:48.995Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374488956_c85333",
+      "userId": "customer",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "developer",
+      "action": "MANUAL_UPI_UTR_SUBMITTED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-4D4C38:987654321098",
+      "timestamp": "2026-10-30T15:34:48.956Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374488950_d4bc6f",
+      "userId": "public_customer",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-4D4C38",
+      "timestamp": "2026-10-30T15:34:48.950Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374488947_a3b6ab",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:34:48.947Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374488904",
+      "userId": "public_lead_form",
+      "userEmail": "integration@testenterprise.in",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:RTP-2026-5050",
+      "timestamp": "2026-10-30T15:34:48.904Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374488893_51f7bb",
+      "userId": "customer",
+      "userEmail": "anitha@silks.in",
+      "userRole": "developer",
+      "action": "MANUAL_UPI_UTR_SUBMITTED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-EAF0A3:429182371920",
+      "timestamp": "2026-10-30T15:34:48.893Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374488874_52ef31",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:34:48.874Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374488820_dd1752",
+      "userId": "public_customer",
+      "userEmail": "anitha@silks.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-EAF0A3",
+      "timestamp": "2026-10-30T15:34:48.820Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793374488817_0254e0",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:34:48.817Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793374488762_4da5b1",
+      "userId": "public_customer",
+      "userEmail": "karthik@kovai.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-9D51F0",
+      "timestamp": "2026-10-30T15:34:48.762Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793372599319_849e56",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "SYSTEM_BACKUP",
+      "ipAddress": "127.0.0.1",
+      "resource": "crm_backup_2026-10-30T15-03-19-318Z.json",
+      "timestamp": "2026-10-30T15:03:19.319Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793372599298_2bf99d",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "CSV_EXPORT",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEADS_CSV",
+      "timestamp": "2026-10-30T15:03:19.298Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793372599271_2766d9",
+      "userId": "RUBI TECH PARK Admin",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "super_admin",
+      "action": "ADMIN_MANUAL_PAYMENT_VERIFIED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-1A810F | Receipt: RTP-REC-2026-23F116",
+      "timestamp": "2026-10-30T15:03:19.271Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793372599269_8056c6",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:03:19.269Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793372599234_48c569",
+      "userId": "usr_admin_rtp",
+      "userEmail": "admin@rubitechpark.com",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:03:19.234Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793372599197",
+      "userId": "public_lead_form",
+      "userEmail": "integration@testenterprise.in",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:RTP-2026-3917",
+      "timestamp": "2026-10-30T15:03:19.197Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793372599192_0d8578",
+      "userId": "customer",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "developer",
+      "action": "MANUAL_UPI_UTR_SUBMITTED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-1A810F:987654321098",
+      "timestamp": "2026-10-30T15:03:19.192Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793372599152_cfd637",
+      "userId": "public_customer",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-1A810F",
+      "timestamp": "2026-10-30T15:03:19.152Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793372599148_e6deda",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:03:19.148Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793372599088_612aa4",
+      "userId": "customer",
+      "userEmail": "anitha@silks.in",
+      "userRole": "developer",
+      "action": "MANUAL_UPI_UTR_SUBMITTED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-E72ABA:429182371920",
+      "timestamp": "2026-10-30T15:03:19.088Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793372599086_74114e",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T15:03:19.086Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793372599034_d71830",
+      "userId": "public_customer",
+      "userEmail": "anitha@silks.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-E72ABA",
+      "timestamp": "2026-10-30T15:03:19.034Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793372599027_dc6bdc",
+      "userId": "public_customer",
+      "userEmail": "karthik@kovai.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-53927F",
+      "timestamp": "2026-10-30T15:03:19.027Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371862353_dececf",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "SYSTEM_BACKUP",
+      "ipAddress": "127.0.0.1",
+      "resource": "crm_backup_2026-10-30T14-51-02-352Z.json",
+      "timestamp": "2026-10-30T14:51:02.353Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371862340_66984a",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "CSV_EXPORT",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEADS_CSV",
+      "timestamp": "2026-10-30T14:51:02.341Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371862327_d566a9",
+      "userId": "RUBI TECH PARK Admin",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "super_admin",
+      "action": "ADMIN_MANUAL_PAYMENT_VERIFIED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-8A5DA1 | Receipt: RTP-REC-2026-052551",
+      "timestamp": "2026-10-30T14:51:02.327Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371862322_fc70ee",
+      "userId": "usr_admin_rtp",
+      "userEmail": "admin@rubitechpark.com",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T14:51:02.322Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371862259_bfcd72",
+      "userId": "customer",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "developer",
+      "action": "MANUAL_UPI_UTR_SUBMITTED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-8A5DA1:987654321098",
+      "timestamp": "2026-10-30T14:51:02.259Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371862257_5f87fb",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T14:51:02.257Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371862213_4ddcaa",
+      "userId": "public_customer",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-8A5DA1",
+      "timestamp": "2026-10-30T14:51:02.213Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371862211",
+      "userId": "public_lead_form",
+      "userEmail": "integration@testenterprise.in",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:RTP-2026-9664",
+      "timestamp": "2026-10-30T14:51:02.211Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371862201_44142a",
+      "userId": "customer",
+      "userEmail": "anitha@silks.in",
+      "userRole": "developer",
+      "action": "MANUAL_UPI_UTR_SUBMITTED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-5771E9:429182371920",
+      "timestamp": "2026-10-30T14:51:02.201Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371862199_ad7ac1",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T14:51:02.199Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371862146_2f5dca",
+      "userId": "public_customer",
+      "userEmail": "anitha@silks.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-5771E9",
+      "timestamp": "2026-10-30T14:51:02.146Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371862141_be1bc7",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T14:51:02.141Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793371862104_ca4ae3",
+      "userId": "public_customer",
+      "userEmail": "karthik@kovai.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-291E91",
+      "timestamp": "2026-10-30T14:51:02.104Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371106441_355f9d",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "SYSTEM_BACKUP",
+      "ipAddress": "127.0.0.1",
+      "resource": "crm_backup_2026-10-30T14-38-26-440Z.json",
+      "timestamp": "2026-10-30T14:38:26.441Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371106399_3d905b",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "CSV_EXPORT",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEADS_CSV",
+      "timestamp": "2026-10-30T14:38:26.399Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371106398_88cf6b",
+      "userId": "RUBI TECH PARK Admin",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "super_admin",
+      "action": "ADMIN_MANUAL_PAYMENT_VERIFIED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-D24D1A | Receipt: RTP-REC-2026-776F89",
+      "timestamp": "2026-10-30T14:38:26.398Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371106386_55d137",
+      "userId": "usr_admin_rtp",
+      "userEmail": "admin@rubitechpark.com",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T14:38:26.386Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371106338_d18246",
+      "userId": "customer",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "developer",
+      "action": "MANUAL_UPI_UTR_SUBMITTED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-D24D1A:987654321098",
+      "timestamp": "2026-10-30T14:38:26.338Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371106326_dbcb66",
+      "userId": "public_customer",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-D24D1A",
+      "timestamp": "2026-10-30T14:38:26.326Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371106323_ac5bce",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T14:38:26.323Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371106262",
+      "userId": "public_lead_form",
+      "userEmail": "integration@testenterprise.in",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:RTP-2026-8514",
+      "timestamp": "2026-10-30T14:38:26.261Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371106255_8f0b5f",
+      "userId": "customer",
+      "userEmail": "anitha@silks.in",
+      "userRole": "developer",
+      "action": "MANUAL_UPI_UTR_SUBMITTED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-E00D19:429182371920",
+      "timestamp": "2026-10-30T14:38:26.255Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371106244_409d66",
+      "userId": "public_customer",
+      "userEmail": "anitha@silks.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-E00D19",
+      "timestamp": "2026-10-30T14:38:26.244Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371106240_c18428",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T14:38:26.240Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371106175_0741f9",
+      "userId": "public_customer",
+      "userEmail": "karthik@kovai.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-B749B2",
+      "timestamp": "2026-10-30T14:38:26.175Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793371106169_65fc02",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-30T14:38:26.170Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793293275777_9b6fe8",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "SYSTEM_BACKUP",
+      "ipAddress": "127.0.0.1",
+      "resource": "crm_backup_2026-10-29T17-01-15-776Z.json",
+      "timestamp": "2026-10-29T17:01:15.777Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293275766_1ae781",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "CSV_EXPORT",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEADS_CSV",
+      "timestamp": "2026-10-29T17:01:15.766Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293275746_bbd3ca",
+      "userId": "RUBI TECH PARK Admin",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "super_admin",
+      "action": "ADMIN_MANUAL_PAYMENT_VERIFIED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-BB65E8 | Receipt: RTP-REC-2026-FF7E6B",
+      "timestamp": "2026-10-29T17:01:15.746Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293275737_ee5560",
+      "userId": "usr_admin_rtp",
+      "userEmail": "admin@rubitechpark.com",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T17:01:15.737Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293275690_aa59db",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T17:01:15.690Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293275645_f6ec0b",
+      "userId": "customer",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "developer",
+      "action": "MANUAL_UPI_UTR_SUBMITTED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-BB65E8:987654321098",
+      "timestamp": "2026-10-29T17:01:15.645Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293275642",
+      "userId": "public_lead_form",
+      "userEmail": "integration@testenterprise.in",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:RTP-2026-7385",
+      "timestamp": "2026-10-29T17:01:15.641Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293275636_312164",
+      "userId": "public_customer",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-BB65E8",
+      "timestamp": "2026-10-29T17:01:15.636Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293275628_82a2fa",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T17:01:15.628Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293275567_113731",
+      "userId": "customer",
+      "userEmail": "anitha@silks.in",
+      "userRole": "developer",
+      "action": "MANUAL_UPI_UTR_SUBMITTED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-3BE288:429182371920",
+      "timestamp": "2026-10-29T17:01:15.567Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293275564_07a4e5",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T17:01:15.564Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793293275508_35871b",
+      "userId": "public_customer",
+      "userEmail": "anitha@silks.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-3BE288",
+      "timestamp": "2026-10-29T17:01:15.508Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293275501_7a7ba7",
+      "userId": "public_customer",
+      "userEmail": "karthik@kovai.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-1FA726",
+      "timestamp": "2026-10-29T17:01:15.501Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293175476_9849f1",
+      "userId": "RUBI TECH PARK Admin",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "super_admin",
+      "action": "ADMIN_MANUAL_PAYMENT_VERIFIED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-066DC1 | Receipt: RTP-REC-2026-E38A4D",
+      "timestamp": "2026-10-29T16:59:35.476Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293175467_57083d",
+      "userId": "usr_admin_rtp",
+      "userEmail": "admin@rubitechpark.com",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T16:59:35.467Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293175425_a2573c",
+      "userId": "customer",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "developer",
+      "action": "MANUAL_UPI_UTR_SUBMITTED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-066DC1:987654321098",
+      "timestamp": "2026-10-29T16:59:35.425Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293175408_7fb83e",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "SYSTEM_BACKUP",
+      "ipAddress": "127.0.0.1",
+      "resource": "crm_backup_2026-10-29T16-59-35-408Z.json",
+      "timestamp": "2026-10-29T16:59:35.408Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293175405_07b5d5",
+      "userId": "public_customer",
+      "userEmail": "selvam@logistics.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-066DC1",
+      "timestamp": "2026-10-29T16:59:35.405Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293175402_c6ef68",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "CSV_EXPORT",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEADS_CSV",
+      "timestamp": "2026-10-29T16:59:35.402Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293175393_10c844",
+      "userId": "customer",
+      "userEmail": "anitha@silks.in",
+      "userRole": "developer",
+      "action": "MANUAL_UPI_UTR_SUBMITTED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-E15EE9:429182371920",
+      "timestamp": "2026-10-29T16:59:35.393Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293175387_2b613f",
+      "userId": "public_customer",
+      "userEmail": "anitha@silks.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-E15EE9",
+      "timestamp": "2026-10-29T16:59:35.387Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293175380_cf41f6",
+      "userId": "public_customer",
+      "userEmail": "karthik@kovai.in",
+      "userRole": "developer",
+      "action": "PAYMENT_ORDER_CREATED",
+      "ipAddress": "127.0.0.1",
+      "resource": "RTP-ORD-2026-05118F",
+      "timestamp": "2026-10-29T16:59:35.380Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293175377_7b5800",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T16:59:35.377Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293175334",
+      "userId": "public_lead_form",
+      "userEmail": "integration@testenterprise.in",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:RTP-2026-1757",
+      "timestamp": "2026-10-29T16:59:35.334Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293175324_90749e",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T16:59:35.324Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793293175239_f48878",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T16:59:35.239Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793290600834_568d8c",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "SYSTEM_BACKUP",
+      "ipAddress": "127.0.0.1",
+      "resource": "crm_backup_2026-10-29T16-16-40-833Z.json",
+      "timestamp": "2026-10-29T16:16:40.834Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793290600827_d3267a",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "CSV_EXPORT",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEADS_CSV",
+      "timestamp": "2026-10-29T16:16:40.828Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793290600806_6f9392",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T16:16:40.806Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793290600763",
+      "userId": "public_lead_form",
+      "userEmail": "integration@testenterprise.in",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:RTP-2026-7948",
+      "timestamp": "2026-10-29T16:16:40.763Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793290600752_0cc7b9",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T16:16:40.752Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793290600700_7b64a6",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T16:16:40.700Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793290531553_441e16",
+      "userId": "usr_admin_rtp",
+      "userEmail": "admin@rubitechpark.com",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T16:15:31.553Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793290485291",
+      "userId": "public_lead_form",
+      "userEmail": "karthik@rubitechpark.com",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:RTP-2026-7674",
+      "timestamp": "2026-10-29T16:14:45.290Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793290292556_d36fa0",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "SYSTEM_BACKUP",
+      "ipAddress": "127.0.0.1",
+      "resource": "crm_backup_2026-10-29T16-11-32-555Z.json",
+      "timestamp": "2026-10-29T16:11:32.556Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793290292537_dca1c4",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "CSV_EXPORT",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEADS_CSV",
+      "timestamp": "2026-10-29T16:11:32.537Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793290292519_6a9c7b",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T16:11:32.519Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793290292479",
+      "userId": "public_lead_form",
+      "userEmail": "integration@testenterprise.in",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:RTP-2026-9790",
+      "timestamp": "2026-10-29T16:11:32.479Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793290292467_48190e",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T16:11:32.467Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793290292419_99be9e",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T16:11:32.419Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793290236421_ffb1f4",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T16:10:36.421Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793290202714_ba0a8d",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T16:10:02.714Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793290193932_ec768e",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T16:09:53.932Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793290193894",
+      "userId": "public_lead_form",
+      "userEmail": "integration@testenterprise.in",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:RTP-2026-1948",
+      "timestamp": "2026-10-29T16:09:53.894Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793290193882_599a9e",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T16:09:53.882Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793290193815_d7a69b",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T16:09:53.815Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793289292748_16ac57",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T15:54:52.748Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793289292710",
+      "userId": "public_lead_form",
+      "userEmail": "integration@testenterprise.in",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:EDH-2026-5660",
+      "timestamp": "2026-10-29T15:54:52.709Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793289292702_7c52a0",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T15:54:52.702Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793289292667_d126ab",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T15:54:52.667Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793289285829_c7e7ed",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T15:54:45.829Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793289220855_841326",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T15:53:40.855Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793289220765",
+      "userId": "public_lead_form",
+      "userEmail": "integration@testenterprise.in",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:EDH-2026-7154",
+      "timestamp": "2026-10-29T15:53:40.764Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793289220754_598fc6",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T15:53:40.754Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793289220677_5f8821",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T15:53:40.677Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793287072864_dc2f8c",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T15:17:52.864Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793287027011_b6f77d",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "SYSTEM_BACKUP",
+      "ipAddress": "127.0.0.1",
+      "resource": "crm_backup_2026-10-29T15-17-07-011Z.json",
+      "timestamp": "2026-10-29T15:17:07.011Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793287026992_b02bf8",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "CSV_EXPORT",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEADS_CSV",
+      "timestamp": "2026-10-29T15:17:06.992Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793287026971_8f7fe6",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T15:17:06.971Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793287026931",
+      "userId": "public_lead_form",
+      "userEmail": "integration@testenterprise.in",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:EDH-2026-2627",
+      "timestamp": "2026-10-29T15:17:06.931Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793287026880_455613",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T15:17:06.880Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793287026807_fc0fac",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T15:17:06.807Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793287004656",
+      "userId": "public_lead_form",
+      "userEmail": "integration@testenterprise.in",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:EDH-2026-5313",
+      "timestamp": "2026-10-29T15:16:44.656Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793287004646_7e8ba7",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T15:16:44.646Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793287004594_059031",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T15:16:44.594Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793286989445_a57585",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "SYSTEM_BACKUP",
+      "ipAddress": "127.0.0.1",
+      "resource": "crm_backup_2026-10-29T15-16-29-445Z.json",
+      "timestamp": "2026-10-29T15:16:29.445Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793286989426_ff1cde",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "CSV_EXPORT",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEADS_CSV",
+      "timestamp": "2026-10-29T15:16:29.426Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793286989407_749dfb",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T15:16:29.407Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793286989364",
+      "userId": "public_lead_form",
+      "userEmail": "integration@testenterprise.in",
+      "userRole": "developer",
+      "action": "LEAD_SUBMISSION",
+      "ipAddress": "127.0.0.1",
+      "resource": "LEAD:EDH-2026-8198",
+      "timestamp": "2026-10-29T15:16:29.363Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793286989353_45fa43",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "LOGIN_SUCCESS",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T15:16:29.353Z",
+      "success": true
+    },
+    {
+      "id": "audit_1793286989307_45a1b3",
+      "userId": "unknown",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "developer",
+      "action": "LOGIN_FAILURE",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH",
+      "timestamp": "2026-10-29T15:16:29.307Z",
+      "success": false
+    },
+    {
+      "id": "audit_1793286956968_a52cb1",
+      "userId": "usr_admin_01",
+      "userEmail": "admin@elloradigital.in",
+      "userRole": "super_admin",
+      "action": "SYSTEM_BOOTSTRAP",
+      "ipAddress": "127.0.0.1",
+      "resource": "AUTH_USERS",
+      "timestamp": "2026-10-29T15:15:56.968Z",
+      "success": true
+    }
+  ],
+  "schemaVersion": "2.0.0"
+}

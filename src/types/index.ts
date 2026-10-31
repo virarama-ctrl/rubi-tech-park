@@ -17,37 +17,54 @@ export type PageRoute =
   | 'admin-dashboard'
   | 'not-found';
 
+export type ServiceCategoryType = 'software' | 'compliance' | 'eservices';
+
 export interface ServiceDetail {
   id: string;
-  slug: PageRoute;
+  slug: PageRoute | string;
   title: string;
+  category: ServiceCategoryType;
+  categoryTitle: string;
   shortDescription: string;
-  whoItIsFor: string[];
-  problemsItSolves: string[];
-  deliverables: string[];
-  processSteps: { title: string; description: string }[];
-  startingPrice: number;
-  startingPriceLabel: string;
-  quotationFactors: string[];
-  category: 'web' | 'ecommerce' | 'crm' | 'integration' | 'automation';
+  detailedScope?: string;
+  whoItIsFor?: string[];
+  problemsItSolves?: string[];
+  deliverables?: string[];
+  processSteps?: { title: string; description: string }[];
+  startingPrice?: number;
+  startingPriceLabel?: string;
+  quotationFactors?: string[];
+  whatsappMessage: string;
+  whatsappUrl?: string;
+  isWorkBasedPricing: boolean;
+  isEService?: boolean;
+  bookingAmount?: number;
+  bookingBase?: number;
+  bookingGst?: number;
+  complianceNotice?: string;
 }
 
-export type ProjectStatus = 'Live' | 'In Progress' | 'Demo';
+export type ProjectStatus = 'Live' | 'In Progress' | 'Demo' | 'Development / Enhancement' | 'Published Website' | 'Development / Commercial Preparation';
 
 export interface CaseStudy {
   id: string;
   title: string;
+  projectName?: string;
   clientName: string;
   industry: string;
+  categoryTag?: string;
   location: string;
   status: ProjectStatus;
   summary: string;
   challenge: string;
   solution: string;
   keyDeliverables: string[];
+  keyFeatures?: string[];
   technologies: string[];
   liveUrlPlaceholder?: string;
+  liveUrl?: string;
   isVerifiedReal: boolean;
+  thumbnailUrl?: string;
 }
 
 export type BusinessType =

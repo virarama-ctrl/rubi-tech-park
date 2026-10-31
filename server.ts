@@ -27,6 +27,14 @@ import {
   TRUSTED_PRICING_CATALOG
 } from './src/server/payments';
 import { supabaseService } from './src/server/supabase';
+import {
+  formatBusinessWhatsAppNotification,
+  generateBusinessWhatsAppLink,
+  sendBusinessEmailNotification,
+  BUSINESS_WHATSAPP_NUMBER,
+  BUSINESS_EMAIL
+} from './src/server/notifications';
+import { processCustomerChat } from './src/server/gemini';
 
 dotenv.config();
 
@@ -124,27 +132,42 @@ async function handleLeadSubmission(req: Request, res: Response) {
   }
 
   // 3. Extract and Sanitize Inputs (support camelCase and snake_case)
-  const fullName = sanitizeText(req.body.fullName || req.body.customer_name);
-  const businessName = sanitizeText(req.body.businessName || req.body.business_name);
+  const fullName = sanitizeText(req.body.fullName || req.body.customer_name || req.body.name);
+  const businessName = sanitizeText(req.body.businessName || req.body.business_name || '');
   const email = sanitizeEmail(req.body.email);
-  const phone = sanitizePhone(req.body.phone || req.body.phone_number);
-  const requiredService = (req.body.requiredService || req.body.service_interested || 'business-website').trim();
-  const projectDescription = sanitizeText(req.body.projectDescription || req.body.message);
+  const phone = sanitizePhone(req.body.phone || req.body.phone_number || req.body.mobileNumber || req.body.mobile);
+  const whatsappNumber = sanitizePhone(req.body.whatsappNumber || req.body.whatsapp_number || phone);
+  const customerType = sanitizeText(req.body.customerType || req.body.customer_type || 'Business / Individual');
+  const serviceCategory = sanitizeText(req.body.serviceCategory || req.body.service_category || 'General');
+  const selectedService = sanitizeText(req.body.selectedService || req.body.selected_service || req.body.requiredService || req.body.service_interested || 'General Inquiry');
+  const projectDescription = sanitizeText(req.body.projectDescription || req.body.customerRequirement || req.body.requirement || req.body.message || '');
   const businessType = req.body.businessType || 'other';
-  const budgetRange = req.body.budgetRange || '₹15,000 - ₹35,000';
   const preferredContactMethod = req.body.preferredContactMethod || 'WhatsApp';
   const sourcePage = sanitizeText(req.body.source || req.body.source_page || 'Website');
+
+  // Booking payment rules: If category is E-Services or booking requested, set booking amount to ₹236 (₹200 + ₹36 GST)
+  const isEService = serviceCategory.toLowerCase().includes('e-service') ||
+    sourcePage.toLowerCase().includes('e-service') ||
+    req.body.isEService === true ||
+    Boolean(req.body.bookingAmount);
+
+  const bookingAmount = isEService ? 236 : (req.body.bookingAmount ? Number(req.body.bookingAmount) : undefined);
+  const bookingPaymentStatus = req.body.bookingPaymentStatus || (isEService ? 'Pending' : undefined);
+  const balanceAmount = req.body.balanceAmount ? Number(req.body.balanceAmount) : undefined;
+  const consentAgreed = req.body.consentAgreed ?? req.body.consent_agreed ?? true;
 
   // 4. Duplicate Prevention (15-second window)
   const dedupKey = `${phone}_${email}`.toLowerCase();
   const existing = recentSubmissions.get(dedupKey);
   const now = Date.now();
   if (existing && now - existing.timestamp < 15000) {
+    const waUrl = generateBusinessWhatsAppLink(existing.lead);
     res.status(200).json({
       success: true,
       referenceId: existing.referenceId,
       lead: existing.lead,
       duplicate: true,
+      whatsappNotificationUrl: waUrl,
       message: 'Your enquiry was already received. A representative will contact you shortly.'
     });
     return;
@@ -164,7 +187,7 @@ async function handleLeadSubmission(req: Request, res: Response) {
   if (!phone || !indianMobileRegex.test(digitsOnly)) {
     errors.phone = 'Please provide a valid 10-digit Indian mobile number.';
   }
-  if (!requiredService) {
+  if (!selectedService) {
     errors.requiredService = 'Please select a service.';
   }
 
@@ -183,16 +206,32 @@ async function handleLeadSubmission(req: Request, res: Response) {
       {
         customer_name: fullName,
         phone_number: phone,
+        whatsapp_number: whatsappNumber,
         email,
         business_name: businessName,
-        service_interested: requiredService,
+        customer_type: customerType,
+        service_category: serviceCategory,
+        selected_service: selectedService,
+        service_interested: selectedService,
         message: projectDescription,
-        source_page: sourcePage
+        source_page: sourcePage,
+        booking_amount: bookingAmount,
+        booking_payment_status: bookingPaymentStatus,
+        balance_amount: balanceAmount,
+        consent_agreed: consentAgreed,
+        status: 'New'
       },
       ip
     );
 
-    const refId = result.lead?.referenceNumber || `RTP-${(result.lead?.id || 'LEAD').slice(0, 8).toUpperCase()}`;
+    const refId = result.lead?.referenceNumber || `RTP-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const formattedNotification = formatBusinessWhatsAppNotification(result.lead);
+    const whatsappNotificationUrl = generateBusinessWhatsAppLink(result.lead);
+
+    // Fire server-side email notification logging asynchronously
+    sendBusinessEmailNotification(result.lead, ip).catch((mailErr) => {
+      console.warn('[EMAIL NOTIFY NON-BLOCKING ERROR]:', mailErr);
+    });
 
     // Record for duplicate detection
     recentSubmissions.set(dedupKey, {
@@ -206,6 +245,16 @@ async function handleLeadSubmission(req: Request, res: Response) {
       referenceId: refId,
       lead: result.lead,
       storage: result.storage,
+      whatsappNotificationUrl,
+      formattedNotification,
+      bookingDetails: isEService ? {
+        baseCharge: 200,
+        gstRatePercent: 18,
+        gstAmount: 36,
+        totalBookingAmount: 236,
+        paymentStatus: 'Pending',
+        notice: 'Book your e-service by paying ₹236 (₹200 + 18% GST). The remaining service charges will be communicated after reviewing your requirements and collected after completion of the work. Applicable government fees and additional charges, if any, will be informed separately.'
+      } : undefined,
       message: result.storage === 'supabase'
         ? 'Enquiry recorded in Supabase cloud database.'
         : 'Enquiry recorded in persistent CRM database.'
@@ -224,6 +273,48 @@ async function handleLeadSubmission(req: Request, res: Response) {
  */
 app.post('/api/enquiries', handleLeadSubmission);
 app.post('/api/leads', handleLeadSubmission);
+
+/**
+ * AI Customer Support Chatbot Endpoint (Powered by Google Gemini API)
+ * POST /api/chat
+ */
+app.post('/api/chat', async (req: Request, res: Response) => {
+  const ip = getClientIp(req);
+  const rateLimit = enquiryRateLimiter.check(ip);
+  if (!rateLimit.allowed) {
+    res.status(429).json({
+      error: 'Too Many Requests',
+      reply: 'You have sent several messages in a short time. Please wait a moment or reach out directly to our WhatsApp support at +91 82205 50829.',
+      source: 'fallback'
+    });
+    return;
+  }
+
+  const { message, history } = req.body;
+  if (!message || typeof message !== 'string' || message.trim().length === 0) {
+    res.status(400).json({
+      error: 'Bad Request',
+      message: 'A message string is required.'
+    });
+    return;
+  }
+
+  try {
+    const chatHistory = Array.isArray(history) ? history : [];
+    const response = await processCustomerChat(chatHistory, message);
+    res.status(200).json({
+      success: true,
+      ...response
+    });
+  } catch (err: any) {
+    console.error('Chat endpoint error:', err);
+    res.status(500).json({
+      success: false,
+      reply: 'Our AI consultant is temporarily busy. You can speak directly with our team on WhatsApp: +91 82205 50829.',
+      source: 'fallback'
+    });
+  }
+});
 
 // -------------------------------------------------------------
 // Online Payment Endpoints (UPI, Cards, Net Banking)

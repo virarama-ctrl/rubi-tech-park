@@ -85,7 +85,11 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({ service, o
             </h2>
           </div>
           <ul className="space-y-3 text-sm text-slate-300">
-            {service.whoItIsFor.map((item, idx) => (
+            {(service.whoItIsFor || [
+              'Growing SMEs and businesses seeking verified digital operations',
+              'Enterprises looking to modernize customer workflows',
+              'Industrial and retail establishments in India'
+            ]).map((item, idx) => (
               <li key={idx} className="flex items-start gap-3">
                 <CheckCircle2 className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
                 <span className="leading-relaxed">{item}</span>
@@ -103,7 +107,11 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({ service, o
             </h2>
           </div>
           <ul className="space-y-3 text-sm text-slate-300">
-            {service.problemsItSolves.map((item, idx) => (
+            {(service.problemsItSolves || [
+              'Manual paperwork bottlenecks and unorganized follow-ups',
+              'Lack of mobile responsiveness and sluggish web experience',
+              'Lost customer leads due to missing WhatsApp automation'
+            ]).map((item, idx) => (
               <li key={idx} className="flex items-start gap-3">
                 <span className="w-4 h-4 rounded-full bg-red-950/80 border border-red-500/40 text-red-400 text-xs flex items-center justify-center shrink-0 mt-0.5">
                   ✕
@@ -132,7 +140,14 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({ service, o
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs sm:text-sm">
-          {service.deliverables.map((item, idx) => (
+          {(service.deliverables || [
+            'Requirement architecture and wireframe specification',
+            'Full mobile-responsive engineering and optimization',
+            'Database schema and backend API integration',
+            'Security audit and penetration testing verification',
+            'Deployment to high-performance cloud infrastructure',
+            'Complete source code ownership and technical handover'
+          ]).map((item, idx) => (
             <div key={idx} className="bg-[#070B14] p-4 rounded-lg border border-slate-800 flex items-start gap-3">
               <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
               <span className="text-slate-300 leading-snug">{item}</span>
@@ -153,7 +168,13 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({ service, o
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          {service.processSteps.map((step, idx) => (
+          {(service.processSteps || [
+            { title: 'Discovery', description: 'Detailed requirement analysis, technical scope mapping, and quotation signoff.' },
+            { title: 'Architecture', description: 'System design, UI/UX wireframing, and database schema definition.' },
+            { title: 'Development', description: 'Clean sprint engineering with continuous testing and client review.' },
+            { title: 'QA & Staging', description: 'Performance tuning, security verification, and customer demo approval.' },
+            { title: 'Launch', description: 'Production deployment, domain linking, and handover of code assets.' }
+          ]).map((step, idx) => (
             <div key={idx} className="bg-[#090F20] border border-slate-800 p-5 rounded-xl">
               <div className="text-xs font-mono text-[#D4AF37] font-semibold mb-2">
                 {language === 'ta' ? `படிநிலை ${idx + 1}` : `Phase ${idx + 1}`}
@@ -205,7 +226,12 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({ service, o
                 : 'The following scope variables will adjust the final quotation upwards or downwards:'}
             </p>
             <ul className="space-y-2 text-xs text-slate-300">
-              {service.quotationFactors.map((factor, idx) => (
+              {(service.quotationFactors || [
+                'Total number of custom workflows and database entities',
+                'Third-party API consumption and automated messaging triggers',
+                'Custom reporting, analytics, and CSV data export modules',
+                'Legacy data migration requirements and multi-role access levels'
+              ]).map((factor, idx) => (
                 <li key={idx} className="flex items-start gap-2.5">
                   <span className="text-[#D4AF37] font-bold">›</span>
                   <span className="leading-relaxed">{factor}</span>

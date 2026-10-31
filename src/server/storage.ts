@@ -209,9 +209,9 @@ export class CRMStorage {
           l.fullName.toLowerCase().includes(term) ||
           (l.businessName && l.businessName.toLowerCase().includes(term)) ||
           l.email.toLowerCase().includes(term) ||
-          l.phone.includes(term) ||
-          l.referenceNumber.toLowerCase().includes(term) ||
-          l.projectDescription.toLowerCase().includes(term)
+          (l.referenceNumber && l.referenceNumber.toLowerCase().includes(term)) ||
+          (l.projectDescription && l.projectDescription.toLowerCase().includes(term)) ||
+          (l.customerRequirement && l.customerRequirement.toLowerCase().includes(term))
       );
     }
 
@@ -238,28 +238,45 @@ export class CRMStorage {
     return leads.find((l) => l.id === id || l.referenceNumber === id) || null;
   }
 
-  public createLead(data: LeadFormData, ipAddress: string): StoredLead {
+  public createLead(data: any, ipAddress: string): StoredLead {
     const leads = readJson<StoredLead[]>(LEADS_FILE, []);
     const now = new Date().toISOString();
     const id = `lead_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
     const referenceNumber = `RTP-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
+    const fullName = data.customerName || data.fullName || 'Anonymous';
+    const phone = data.mobileNumber || data.phone || '';
+    const email = data.email || '';
+
     const newLead: StoredLead = {
       id,
       referenceNumber,
+      enquiryId: referenceNumber,
       createdAt: now,
       updatedAt: now,
-      status: 'New',
-      fullName: data.fullName,
-      businessName: data.businessName || '',
-      email: data.email,
-      phone: data.phone,
-      businessType: data.businessType,
-      requiredService: data.requiredService,
-      budgetRange: data.budgetRange,
-      projectDescription: data.projectDescription,
-      preferredContactMethod: data.preferredContactMethod,
-      consentAgreed: data.consentAgreed,
+      status: data.status || 'New',
+      fullName,
+      customerName: fullName,
+      businessName: data.businessName || data.business_name || '',
+      email,
+      phone,
+      mobileNumber: phone,
+      whatsappNumber: data.whatsappNumber || data.whatsapp_number || phone,
+      customerType: data.customerType || 'Individual',
+      serviceCategory: data.serviceCategory || (typeof data.requiredService === 'string' ? data.requiredService : 'General'),
+      selectedService: data.selectedService || data.requiredService || 'General Inquiry',
+      customerRequirement: data.customerRequirement || data.projectDescription || data.message || '',
+      enquiryDate: data.enquiryDate || new Date().toLocaleString('en-IN'),
+      source: data.source || 'Website Form',
+      businessType: data.businessType || 'other',
+      requiredService: data.requiredService || data.selectedService || 'General',
+      budgetRange: data.budgetRange || (data.bookingAmount ? `₹${data.bookingAmount}` : 'Quote on Request'),
+      projectDescription: data.customerRequirement || data.projectDescription || data.message || '',
+      preferredContactMethod: data.preferredContactMethod || 'WhatsApp',
+      consentAgreed: Boolean(data.consentAgreed ?? true),
+      bookingPaymentStatus: data.bookingPaymentStatus || (data.bookingAmount ? 'Pending' : 'None'),
+      bookingAmount: data.bookingAmount || (data.isEService ? 236 : undefined),
+      balanceAmount: data.balanceAmount,
       notes: [],
       activityHistory: [
         {
@@ -267,7 +284,7 @@ export class CRMStorage {
           leadId: id,
           performedBy: 'System Webhook',
           action: 'STATUS_CHANGE',
-          details: `Enquiry received from ${ipAddress} and registered in pipeline.`,
+          details: `Enquiry [${referenceNumber}] recorded from ${ipAddress} via ${data.source || 'Website'}.`,
           timestamp: now
         }
       ]

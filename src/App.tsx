@@ -4,6 +4,7 @@ import { SERVICES_DATA } from './config/agencyConfig';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { WhatsAppFloatingButton } from './components/WhatsAppFloatingButton';
+import { RubiAssistantChatbot } from './components/RubiAssistantChatbot';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { ThemeProvider } from './context/ThemeContext';
 
@@ -293,6 +294,9 @@ function AppContent() {
 
       {/* Floating WhatsApp Action Button */}
       {!isAdminDashboard && <WhatsAppFloatingButton />}
+
+      {/* Floating AI Assistant Chatbot (Gemini Powered) */}
+      {!isAdminDashboard && <RubiAssistantChatbot />}
     </div>
   );
 }

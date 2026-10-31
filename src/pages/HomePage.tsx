@@ -195,6 +195,104 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         </div>
       </section>
 
+      {/* 1.5. Three Core Pillars of RUBI TECH PARK */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-2xl mx-auto mb-10">
+          <span className="text-xs font-semibold text-[#6654E8] dark:text-[#9689FF] uppercase tracking-wider block mb-2">
+            Integrated Service Platform
+          </span>
+          <h2 className="text-2xl sm:text-4xl font-bold font-display text-[#172033] dark:text-white">
+            Three Core Divisions. Complete Digital Excellence.
+          </h2>
+          <p className="mt-2 text-sm text-[#647087] dark:text-slate-400">
+            From modern web software engineering to statutory regulatory filings and citizen e-services.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Pillar 1: Software */}
+          <div className="saas-card rounded-2xl p-6 sm:p-7 flex flex-col justify-between bg-white dark:bg-[#121829] border border-[#E5E9F2] dark:border-white/10 saas-card-hover">
+            <div className="space-y-4">
+              <div className="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 flex items-center justify-center text-[#6654E8]">
+                <Code2 className="w-6 h-6" />
+              </div>
+              <span className="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800 inline-block">
+                12 Services Available
+              </span>
+              <h3 className="text-xl font-bold font-display text-[#172033] dark:text-white">
+                Software & Digital Solutions
+              </h3>
+              <p className="text-xs text-[#647087] dark:text-slate-300 leading-relaxed">
+                Modern responsive websites, custom CRM platforms, billing software, mobile apps, and workflow automation. Clear work-based quotations without inflated packages.
+              </p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-[#E5E9F2] dark:border-white/10">
+              <button
+                onClick={() => onNavigate('services')}
+                className="text-xs font-semibold text-[#6654E8] dark:text-[#9689FF] hover:underline flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>View Software Services</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Pillar 2: Compliance */}
+          <div className="saas-card rounded-2xl p-6 sm:p-7 flex flex-col justify-between bg-white dark:bg-[#121829] border border-[#E5E9F2] dark:border-white/10 saas-card-hover">
+            <div className="space-y-4">
+              <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center text-indigo-600">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              <span className="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 inline-block">
+                15 Services Available
+              </span>
+              <h3 className="text-xl font-bold font-display text-[#172033] dark:text-white">
+                Statutory & Compliance Services
+              </h3>
+              <p className="text-xs text-[#647087] dark:text-slate-300 leading-relaxed">
+                GST registration, ITR filing, MSME/Udyam, FSSAI food licensing, trademark protection, and trade licences. Verified documentation support with transparent regulatory disclosures.
+              </p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-[#E5E9F2] dark:border-white/10">
+              <button
+                onClick={() => onNavigate('services')}
+                className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>View Compliance Services</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Pillar 3: E-Services */}
+          <div className="saas-card rounded-2xl p-6 sm:p-7 flex flex-col justify-between bg-white dark:bg-[#121829] border border-[#E5E9F2] dark:border-white/10 saas-card-hover">
+            <div className="space-y-4">
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center text-emerald-600">
+                <Globe className="w-6 h-6" />
+              </div>
+              <span className="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 inline-block">
+                ₹236 Initial Booking Deposit
+              </span>
+              <h3 className="text-xl font-bold font-display text-[#172033] dark:text-white">
+                Citizen E-Services
+              </h3>
+              <p className="text-xs text-[#647087] dark:text-slate-300 leading-relaxed">
+                Online guidance for PAN cards, Voter ID, Passport, Ration Cards, and EB service connections. Clear ₹200 + 18% GST ₹36 booking fee with full transparency.
+              </p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-[#E5E9F2] dark:border-white/10">
+              <button
+                onClick={() => onNavigate('services')}
+                className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>Book E-Service (₹236)</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 2. Bento Grid: Capabilities & Technical Architecture */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">

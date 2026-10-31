@@ -151,25 +151,46 @@ class SupabaseService {
   public async createLead(leadData: {
     customer_name: string;
     phone_number: string;
+    whatsapp_number?: string;
     email: string;
     business_name?: string;
-    service_interested: string;
+    service_interested?: string;
+    customer_type?: string;
+    service_category?: string;
+    selected_service?: string;
     message?: string;
     source_page?: string;
+    booking_amount?: number;
+    booking_payment_status?: string;
+    balance_amount?: number;
+    consent_agreed?: boolean;
+    status?: string;
   }, clientIp: string): Promise<{ success: boolean; lead: any; storage: 'supabase' | 'local_persistent'; error?: string }> {
     // 1. Mirror into persistent local storage for bulletproof reliability
     const localLead = crmStorage.createLead(
       {
         fullName: leadData.customer_name,
+        customerName: leadData.customer_name,
         businessName: leadData.business_name || '',
         email: leadData.email,
         phone: leadData.phone_number,
+        mobileNumber: leadData.phone_number,
+        whatsappNumber: leadData.whatsapp_number || leadData.phone_number,
+        customerType: leadData.customer_type || 'Business / Individual',
+        serviceCategory: leadData.service_category || 'General',
+        selectedService: leadData.selected_service || leadData.service_interested || 'General Inquiry',
         businessType: 'other',
-        requiredService: leadData.service_interested as any,
-        budgetRange: '₹15,000 - ₹35,000',
+        requiredService: (leadData.selected_service || leadData.service_interested || 'business-website') as any,
+        budgetRange: leadData.booking_amount ? `₹${leadData.booking_amount}` : '₹15,000 - ₹35,000',
         projectDescription: leadData.message || '',
+        customerRequirement: leadData.message || '',
         preferredContactMethod: 'WhatsApp',
-        consentAgreed: true
+        consentAgreed: leadData.consent_agreed ?? true,
+        source: leadData.source_page || 'Website',
+        bookingAmount: leadData.booking_amount,
+        bookingPaymentStatus: leadData.booking_payment_status || 'Pending',
+        balanceAmount: leadData.balance_amount,
+        status: leadData.status || 'New'
       },
       clientIp
     );

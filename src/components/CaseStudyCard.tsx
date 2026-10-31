@@ -15,24 +15,28 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({
   const getStatusBadge = (status: CaseStudy['status']) => {
     switch (status) {
       case 'Live':
+      case 'Published Website':
         return (
           <span className="text-xs font-semibold text-[#0F766E] dark:text-emerald-300 bg-[#E5FAF7] dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-[#35C9B0]/30 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#35C9B0]" />
-            <span>Live Client Platform</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#35C9B0] animate-pulse" />
+            <span>{status === 'Published Website' ? 'Published Website' : 'Live Platform'}</span>
           </span>
         );
       case 'In Progress':
+      case 'Development / Enhancement':
+      case 'Development / Commercial Preparation':
         return (
           <span className="text-xs font-semibold text-[#6654E8] dark:text-[#9689FF] bg-[#F3F0FF] dark:bg-[#6654E8]/20 px-2.5 py-0.5 rounded-full border border-[#6654E8]/20 flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-[#6654E8]" />
-            <span>Active Implementation</span>
+            <span>{status}</span>
           </span>
         );
       case 'Demo':
+      default:
         return (
           <span className="text-xs font-semibold text-[#647087] dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full border border-slate-200 dark:border-slate-700 flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-            <span>Reference Architecture Demo</span>
+            <span>Reference Architecture</span>
           </span>
         );
     }
@@ -91,7 +95,12 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({
 
       {/* Footer Strip with Tech Stack & CTA */}
       <div className="mt-8 pt-4 border-t border-[#E5E9F2] dark:border-white/10 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex flex-wrap items-center gap-1.5 text-xs text-[#647087] dark:text-slate-400">
+        <div className="flex flex-wrap items-center gap-2 text-xs text-[#647087] dark:text-slate-400">
+          {study.categoryTag && (
+            <span className="px-2 py-0.5 rounded-md bg-[#6654E8]/10 text-[#6654E8] dark:text-[#9689FF] font-semibold text-[11px]">
+              {study.categoryTag}
+            </span>
+          )}
           <span className="font-medium text-[#172033] dark:text-slate-300">Stack:</span>
           {study.technologies.map((tech, idx) => (
             <span key={idx} className="text-[#647087] dark:text-slate-400">
@@ -101,15 +110,29 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({
           ))}
         </div>
 
-        {onRequestQuoteForSimilar && (
-          <button
-            onClick={() => onRequestQuoteForSimilar(study)}
-            className="text-xs font-semibold text-[#6654E8] dark:text-[#9689FF] hover:underline flex items-center gap-1 cursor-pointer"
-          >
-            <span>Request Scope for Similar Solution</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </button>
-        )}
+        <div className="flex items-center gap-3">
+          {study.liveUrl && (
+            <a
+              href={study.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-1.5 rounded-lg bg-[#6654E8] hover:bg-[#5542E5] text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-colors"
+            >
+              <span>View Live Platform</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          )}
+
+          {onRequestQuoteForSimilar && (
+            <button
+              onClick={() => onRequestQuoteForSimilar(study)}
+              className="text-xs font-semibold text-[#6654E8] dark:text-[#9689FF] hover:underline flex items-center gap-1 cursor-pointer"
+            >
+              <span>Request Scope</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
       </div>
     </article>
   );
