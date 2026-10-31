@@ -1,5 +1,71 @@
 [
   {
+    "id": "audit_1793464052738_6b8bf3",
+    "userId": "system_mailer",
+    "userEmail": "rubienterprisesgst@gmail.com",
+    "userRole": "developer",
+    "action": "EMAIL_NOTIFICATION_RECORDED",
+    "ipAddress": "127.0.0.1",
+    "resource": "EMAIL_QUEUE:RTP-2026-5051",
+    "timestamp": "2026-10-31T16:27:32.738Z",
+    "success": true
+  },
+  {
+    "id": "audit_1793464052737",
+    "userId": "public_lead_form",
+    "userEmail": "chatbot_1793464052734@example.com",
+    "userRole": "developer",
+    "action": "LEAD_SUBMISSION",
+    "ipAddress": "127.0.0.1",
+    "resource": "LEAD:RTP-2026-5051",
+    "timestamp": "2026-10-31T16:27:32.736Z",
+    "success": true
+  },
+  {
+    "id": "audit_1793464052724_01dcaf",
+    "userId": "usr_admin_rtp",
+    "userEmail": "admin@rubitechpark.com",
+    "userRole": "super_admin",
+    "action": "LOGIN_SUCCESS",
+    "ipAddress": "127.0.0.1",
+    "resource": "AUTH",
+    "timestamp": "2026-10-31T16:27:32.724Z",
+    "success": true
+  },
+  {
+    "id": "audit_1793464052670_f89368",
+    "userId": "system_mailer",
+    "userEmail": "rubienterprisesgst@gmail.com",
+    "userRole": "developer",
+    "action": "EMAIL_NOTIFICATION_RECORDED",
+    "ipAddress": "127.0.0.1",
+    "resource": "EMAIL_QUEUE:RTP-2026-9985",
+    "timestamp": "2026-10-31T16:27:32.670Z",
+    "success": true
+  },
+  {
+    "id": "audit_1793464052668",
+    "userId": "public_lead_form",
+    "userEmail": "verify_1793464052564@example.com",
+    "userRole": "developer",
+    "action": "LEAD_SUBMISSION",
+    "ipAddress": "127.0.0.1",
+    "resource": "LEAD:RTP-2026-9985",
+    "timestamp": "2026-10-31T16:27:32.654Z",
+    "success": true
+  },
+  {
+    "id": "audit_1793464035981_f3d8cc",
+    "userId": "usr_admin_rtp",
+    "userEmail": "admin@rubitechpark.com",
+    "userRole": "super_admin",
+    "action": "LOGIN_SUCCESS",
+    "ipAddress": "127.0.0.1",
+    "resource": "AUTH",
+    "timestamp": "2026-10-31T16:27:15.981Z",
+    "success": true
+  },
+  {
     "id": "audit_1793461808646_a79257",
     "userId": "system_mailer",
     "userEmail": "rubienterprisesgst@gmail.com",
