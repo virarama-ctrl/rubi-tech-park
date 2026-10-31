@@ -28,8 +28,25 @@ import {
   CreditCard,
   Copy,
   Check,
-  Ban
+  Ban,
+  Trash2,
+  Server,
+  CloudCheck,
+  HelpCircle,
+  ArrowUpDown,
+  Building2,
+  Send
 } from 'lucide-react';
+
+interface SupabaseConfigStatus {
+  configured: boolean;
+  connected: boolean;
+  urlConfigured: boolean;
+  keyConfigured: boolean;
+  error: string | null;
+  mode: 'supabase' | 'local_persistent';
+  requiredEnvVars: string[];
+}
 
 interface AdminDashboardPageProps {
   onNavigate: (route: PageRoute) => void;
@@ -41,11 +58,14 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
   const [user, setUser] = useState<{ id: string; email: string; name: string; role: string } | null>(null);
 
   // Leads & Data State
-  const [leads, setLeads] = useState<StoredLead[]>([]);
+  const [leads, setLeads] = useState<any[]>([]);
   const [stats, setStats] = useState({
     total: 0,
     new: 0,
     contacted: 0,
+    interested: 0,
+    converted: 0,
+    today: 0,
     qualified: 0,
     proposalSent: 0,
     won: 0,
@@ -53,12 +73,18 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
     totalPipelineValueINR: 0
   });
 
+  // Supabase Status State
+  const [supabaseStatus, setSupabaseStatus] = useState<SupabaseConfigStatus | null>(null);
+  const [isCheckingSupabase, setIsCheckingSupabase] = useState(false);
+  const [showSupabaseModal, setShowSupabaseModal] = useState(false);
+  const [copiedSchema, setCopiedSchema] = useState(false);
+
   // UI & Filter States
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('All');
-  const [serviceFilter, setServiceFilter] = useState<string>('All');
+  const [dateFilter, setDateFilter] = useState<string>('all');
   const [activeTab, setActiveTab] = useState<'pipeline' | 'payments' | 'audit'>('pipeline');
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
 
@@ -75,7 +101,9 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
   const [copiedUtr, setCopiedUtr] = useState<string | null>(null);
 
   // Selected Lead Drawer / Detail Modal
-  const [selectedLead, setSelectedLead] = useState<StoredLead | null>(null);
+  const [selectedLead, setSelectedLead] = useState<any | null>(null);
+  const [leadToDelete, setLeadToDelete] = useState<any | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [newNoteText, setNewNoteText] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
   const [toastMessage, setToastMessage] = useState<string>('');
@@ -92,6 +120,22 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
     navigator.clipboard.writeText(text);
     setCopiedUtr(id);
     setTimeout(() => setCopiedUtr(null), 2000);
+  };
+
+  // Fetch Supabase status
+  const checkSupabaseStatus = async () => {
+    setIsCheckingSupabase(true);
+    try {
+      const res = await fetch('/api/admin/supabase-status');
+      if (res.ok) {
+        const data: SupabaseConfigStatus = await res.json();
+        setSupabaseStatus(data);
+      }
+    } catch (e) {
+      console.warn('Could not query Supabase status:', e);
+    } finally {
+      setIsCheckingSupabase(false);
+    }
   };
 
   // Check auth and load leads
@@ -115,6 +159,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
     fetchLeads(storedToken);
     fetchPayments(storedToken);
+    checkSupabaseStatus();
   }, []);
 
   const fetchPayments = async (authToken?: string) => {
@@ -184,7 +229,10 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
     }
   };
 
-  const fetchLeads = async (authToken: string) => {
+  const fetchLeads = async (authToken?: string) => {
+    const currentToken = authToken || token;
+    if (!currentToken) return;
+
     setLoading(true);
     setErrorMsg('');
 
@@ -192,17 +240,19 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
       const queryParams = new URLSearchParams();
       if (searchTerm) queryParams.set('searchTerm', searchTerm);
       if (statusFilter && statusFilter !== 'All') queryParams.set('status', statusFilter);
-      if (serviceFilter && serviceFilter !== 'All') queryParams.set('service', serviceFilter);
+      if (dateFilter && dateFilter !== 'all') queryParams.set('dateFilter', dateFilter);
 
       const res = await fetch(`/api/admin/leads?${queryParams.toString()}`, {
         headers: {
-          Authorization: `Bearer ${authToken}`
+          Authorization: `Bearer ${currentToken}`
         }
       });
 
       if (!res.ok) {
         if (res.status === 401) {
+          sessionStorage.removeItem('rtp_admin_token');
           sessionStorage.removeItem('edh_admin_token');
+          sessionStorage.removeItem('rtp_admin_user');
           sessionStorage.removeItem('edh_admin_user');
           onNavigate('admin-login');
           return;
@@ -212,12 +262,32 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
       }
 
       const data = await res.json();
-      setLeads(data.leads || []);
-      if (data.stats) setStats(data.stats);
+      let fetchedLeads = data.leads || [];
 
-      // Keep selected lead synchronized if open
+      // Client-side date filter refinement if applied
+      if (dateFilter === 'today') {
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+        fetchedLeads = fetchedLeads.filter((l: any) => new Date(l.createdAt || l.created_at) >= startOfToday);
+      } else if (dateFilter === '7days') {
+        const past7 = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        fetchedLeads = fetchedLeads.filter((l: any) => new Date(l.createdAt || l.created_at) >= past7);
+      } else if (dateFilter === '30days') {
+        const past30 = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        fetchedLeads = fetchedLeads.filter((l: any) => new Date(l.createdAt || l.created_at) >= past30);
+      }
+
+      setLeads(fetchedLeads);
+      if (data.stats) {
+        setStats((prev) => ({
+          ...prev,
+          ...data.stats
+        }));
+      }
+
+      // Synchronize selected lead drawer if open
       if (selectedLead) {
-        const refreshed = data.leads.find((l: StoredLead) => l.id === selectedLead.id);
+        const refreshed = fetchedLeads.find((l: any) => l.id === selectedLead.id);
         if (refreshed) setSelectedLead(refreshed);
       }
     } catch (err: any) {
@@ -251,14 +321,14 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
   const handleResetFilters = () => {
     setSearchTerm('');
     setStatusFilter('All');
-    setServiceFilter('All');
+    setDateFilter('all');
     if (token) {
       setTimeout(() => fetchLeads(token), 0);
     }
   };
 
   // Status Update Handler
-  const handleStatusChange = async (leadId: string, newStatus: LeadStatus) => {
+  const handleStatusChange = async (leadId: string, newStatus: string) => {
     if (!token) return;
     setIsUpdating(true);
 
@@ -304,7 +374,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
       if (res.ok) {
         setNewNoteText('');
-        showToast('Internal note saved.');
+        showToast('Internal note saved to lead record.');
         fetchLeads(token);
       } else {
         const d = await res.json();
@@ -317,50 +387,35 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
     }
   };
 
-  // Follow-Up Date Handler
-  const handleFollowUpChange = async (leadId: string, date: string) => {
-    if (!token) return;
+  // Delete Lead Handler
+  const confirmDeleteLead = async () => {
+    if (!token || !leadToDelete) return;
+    setIsDeleting(true);
+
     try {
-      const res = await fetch(`/api/admin/leads/${leadId}/followup`, {
-        method: 'PATCH',
+      const res = await fetch(`/api/admin/leads/${leadToDelete.id}`, {
+        method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ followUpDate: date })
+        }
       });
 
       if (res.ok) {
-        showToast('Follow-up scheduled.');
+        showToast(`Lead "${leadToDelete.fullName || leadToDelete.customer_name}" permanently deleted.`);
+        if (selectedLead && selectedLead.id === leadToDelete.id) {
+          setSelectedLead(null);
+        }
+        setLeadToDelete(null);
         fetchLeads(token);
+      } else {
+        const d = await res.json();
+        alert(d.message || 'Failed to delete lead.');
       }
     } catch (err) {
       console.error(err);
-    }
-  };
-
-  // Estimated Value Handler
-  const handleValueChange = async (leadId: string, valStr: string) => {
-    if (!token) return;
-    const value = parseInt(valStr, 10);
-    if (isNaN(value)) return;
-
-    try {
-      const res = await fetch(`/api/admin/leads/${leadId}/value`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ value })
-      });
-
-      if (res.ok) {
-        showToast('Estimated pipeline value updated.');
-        fetchLeads(token);
-      }
-    } catch (err) {
-      console.error(err);
+      alert('Network error deleting lead.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -381,7 +436,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `ellora_leads_export_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.download = `rubitechpark_leads_${new Date().toISOString().slice(0, 10)}.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -402,7 +457,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
       });
       if (res.ok) {
         const d = await res.json();
-        setBackupStatus(`Backup snapshot created: ${d.backup.filename}`);
+        setBackupStatus(`Backup snapshot recorded: ${d.backup.filename}`);
         showToast('Database backup snapshot recorded.');
         setTimeout(() => setBackupStatus(''), 6000);
       }
@@ -422,44 +477,76 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
         // ignore
       }
     }
+    sessionStorage.removeItem('rtp_admin_token');
     sessionStorage.removeItem('edh_admin_token');
+    sessionStorage.removeItem('rtp_admin_user');
     sessionStorage.removeItem('edh_admin_user');
     onLogout();
     onNavigate('home');
   };
 
-  const getStatusColor = (status: LeadStatus) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'New':
-        return 'text-blue-400 bg-blue-950/70 border-blue-800';
+        return 'text-blue-700 bg-blue-50 border-blue-200 dark:text-blue-300 dark:bg-blue-950/70 dark:border-blue-800';
       case 'Contacted':
-        return 'text-yellow-400 bg-yellow-950/70 border-yellow-800';
+        return 'text-amber-700 bg-amber-50 border-amber-200 dark:text-amber-300 dark:bg-amber-950/70 dark:border-amber-800';
+      case 'Interested':
       case 'Qualified':
-        return 'text-purple-400 bg-purple-950/70 border-purple-800';
-      case 'Proposal Sent':
-        return 'text-[#F3DC87] bg-[#D4AF37]/20 border-[#D4AF37]/50';
+        return 'text-purple-700 bg-purple-50 border-purple-200 dark:text-purple-300 dark:bg-purple-950/70 dark:border-purple-800';
+      case 'Converted':
       case 'Won':
-        return 'text-emerald-400 bg-emerald-950/70 border-emerald-800';
+      case 'Proposal Sent':
+        return 'text-emerald-700 bg-emerald-50 border-emerald-200 dark:text-emerald-300 dark:bg-emerald-950/70 dark:border-emerald-800';
+      case 'Not Interested':
       case 'Lost':
-        return 'text-red-400 bg-red-950/70 border-red-800';
+      default:
+        return 'text-rose-700 bg-rose-50 border-rose-200 dark:text-rose-300 dark:bg-rose-950/70 dark:border-rose-800';
     }
   };
 
+  const copySqlSchema = () => {
+    const sql = `-- RUBI TECH PARK - Supabase SQL Schema
+CREATE TABLE IF NOT EXISTS public.leads (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    customer_name TEXT NOT NULL,
+    phone_number TEXT NOT NULL,
+    email TEXT NOT NULL,
+    business_name TEXT,
+    service_interested TEXT NOT NULL,
+    message TEXT,
+    source_page TEXT DEFAULT 'Website',
+    status TEXT NOT NULL DEFAULT 'New' CHECK (status IN ('New', 'Contacted', 'Interested', 'Converted', 'Not Interested', 'Qualified', 'Proposal Sent', 'Won', 'Lost')),
+    admin_notes TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public lead inserts" ON public.leads FOR INSERT TO anon, authenticated WITH CHECK (true);
+CREATE POLICY "Allow service role full lead access" ON public.leads FOR ALL TO service_role USING (true) WITH CHECK (true);`;
+
+    navigator.clipboard.writeText(sql);
+    setCopiedSchema(true);
+    setTimeout(() => setCopiedSchema(false), 2500);
+  };
+
   return (
-    <div className="min-h-screen bg-[#070B14] text-slate-100 pb-20">
+    <div className="min-h-screen bg-[#FAFBFF] dark:bg-[#070B14] text-[#172033] dark:text-slate-100 pb-20 transition-colors">
       {/* Toast Alert */}
       {toastMessage && (
-        <div className="fixed top-24 right-6 z-50 bg-[#0B132B] border border-[#D4AF37] px-4 py-3 rounded-xl shadow-2xl text-xs text-white flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-          <span>{toastMessage}</span>
+        <div className="fixed top-24 right-6 z-50 bg-white dark:bg-[#0B132B] border border-[#6654E8] dark:border-[#9689FF] px-4 py-3 rounded-xl shadow-2xl text-xs text-[#172033] dark:text-white flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
+          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+          <span className="font-medium">{toastMessage}</span>
         </div>
       )}
 
       {/* Top Admin Sub-Bar */}
-      <div className="bg-[#0A1020] border-b border-slate-800 sticky top-20 z-30">
+      <div className="bg-white/95 dark:bg-[#0A1020]/95 backdrop-blur-md border-b border-[#E5E9F2] dark:border-slate-800 sticky top-0 z-30 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg overflow-hidden border border-[#D4AF37]/50 bg-black flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-xl overflow-hidden border border-[#D4AF37]/50 bg-black flex items-center justify-center shrink-0 shadow-sm">
               <img
                 src="/assets/aistudio/Ruby_Tech_Park_Luxury_Emblem_3b5d2b3d.png"
                 alt="RUBI TECH PARK"
@@ -467,48 +554,68 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
               />
             </div>
             <div>
-              <h1 className="text-sm sm:text-base font-bold font-display text-white">
-                RUBI TECH PARK Lead Console
-              </h1>
-              <div className="text-[11px] text-slate-400 flex items-center gap-2">
-                <span>Logged in as: {user?.name || 'Administrator'}</span>
-                <span aria-hidden="true">·</span>
-                <span className="font-mono text-[#E5C158] uppercase text-[10px] bg-[#D4AF37]/10 px-1.5 py-0.2 rounded">
-                  {user?.role || 'super_admin'}
+              <div className="flex items-center gap-2">
+                <h1 className="text-sm sm:text-base font-bold font-display text-[#172033] dark:text-white">
+                  RUBI TECH PARK Admin
+                </h1>
+                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-[#6654E8]/10 text-[#6654E8] dark:bg-[#6654E8]/20 dark:text-[#9689FF] font-semibold">
+                  CRM Console
                 </span>
+              </div>
+              <div className="text-[11px] text-[#647087] dark:text-slate-400 flex items-center gap-2">
+                <span>{user?.name || 'Administrator'} ({user?.email || 'admin@rubitechpark.com'})</span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            {/* Supabase Status Pill */}
+            <button
+              onClick={() => setShowSupabaseModal(true)}
+              className={`px-2.5 py-1 text-[11px] font-semibold rounded-lg border flex items-center gap-1.5 transition-all cursor-pointer ${
+                supabaseStatus?.connected
+                  ? 'bg-emerald-50 border-emerald-300 text-emerald-700 dark:bg-emerald-950/60 dark:border-emerald-800 dark:text-emerald-300'
+                  : 'bg-amber-50 border-amber-300 text-amber-800 dark:bg-amber-950/60 dark:border-amber-700 dark:text-amber-300'
+              }`}
+              title="Click to view Supabase database setup details"
+            >
+              <div className={`w-2 h-2 rounded-full ${supabaseStatus?.connected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+              <span className="hidden sm:inline">
+                {supabaseStatus?.connected ? 'Supabase Active' : 'Local Mode (Supabase Setup)'}
+              </span>
+              <span className="sm:hidden">
+                {supabaseStatus?.connected ? 'Supabase' : 'Local'}
+              </span>
+            </button>
+
             <button
               onClick={() => onNavigate('home')}
-              className="hidden sm:flex px-3 py-1.5 text-xs text-slate-300 hover:text-white bg-[#070B14] border border-slate-800 hover:border-slate-700 rounded-lg transition-colors cursor-pointer items-center gap-1.5"
+              className="hidden md:flex px-3 py-1.5 text-xs text-[#172033] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-lg transition-colors cursor-pointer items-center gap-1.5"
             >
-              <span>Public Website</span>
-              <ExternalLink className="w-3 h-3 text-[#D4AF37]" />
+              <span>Public Site</span>
+              <ExternalLink className="w-3 h-3 text-[#6654E8] dark:text-[#9689FF]" />
             </button>
 
             <button
               onClick={handleTriggerBackup}
               title="Record instant database backup snapshot"
-              className="px-3 py-1.5 text-xs text-slate-300 hover:text-white bg-[#070B14] border border-slate-800 hover:border-slate-700 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5"
+              className="hidden lg:flex px-3 py-1.5 text-xs text-[#172033] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-lg transition-colors cursor-pointer items-center gap-1.5"
             >
               <Database className="w-3.5 h-3.5 text-slate-400" />
-              <span className="hidden md:inline">Snapshot Backup</span>
+              <span>Snapshot</span>
             </button>
 
             <button
               onClick={handleExportCSV}
-              className="px-3 py-1.5 text-xs font-semibold text-[#070B14] bg-[#E5C158] hover:bg-[#F3DC87] rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 shadow"
+              className="px-3 py-1.5 text-xs font-semibold text-white bg-gradient-to-r from-[#6654E8] to-[#4388FF] hover:opacity-95 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shadow-sm"
             >
               <Download className="w-3.5 h-3.5" />
-              <span>Export CSV</span>
+              <span className="hidden sm:inline">Export CSV</span>
             </button>
 
             <button
               onClick={handleLogoutClick}
-              className="p-2 text-slate-400 hover:text-red-400 bg-[#070B14] border border-slate-800 rounded-lg transition-colors cursor-pointer"
+              className="p-2 text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 bg-white dark:bg-[#070B14] border border-slate-200 dark:border-slate-800 rounded-lg transition-colors cursor-pointer"
               title="Sign Out of CRM"
             >
               <LogOut className="w-4 h-4" />
@@ -517,105 +624,129 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
         
         {backupStatus && (
-          <div className="p-3 bg-emerald-950/60 border border-emerald-500/40 rounded-lg text-xs text-emerald-300 flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4" />
+          <div className="p-3 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-500/40 rounded-xl text-xs text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
             <span>{backupStatus}</span>
           </div>
         )}
 
-        {/* KPI Metrics Dashboard Cards */}
+        {/* Supabase Notice Banner if not connected */}
+        {supabaseStatus && !supabaseStatus.connected && (
+          <div className="p-3.5 bg-[#FFF8EB] dark:bg-amber-950/30 border border-amber-300/80 dark:border-amber-700/50 rounded-xl flex items-center justify-between gap-3 text-xs text-amber-900 dark:text-amber-200">
+            <div className="flex items-center gap-2.5">
+              <Server className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+              <span>
+                <strong>Persistent Local Mode Active:</strong> Customer leads are safely stored in <code className="bg-amber-100 dark:bg-amber-900/60 px-1 py-0.5 rounded text-[11px]">data/crm_leads.json</code>. Connect Supabase for cloud PostgreSQL syncing.
+              </span>
+            </div>
+            <button
+              onClick={() => setShowSupabaseModal(true)}
+              className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-[11px] font-semibold whitespace-nowrap cursor-pointer shrink-0"
+            >
+              Setup Supabase
+            </button>
+          </div>
+        )}
+
+        {/* 6 Required KPI Metrics Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-          <div className="bg-[#0B132B] border border-slate-800 rounded-xl p-4">
-            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
-              Total Inbound
+          {/* 1. Total Leads */}
+          <div className="bg-white dark:bg-[#0D1527] border border-slate-200 dark:border-white/10 rounded-2xl p-4 shadow-sm hover:border-[#6654E8]/40 transition-colors">
+            <span className="text-[11px] font-semibold text-[#647087] dark:text-slate-400 uppercase tracking-wider block">
+              Total Leads
             </span>
-            <div className="mt-1 text-2xl font-bold font-display text-white tabular-nums">
+            <div className="mt-1 text-2xl font-bold font-display text-[#172033] dark:text-white tabular-nums">
               {stats.total}
             </div>
-            <div className="text-[11px] text-slate-500 mt-0.5">Recorded Leads</div>
+            <div className="text-[11px] text-[#647087] dark:text-slate-500 mt-0.5">All Time Inbound</div>
           </div>
 
-          <div className="bg-[#0B132B] border border-blue-900/40 rounded-xl p-4">
-            <span className="text-[11px] font-semibold text-blue-400 uppercase tracking-wider block">
+          {/* 2. New Leads */}
+          <div className="bg-white dark:bg-[#0D1527] border border-blue-200 dark:border-blue-900/40 rounded-2xl p-4 shadow-sm hover:border-blue-400 transition-colors">
+            <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider block">
               New Leads
             </span>
-            <div className="mt-1 text-2xl font-bold font-display text-blue-300 tabular-nums">
+            <div className="mt-1 text-2xl font-bold font-display text-blue-700 dark:text-blue-300 tabular-nums">
               {stats.new}
             </div>
-            <div className="text-[11px] text-slate-500 mt-0.5">Awaiting Callback</div>
+            <div className="text-[11px] text-[#647087] dark:text-slate-500 mt-0.5">Needs Callback</div>
           </div>
 
-          <div className="bg-[#0B132B] border border-purple-900/40 rounded-xl p-4">
-            <span className="text-[11px] font-semibold text-purple-400 uppercase tracking-wider block">
-              In Pipeline
+          {/* 3. Contacted Leads */}
+          <div className="bg-white dark:bg-[#0D1527] border border-amber-200 dark:border-amber-900/40 rounded-2xl p-4 shadow-sm hover:border-amber-400 transition-colors">
+            <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider block">
+              Contacted
             </span>
-            <div className="mt-1 text-2xl font-bold font-display text-purple-300 tabular-nums">
-              {stats.contacted + stats.qualified}
+            <div className="mt-1 text-2xl font-bold font-display text-amber-700 dark:text-amber-300 tabular-nums">
+              {stats.contacted}
             </div>
-            <div className="text-[11px] text-slate-500 mt-0.5">Contacted / Qualified</div>
+            <div className="text-[11px] text-[#647087] dark:text-slate-500 mt-0.5">First Touch Done</div>
           </div>
 
-          <div className="bg-[#0B132B] border border-[#D4AF37]/30 rounded-xl p-4">
-            <span className="text-[11px] font-semibold text-[#E5C158] uppercase tracking-wider block">
-              Proposals
+          {/* 4. Interested Leads */}
+          <div className="bg-white dark:bg-[#0D1527] border border-purple-200 dark:border-purple-900/40 rounded-2xl p-4 shadow-sm hover:border-purple-400 transition-colors">
+            <span className="text-[11px] font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider block">
+              Interested
             </span>
-            <div className="mt-1 text-2xl font-bold font-display text-[#F3DC87] tabular-nums">
-              {stats.proposalSent}
+            <div className="mt-1 text-2xl font-bold font-display text-purple-700 dark:text-purple-300 tabular-nums">
+              {stats.interested}
             </div>
-            <div className="text-[11px] text-slate-500 mt-0.5">Quotes Dispatched</div>
+            <div className="text-[11px] text-[#647087] dark:text-slate-500 mt-0.5">Requirement Scoped</div>
           </div>
 
-          <div className="bg-[#0B132B] border border-emerald-900/40 rounded-xl p-4">
-            <span className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider block">
-              Closed Won
+          {/* 5. Converted Leads */}
+          <div className="bg-white dark:bg-[#0D1527] border border-emerald-200 dark:border-emerald-900/40 rounded-2xl p-4 shadow-sm hover:border-emerald-400 transition-colors">
+            <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">
+              Converted
             </span>
-            <div className="mt-1 text-2xl font-bold font-display text-emerald-300 tabular-nums">
-              {stats.won}
+            <div className="mt-1 text-2xl font-bold font-display text-emerald-700 dark:text-emerald-300 tabular-nums">
+              {stats.converted}
             </div>
-            <div className="text-[11px] text-slate-500 mt-0.5">Active Engagements</div>
+            <div className="text-[11px] text-[#647087] dark:text-slate-500 mt-0.5">Won & Active</div>
           </div>
 
-          <div className="bg-[#0B132B] border border-[#D4AF37]/40 rounded-xl p-4">
-            <span className="text-[11px] font-semibold text-[#E5C158] uppercase tracking-wider block">
-              Pipeline Value
+          {/* 6. Today's Enquiries */}
+          <div className="bg-white dark:bg-[#0D1527] border border-[#6654E8]/30 dark:border-[#9689FF]/30 rounded-2xl p-4 shadow-sm hover:border-[#6654E8] transition-colors">
+            <span className="text-[11px] font-semibold text-[#6654E8] dark:text-[#9689FF] uppercase tracking-wider block">
+              Today's Enquiries
             </span>
-            <div className="mt-1 text-xl sm:text-2xl font-bold font-display text-white gold-gradient-text tabular-nums">
-              {formatINR(stats.totalPipelineValueINR)}
+            <div className="mt-1 text-2xl font-bold font-display text-[#6654E8] dark:text-[#9689FF] tabular-nums">
+              {stats.today}
             </div>
-            <div className="text-[11px] text-slate-500 mt-0.5">Estimated In Portfolio</div>
+            <div className="text-[11px] text-[#647087] dark:text-slate-500 mt-0.5">Received Today</div>
           </div>
         </div>
 
-        {/* Tab Selector: Pipeline Leads vs Online Payments vs Audit Logs */}
-        <div className="flex flex-wrap items-center gap-3 border-b border-slate-800 pb-2">
+        {/* Tab Navigation: Pipeline Leads vs Online Payments vs Security Audit */}
+        <div className="flex flex-wrap items-center gap-2 border-b border-[#E5E9F2] dark:border-slate-800 pb-2">
           <button
             onClick={() => setActiveTab('pipeline')}
-            className={`px-4 py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
+            className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
               activeTab === 'pipeline'
-                ? 'bg-[#D4AF37] text-[#070B14]'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-[#6654E8] text-white shadow-sm'
+                : 'text-[#647087] dark:text-slate-400 hover:text-[#172033] dark:hover:text-white'
             }`}
           >
-            Leads Pipeline ({leads.length})
+            Customer Leads ({leads.length})
           </button>
           <button
             onClick={() => {
               setActiveTab('payments');
               fetchPayments();
             }}
-            className={`px-4 py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 ${
+            className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'payments'
-                ? 'bg-[#D4AF37] text-[#070B14]'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-[#6654E8] text-white shadow-sm'
+                : 'text-[#647087] dark:text-slate-400 hover:text-[#172033] dark:hover:text-white'
             }`}
           >
             <CreditCard className="w-3.5 h-3.5" />
-            <span>Orders & Online Payments ({payments.length})</span>
+            <span>Orders & UPI ({payments.length})</span>
             {paymentStats.pendingVerificationCount > 0 && (
-              <span className="ml-1 bg-amber-500 text-[#070B14] font-bold px-1.5 py-0.2 rounded-full text-[10px]">
+              <span className="ml-1 bg-amber-500 text-white font-bold px-1.5 py-0.2 rounded-full text-[10px]">
                 {paymentStats.pendingVerificationCount} Pending
               </span>
             )}
@@ -625,83 +756,87 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
               setActiveTab('audit');
               fetchAuditLogs();
             }}
-            className={`px-4 py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
+            className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
               activeTab === 'audit'
-                ? 'bg-[#D4AF37] text-[#070B14]'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-[#6654E8] text-white shadow-sm'
+                : 'text-[#647087] dark:text-slate-400 hover:text-[#172033] dark:hover:text-white'
             }`}
           >
-            Security & Activity Audit
+            Security & Audit Logs
           </button>
         </div>
 
         {activeTab === 'pipeline' ? (
           <>
             {/* Search and Filters Bar */}
-            <div className="bg-[#0B132B] border border-slate-800 rounded-xl p-4 space-y-3">
-              <form onSubmit={handleSearchSubmit} className="flex flex-col md:flex-row gap-3">
+            <div className="bg-white dark:bg-[#0D1527] border border-[#E5E9F2] dark:border-white/10 rounded-2xl p-4 space-y-3 shadow-sm">
+              <form onSubmit={handleSearchSubmit} className="flex flex-col lg:flex-row gap-3">
                 <div className="flex-1 relative">
-                  <Search className="w-4 h-4 text-slate-500 absolute left-3 top-3 pointer-events-none" />
+                  <Search className="w-4 h-4 text-[#647087] dark:text-slate-500 absolute left-3 top-2.5 pointer-events-none" />
                   <input
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search leads by name, business, email, phone, or reference code..."
-                    className="w-full bg-[#070B14] border border-slate-700 rounded-lg pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#D4AF37]"
+                    placeholder="Search by customer name, phone number, email, or business name..."
+                    className="w-full bg-[#F3F0FF]/40 dark:bg-[#070B14] border border-[#E5E9F2] dark:border-slate-700 rounded-xl pl-9 pr-4 py-2 text-xs text-[#172033] dark:text-white placeholder-[#647087] focus:outline-none focus:border-[#6654E8]"
                   />
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
+                  {/* Status Filter */}
                   <select
                     value={statusFilter}
                     onChange={(e) => {
                       setStatusFilter(e.target.value);
-                      if (token) {
-                        setTimeout(() => fetchLeads(token), 0);
-                      }
+                      if (token) setTimeout(() => fetchLeads(token), 0);
                     }}
-                    className="bg-[#070B14] border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-[#D4AF37]"
+                    className="bg-[#F3F0FF]/40 dark:bg-[#070B14] border border-[#E5E9F2] dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-[#172033] dark:text-slate-200 focus:outline-none focus:border-[#6654E8]"
                   >
                     <option value="All">All Statuses</option>
                     <option value="New">New</option>
                     <option value="Contacted">Contacted</option>
-                    <option value="Qualified">Qualified</option>
-                    <option value="Proposal Sent">Proposal Sent</option>
-                    <option value="Won">Won</option>
-                    <option value="Lost">Lost</option>
+                    <option value="Interested">Interested</option>
+                    <option value="Converted">Converted</option>
+                    <option value="Not Interested">Not Interested</option>
                   </select>
 
+                  {/* Date Filter */}
                   <select
-                    value={serviceFilter}
+                    value={dateFilter}
                     onChange={(e) => {
-                      setServiceFilter(e.target.value);
-                      if (token) {
-                        setTimeout(() => fetchLeads(token), 0);
-                      }
+                      setDateFilter(e.target.value);
+                      if (token) setTimeout(() => fetchLeads(token), 0);
                     }}
-                    className="bg-[#070B14] border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-[#D4AF37]"
+                    className="bg-[#F3F0FF]/40 dark:bg-[#070B14] border border-[#E5E9F2] dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-[#172033] dark:text-slate-200 focus:outline-none focus:border-[#6654E8]"
                   >
-                    <option value="All">All Services</option>
-                    <option value="business-website">Business Website</option>
-                    <option value="ecommerce-store">E-commerce Store</option>
-                    <option value="custom-crm">Custom CRM</option>
-                    <option value="website-crm-integration">Website + CRM</option>
-                    <option value="ai-workflow-automation">AI Automation</option>
+                    <option value="all">All Time</option>
+                    <option value="today">Today</option>
+                    <option value="7days">Last 7 Days</option>
+                    <option value="30days">Last 30 Days</option>
                   </select>
 
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-[#0E1A38] hover:bg-[#162347] border border-slate-700 text-xs text-slate-200 rounded-lg cursor-pointer"
+                    className="px-4 py-2 bg-[#6654E8] hover:bg-[#5343D6] text-white font-medium text-xs rounded-xl cursor-pointer transition-colors shadow-sm"
                   >
-                    Search
+                    Filter
                   </button>
 
                   <button
                     type="button"
                     onClick={handleResetFilters}
-                    className="px-3 py-2 text-xs text-slate-400 hover:text-white cursor-pointer"
+                    className="px-3 py-2 text-xs text-[#647087] dark:text-slate-400 hover:text-[#172033] dark:hover:text-white cursor-pointer"
                   >
                     Reset
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => fetchLeads()}
+                    className="p-2 text-[#647087] hover:text-[#6654E8] border border-[#E5E9F2] dark:border-slate-700 rounded-xl transition-colors cursor-pointer"
+                    title="Refresh Leads"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </form>
@@ -709,119 +844,187 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
             {/* Leads Table */}
             {loading ? (
-              <div className="p-16 text-center text-slate-400 space-y-3 bg-[#0B132B] rounded-xl border border-slate-800">
-                <RefreshCw className="w-6 h-6 animate-spin mx-auto text-[#D4AF37]" />
-                <p className="text-xs">Loading persistent pipeline records...</p>
+              <div className="p-16 text-center text-[#647087] dark:text-slate-400 space-y-3 bg-white dark:bg-[#0D1527] rounded-2xl border border-[#E5E9F2] dark:border-white/10 shadow-sm">
+                <RefreshCw className="w-6 h-6 animate-spin mx-auto text-[#6654E8]" />
+                <p className="text-xs">Loading customer leads from {supabaseStatus?.connected ? 'Supabase' : 'persistent database'}...</p>
               </div>
             ) : leads.length === 0 ? (
-              <div className="p-16 text-center text-slate-400 space-y-3 bg-[#0B132B] rounded-xl border border-slate-800">
-                <p className="text-sm font-semibold text-white">No lead inquiries match your query.</p>
-                <p className="text-xs text-slate-500">
+              <div className="p-16 text-center text-[#647087] dark:text-slate-400 space-y-3 bg-white dark:bg-[#0D1527] rounded-2xl border border-[#E5E9F2] dark:border-white/10 shadow-sm">
+                <p className="text-sm font-semibold text-[#172033] dark:text-white">No lead inquiries match your query.</p>
+                <p className="text-xs text-[#647087] dark:text-slate-500">
                   Try adjusting the search criteria or clear the filters.
                 </p>
                 <button
                   onClick={handleResetFilters}
-                  className="px-4 py-2 text-xs text-[#070B14] bg-[#E5C158] rounded-lg mt-2 cursor-pointer font-medium"
+                  className="px-4 py-2 text-xs text-white bg-[#6654E8] rounded-xl mt-2 cursor-pointer font-medium"
                 >
                   Clear Filters
                 </button>
               </div>
             ) : (
-              <div className="bg-[#0B132B] border border-slate-800 rounded-xl overflow-x-auto shadow-xl">
-                <table className="w-full text-left text-xs text-slate-300">
-                  <thead className="bg-[#070B14] border-b border-slate-800 text-[11px] text-slate-400 uppercase tracking-wider">
-                    <tr>
-                      <th className="py-3.5 px-4 font-semibold">Reference</th>
-                      <th className="py-3.5 px-4 font-semibold">Client / Business</th>
-                      <th className="py-3.5 px-4 font-semibold">Required Service</th>
-                      <th className="py-3.5 px-4 font-semibold">Budget</th>
-                      <th className="py-3.5 px-4 font-semibold">Status</th>
-                      <th className="py-3.5 px-4 font-semibold">Follow-Up</th>
-                      <th className="py-3.5 px-4 font-semibold text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-800/80">
-                    {leads.map((lead) => (
-                      <tr
-                        key={lead.id}
-                        onClick={() => setSelectedLead(lead)}
-                        className="hover:bg-[#0E1A38]/60 transition-colors cursor-pointer group"
-                      >
-                        <td className="py-3.5 px-4 font-mono font-medium text-white whitespace-nowrap">
-                          {lead.referenceNumber}
-                          <div className="text-[10px] text-slate-500 font-sans">
-                            {new Date(lead.createdAt).toLocaleDateString('en-IN')}
-                          </div>
-                        </td>
-
-                        <td className="py-3.5 px-4">
-                          <div className="font-semibold text-white group-hover:text-[#F3DC87] transition-colors">
-                            {lead.fullName}
-                          </div>
-                          <div className="text-[11px] text-slate-400 truncate max-w-[200px]">
-                            {lead.businessName || 'Individual Enterprise'}
-                          </div>
-                          <div className="text-[10px] text-slate-500 font-mono">
-                            {lead.phone}
-                          </div>
-                        </td>
-
-                        <td className="py-3.5 px-4 whitespace-nowrap">
-                          <div className="capitalize text-slate-200">
-                            {lead.requiredService.replace(/-/g, ' ')}
-                          </div>
-                          <div className="text-[10px] text-slate-400 capitalize">
-                            {lead.businessType.replace(/-/g, ' ')}
-                          </div>
-                        </td>
-
-                        <td className="py-3.5 px-4 whitespace-nowrap">
-                          <div className="text-[#F3DC87] font-medium font-mono">
-                            {lead.budgetRange}
-                          </div>
-                          {lead.internalEstimatedValueINR ? (
-                            <div className="text-[10px] text-emerald-400 font-mono">
-                              Est: {formatINR(lead.internalEstimatedValueINR)}
-                            </div>
-                          ) : null}
-                        </td>
-
-                        <td className="py-3.5 px-4 whitespace-nowrap">
-                          <span
-                            className={`px-2.5 py-1 rounded text-[11px] font-medium border ${getStatusColor(
-                              lead.status
-                            )}`}
-                          >
-                            {lead.status}
-                          </span>
-                        </td>
-
-                        <td className="py-3.5 px-4 whitespace-nowrap text-slate-400 text-[11px]">
-                          {lead.followUpDate ? (
-                            <div className="flex items-center gap-1.5 text-slate-300">
-                              <Calendar className="w-3 h-3 text-[#D4AF37]" />
-                              <span>{lead.followUpDate}</span>
-                            </div>
-                          ) : (
-                            <span className="text-slate-600">Not Scheduled</span>
-                          )}
-                        </td>
-
-                        <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedLead(lead);
-                            }}
-                            className="px-3 py-1.5 bg-[#070B14] hover:bg-[#D4AF37] text-slate-300 hover:text-[#070B14] border border-slate-700 hover:border-[#D4AF37] rounded-lg transition-colors text-xs font-medium cursor-pointer"
-                          >
-                            Manage
-                          </button>
-                        </td>
+              <div className="bg-white dark:bg-[#0D1527] border border-[#E5E9F2] dark:border-white/10 rounded-2xl overflow-hidden shadow-sm">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs text-[#172033] dark:text-slate-300">
+                    <thead className="bg-[#FAFBFF] dark:bg-[#070B14] border-b border-[#E5E9F2] dark:border-slate-800 text-[11px] text-[#647087] dark:text-slate-400 uppercase tracking-wider">
+                      <tr>
+                        <th className="py-3.5 px-4 font-semibold">Customer Name</th>
+                        <th className="py-3.5 px-4 font-semibold">Phone Number</th>
+                        <th className="py-3.5 px-4 font-semibold">Email</th>
+                        <th className="py-3.5 px-4 font-semibold">Business Name</th>
+                        <th className="py-3.5 px-4 font-semibold">Service Interested</th>
+                        <th className="py-3.5 px-4 font-semibold">Message</th>
+                        <th className="py-3.5 px-4 font-semibold">Status</th>
+                        <th className="py-3.5 px-4 font-semibold">Date/Time</th>
+                        <th className="py-3.5 px-4 font-semibold text-right">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-[#E5E9F2] dark:divide-slate-800/80">
+                      {leads.map((lead) => {
+                        const customerName = lead.fullName || lead.customer_name || 'Anonymous';
+                        const phoneNumber = lead.phone || lead.phone_number || '';
+                        const email = lead.email || '';
+                        const businessName = lead.businessName || lead.business_name || '—';
+                        const serviceInterested = lead.requiredService || lead.service_interested || 'Website';
+                        const message = lead.projectDescription || lead.message || '—';
+                        const status = lead.status || 'New';
+                        const createdAt = lead.createdAt || lead.created_at;
+
+                        return (
+                          <tr
+                            key={lead.id}
+                            onClick={() => setSelectedLead(lead)}
+                            className="hover:bg-[#F3F0FF]/30 dark:hover:bg-[#0E1A38]/50 transition-colors cursor-pointer group"
+                          >
+                            {/* 1. Customer Name */}
+                            <td className="py-3.5 px-4 whitespace-nowrap">
+                              <div className="font-semibold text-[#172033] dark:text-white group-hover:text-[#6654E8] dark:group-hover:text-[#9689FF] transition-colors">
+                                {customerName}
+                              </div>
+                              <div className="text-[10px] text-[#647087] dark:text-slate-500 font-mono">
+                                Ref: {lead.referenceNumber || lead.id.slice(0, 8)}
+                              </div>
+                            </td>
+
+                            {/* 2. Phone Number (clickable tel:) */}
+                            <td className="py-3.5 px-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                              <div className="flex items-center gap-1.5 font-mono">
+                                <a
+                                  href={`tel:${phoneNumber.replace(/\D/g, '')}`}
+                                  className="text-[#6654E8] dark:text-[#9689FF] hover:underline flex items-center gap-1"
+                                  title="Call customer directly"
+                                >
+                                  <Phone className="w-3 h-3 text-[#647087] dark:text-slate-400" />
+                                  <span>{phoneNumber}</span>
+                                </a>
+                                {phoneNumber && (
+                                  <a
+                                    href={`https://wa.me/91${phoneNumber.replace(/\D/g, '').slice(-10)}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="p-1 rounded text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/60"
+                                    title="Open WhatsApp chat"
+                                  >
+                                    <MessageSquare className="w-3.5 h-3.5" />
+                                  </a>
+                                )}
+                              </div>
+                            </td>
+
+                            {/* 3. Email (clickable mailto:) */}
+                            <td className="py-3.5 px-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                              <a
+                                href={`mailto:${email}`}
+                                className="text-[#172033] dark:text-slate-300 hover:text-[#6654E8] dark:hover:text-[#9689FF] flex items-center gap-1 truncate max-w-[180px]"
+                                title={`Send email to ${email}`}
+                              >
+                                <Mail className="w-3 h-3 text-[#647087] dark:text-slate-400 shrink-0" />
+                                <span className="truncate">{email}</span>
+                              </a>
+                            </td>
+
+                            {/* 4. Business Name */}
+                            <td className="py-3.5 px-4 text-[#647087] dark:text-slate-300 font-medium whitespace-nowrap truncate max-w-[160px]">
+                              {businessName}
+                            </td>
+
+                            {/* 5. Service Interested */}
+                            <td className="py-3.5 px-4 whitespace-nowrap">
+                              <span className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#EAF3FF] text-[#4388FF] dark:bg-[#4388FF]/15 dark:text-[#7BAAFF]">
+                                {serviceInterested.replace(/-/g, ' ')}
+                              </span>
+                            </td>
+
+                            {/* 6. Message */}
+                            <td className="py-3.5 px-4 text-[#647087] dark:text-slate-400 max-w-[200px] truncate" title={message}>
+                              {message}
+                            </td>
+
+                            {/* 7. Status Badge */}
+                            <td className="py-3.5 px-4 whitespace-nowrap">
+                              <span className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border ${getStatusColor(status)}`}>
+                                {status}
+                              </span>
+                            </td>
+
+                            {/* 8. Date/Time */}
+                            <td className="py-3.5 px-4 whitespace-nowrap text-[#647087] dark:text-slate-400 text-[11px]">
+                              {new Date(createdAt).toLocaleDateString('en-IN', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric'
+                              })}
+                              <div className="text-[10px] text-slate-400 dark:text-slate-500">
+                                {new Date(createdAt).toLocaleTimeString('en-IN', {
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </div>
+                            </td>
+
+                            {/* 9. Actions */}
+                            <td className="py-3.5 px-4 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                              <div className="flex items-center justify-end gap-1.5">
+                                {/* Quick Status Selector */}
+                                <select
+                                  value={status}
+                                  onChange={(e) => handleStatusChange(lead.id, e.target.value)}
+                                  className="text-[11px] bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-[#172033] dark:text-slate-300 focus:outline-none focus:border-[#6654E8]"
+                                  title="Change lead status"
+                                >
+                                  <option value="New">New</option>
+                                  <option value="Contacted">Contacted</option>
+                                  <option value="Interested">Interested</option>
+                                  <option value="Converted">Converted</option>
+                                  <option value="Not Interested">Not Interested</option>
+                                </select>
+
+                                {/* View Details Button */}
+                                <button
+                                  type="button"
+                                  onClick={() => setSelectedLead(lead)}
+                                  className="px-2.5 py-1 bg-[#6654E8]/10 hover:bg-[#6654E8] text-[#6654E8] hover:text-white rounded-lg text-xs font-medium transition-colors cursor-pointer"
+                                  title="View complete inquiry & notes"
+                                >
+                                  Details
+                                </button>
+
+                                {/* Delete Button */}
+                                <button
+                                  type="button"
+                                  onClick={() => setLeadToDelete(lead)}
+                                  className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/60 rounded-lg transition-colors cursor-pointer"
+                                  title="Delete lead permanently"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
           </>
@@ -830,51 +1033,51 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
           <div className="space-y-6">
             {/* Payments Metric Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className="bg-[#0B132B] border border-emerald-900/40 rounded-xl p-4">
-                <span className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider block">
+              <div className="bg-white dark:bg-[#0D1527] border border-emerald-200 dark:border-emerald-900/40 rounded-2xl p-4 shadow-sm">
+                <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">
                   Verified Revenue
                 </span>
-                <div className="mt-1 text-2xl font-bold font-display text-emerald-300 font-mono">
+                <div className="mt-1 text-2xl font-bold font-display text-emerald-700 dark:text-emerald-300 font-mono">
                   ₹{paymentStats.totalRevenueINR.toLocaleString('en-IN')}
                 </div>
-                <div className="text-[11px] text-slate-500 mt-0.5">Credited in Bank</div>
+                <div className="text-[11px] text-[#647087] dark:text-slate-500 mt-0.5">Credited in Bank</div>
               </div>
 
-              <div className="bg-[#0B132B] border border-amber-900/40 rounded-xl p-4">
-                <span className="text-[11px] font-semibold text-amber-400 uppercase tracking-wider block">
+              <div className="bg-white dark:bg-[#0D1527] border border-amber-200 dark:border-amber-900/40 rounded-2xl p-4 shadow-sm">
+                <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider block">
                   Pending Verification
                 </span>
-                <div className="mt-1 text-2xl font-bold font-display text-amber-300 font-mono">
+                <div className="mt-1 text-2xl font-bold font-display text-amber-700 dark:text-amber-300 font-mono">
                   {paymentStats.pendingVerificationCount}
                 </div>
-                <div className="text-[11px] text-slate-500 mt-0.5">Awaiting Bank Match</div>
+                <div className="text-[11px] text-[#647087] dark:text-slate-500 mt-0.5">Awaiting UTR Match</div>
               </div>
 
-              <div className="bg-[#0B132B] border border-blue-900/40 rounded-xl p-4">
-                <span className="text-[11px] font-semibold text-blue-400 uppercase tracking-wider block">
+              <div className="bg-white dark:bg-[#0D1527] border border-blue-200 dark:border-blue-900/40 rounded-2xl p-4 shadow-sm">
+                <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider block">
                   Verified Paid Orders
                 </span>
-                <div className="mt-1 text-2xl font-bold font-display text-blue-300 font-mono">
+                <div className="mt-1 text-2xl font-bold font-display text-blue-700 dark:text-blue-300 font-mono">
                   {paymentStats.paidCount}
                 </div>
-                <div className="text-[11px] text-slate-500 mt-0.5">Successful Transactions</div>
+                <div className="text-[11px] text-[#647087] dark:text-slate-500 mt-0.5">Successful Transactions</div>
               </div>
 
-              <div className="bg-[#0B132B] border border-slate-800 rounded-xl p-4">
-                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+              <div className="bg-white dark:bg-[#0D1527] border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
+                <span className="text-[11px] font-semibold text-[#647087] dark:text-slate-400 uppercase tracking-wider block">
                   Total Orders Created
                 </span>
-                <div className="mt-1 text-2xl font-bold font-display text-white font-mono">
+                <div className="mt-1 text-2xl font-bold font-display text-[#172033] dark:text-white font-mono">
                   {paymentStats.totalOrders}
                 </div>
-                <div className="text-[11px] text-slate-500 mt-0.5">All Channels</div>
+                <div className="text-[11px] text-[#647087] dark:text-slate-500 mt-0.5">All Channels</div>
               </div>
             </div>
 
             {/* Filter Bar */}
-            <div className="bg-[#0B132B] border border-slate-800 rounded-xl p-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="bg-white dark:bg-[#0D1527] border border-[#E5E9F2] dark:border-white/10 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-sm">
               <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-400">Filter Status:</span>
+                <span className="text-xs text-[#647087] dark:text-slate-400">Filter Status:</span>
                 <div className="flex gap-1.5 text-xs">
                   {['all', 'pending_verification', 'paid', 'failed'].map((st) => (
                     <button
@@ -884,10 +1087,10 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                         setPaymentStatusFilter(st);
                         setTimeout(() => fetchPayments(token || undefined), 50);
                       }}
-                      className={`px-3 py-1 rounded-lg border transition-all cursor-pointer ${
+                      className={`px-3 py-1 rounded-xl border transition-all cursor-pointer ${
                         paymentStatusFilter === st
-                          ? 'border-[#D4AF37] bg-[#D4AF37]/20 text-[#F3DC87] font-semibold'
-                          : 'border-slate-800 text-slate-400 hover:text-white'
+                          ? 'border-[#6654E8] bg-[#6654E8] text-white font-semibold'
+                          : 'border-slate-200 dark:border-slate-800 text-[#647087] dark:text-slate-400 hover:text-[#172033]'
                       }`}
                     >
                       {st === 'pending_verification'
@@ -901,7 +1104,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
               <button
                 type="button"
                 onClick={() => fetchPayments(token || undefined)}
-                className="px-3 py-1.5 text-xs text-slate-300 hover:text-white bg-[#070B14] border border-slate-800 rounded-lg flex items-center gap-1.5 cursor-pointer"
+                className="px-3 py-1.5 text-xs text-[#172033] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center gap-1.5 cursor-pointer"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 <span>Refresh Orders</span>
@@ -909,10 +1112,10 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
             </div>
 
             {/* Orders Table */}
-            <div className="bg-[#0B132B] border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+            <div className="bg-white dark:bg-[#0D1527] border border-[#E5E9F2] dark:border-white/10 rounded-2xl overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs text-slate-300">
-                  <thead className="bg-[#070B14] text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+                <table className="w-full text-left text-xs text-[#172033] dark:text-slate-300">
+                  <thead className="bg-[#FAFBFF] dark:bg-[#070B14] text-[#647087] dark:text-slate-400 uppercase text-[10px] tracking-wider border-b border-[#E5E9F2] dark:border-slate-800">
                     <tr>
                       <th className="px-4 py-3">Order Ref / Date</th>
                       <th className="px-4 py-3">Customer Details</th>
@@ -923,18 +1126,18 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                       <th className="px-4 py-3 text-right">Verification Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800">
+                  <tbody className="divide-y divide-[#E5E9F2] dark:divide-slate-800">
                     {payments.length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="px-4 py-8 text-center text-slate-500">
+                        <td colSpan={7} className="px-4 py-8 text-center text-[#647087]">
                           No payment orders found matching filter criteria.
                         </td>
                       </tr>
                     ) : (
                       payments.map((p) => (
-                        <tr key={p.id} className="hover:bg-slate-900/40 transition-colors">
+                        <tr key={p.id} className="hover:bg-slate-50 dark:hover:bg-slate-900/40 transition-colors">
                           <td className="px-4 py-3.5">
-                            <div className="font-mono font-bold text-white text-xs">
+                            <div className="font-mono font-bold text-[#172033] dark:text-white text-xs">
                               {p.orderRef}
                             </div>
                             <div className="text-[11px] text-slate-500 mt-0.5">
@@ -948,22 +1151,22 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                           </td>
 
                           <td className="px-4 py-3.5">
-                            <div className="font-semibold text-white">{p.customerName}</div>
+                            <div className="font-semibold text-[#172033] dark:text-white">{p.customerName}</div>
                             {p.customerBusiness && (
-                              <div className="text-[11px] text-[#F3DC87]">{p.customerBusiness}</div>
+                              <div className="text-[11px] text-[#6654E8] dark:text-[#9689FF] font-medium">{p.customerBusiness}</div>
                             )}
-                            <div className="text-[11px] text-slate-400 font-mono mt-0.5">
+                            <div className="text-[11px] text-slate-500 font-mono mt-0.5">
                               {p.customerEmail} · {p.customerPhone}
                             </div>
                           </td>
 
                           <td className="px-4 py-3.5">
-                            <div className="font-medium text-white">{p.serviceTitle}</div>
+                            <div className="font-medium text-[#172033] dark:text-white">{p.serviceTitle}</div>
                             <div className="text-[11px] text-slate-500 uppercase">{p.serviceId}</div>
                           </td>
 
                           <td className="px-4 py-3.5">
-                            <div className="font-mono font-bold text-white text-sm">
+                            <div className="font-mono font-bold text-[#172033] dark:text-white text-sm">
                               ₹{p.totalAmountINR.toLocaleString('en-IN')}
                             </div>
                             <div className="text-[10px] text-slate-500">
@@ -972,20 +1175,20 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                           </td>
 
                           <td className="px-4 py-3.5">
-                            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 text-slate-300 uppercase">
+                            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 uppercase">
                               {p.paymentMethod.replace('_', ' ')}
                             </span>
                             {p.upiTransactionRef && (
-                              <div className="mt-1 flex items-center gap-1 font-mono text-[11px] text-amber-300">
+                              <div className="mt-1 flex items-center gap-1 font-mono text-[11px] text-amber-600 dark:text-amber-300">
                                 <span>UTR: {p.upiTransactionRef}</span>
                                 <button
                                   type="button"
                                   onClick={() => copyToClipboard(p.upiTransactionRef!, p.id)}
-                                  className="text-slate-400 hover:text-white"
+                                  className="text-slate-400 hover:text-black dark:hover:text-white"
                                   title="Copy UTR"
                                 >
                                   {copiedUtr === p.id ? (
-                                    <Check className="w-3 h-3 text-emerald-400" />
+                                    <Check className="w-3 h-3 text-emerald-500" />
                                   ) : (
                                     <Copy className="w-3 h-3" />
                                   )}
@@ -996,24 +1199,24 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
                           <td className="px-4 py-3.5">
                             {p.status === 'paid' && (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-950/60 text-emerald-400 border border-emerald-500/40">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/40">
                                 <CheckCircle2 className="w-3 h-3" />
                                 <span>Verified Paid</span>
                               </span>
                             )}
                             {p.status === 'pending_verification' && (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-950/60 text-amber-300 border border-amber-500/40 animate-pulse">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/40 animate-pulse">
                                 <Clock className="w-3 h-3" />
                                 <span>Pending Verification</span>
                               </span>
                             )}
                             {p.status === 'created' && (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-300">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                                 <span>Initiated</span>
                               </span>
                             )}
                             {p.status === 'failed' && (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-950/60 text-rose-400 border border-rose-500/40">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-500/40">
                                 <AlertCircle className="w-3 h-3" />
                                 <span>Failed</span>
                               </span>
@@ -1026,7 +1229,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                                 <button
                                   type="button"
                                   onClick={() => handleVerifyPayment(p.id)}
-                                  className="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-1 cursor-pointer"
+                                  className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-1 cursor-pointer"
                                   title="Confirm funds credited in current account"
                                 >
                                   <Check className="w-3 h-3" />
@@ -1035,7 +1238,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                                 <button
                                   type="button"
                                   onClick={() => handleRejectPayment(p.id)}
-                                  className="px-2 py-1 rounded bg-rose-950 text-rose-400 hover:bg-rose-900 border border-rose-800 text-xs flex items-center gap-1 cursor-pointer"
+                                  className="px-2 py-1 rounded-lg bg-rose-50 dark:bg-rose-950 text-rose-700 dark:text-rose-400 hover:bg-rose-100 border border-rose-200 dark:border-rose-800 text-xs flex items-center gap-1 cursor-pointer"
                                   title="Reject if no bank record matches"
                                 >
                                   <Ban className="w-3 h-3" />
@@ -1044,9 +1247,9 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                               </div>
                             )}
                             {p.status === 'paid' && (
-                              <div className="text-[11px] text-slate-400">
+                              <div className="text-[11px] text-slate-500">
                                 <span>Receipt: </span>
-                                <span className="font-mono text-[#F3DC87]">{p.receiptNumber}</span>
+                                <span className="font-mono text-[#6654E8] dark:text-[#9689FF] font-semibold">{p.receiptNumber}</span>
                               </div>
                             )}
                           </td>
@@ -1060,21 +1263,21 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
           </div>
         ) : (
           /* Audit Logs View */
-          <div className="bg-[#0B132B] border border-slate-800 rounded-xl p-6 space-y-4">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+          <div className="bg-white dark:bg-[#0D1527] border border-[#E5E9F2] dark:border-white/10 rounded-2xl p-6 space-y-4 shadow-sm">
+            <div className="flex items-center justify-between pb-4 border-b border-[#E5E9F2] dark:border-slate-800">
               <div>
-                <h2 className="text-base font-bold font-display text-white">System Security & Audit Trail</h2>
-                <p className="text-xs text-slate-400">Immutable chronological activity log of all admin operations.</p>
+                <h2 className="text-base font-bold font-display text-[#172033] dark:text-white">Security & Audit Trail</h2>
+                <p className="text-xs text-[#647087] dark:text-slate-400">Immutable chronological activity log of all admin operations.</p>
               </div>
               <button
                 onClick={fetchAuditLogs}
-                className="px-3 py-1.5 text-xs text-slate-300 hover:text-white bg-[#070B14] border border-slate-800 rounded-lg flex items-center gap-1.5"
+                className="px-3 py-1.5 text-xs text-[#172033] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center gap-1.5 cursor-pointer"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 <span>Refresh Log</span>
               </button>
             </div>
-            <div className="divide-y divide-slate-800/80 font-mono text-xs">
+            <div className="divide-y divide-slate-100 dark:divide-slate-800/80 font-mono text-xs">
               {auditLogs.length === 0 ? (
                 <p className="text-xs text-slate-500 py-4">No audit records found.</p>
               ) : (
@@ -1082,12 +1285,14 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                   <div key={log.id} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                     <div className="space-y-0.5">
                       <div className="flex items-center gap-2">
-                        <span className={`px-1.5 py-0.2 rounded text-[10px] ${log.success ? 'bg-emerald-950 text-emerald-400' : 'bg-red-950 text-red-400'}`}>
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                          log.success ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400' : 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400'
+                        }`}>
                           {log.action}
                         </span>
-                        <span className="text-white font-sans">{log.resource}</span>
+                        <span className="text-[#172033] dark:text-white font-sans font-medium">{log.resource}</span>
                       </div>
-                      <div className="text-[11px] text-slate-400 font-sans">
+                      <div className="text-[11px] text-[#647087] dark:text-slate-400 font-sans">
                         Performed by: {log.userEmail} ({log.userRole}) · IP: {log.ipAddress}
                       </div>
                     </div>
@@ -1102,45 +1307,201 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
         )}
       </div>
 
-      {/* Lead Detail & Management Drawer / Modal */}
-      {selectedLead && (
-        <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#0B132B] border-l border-slate-800 w-full max-w-2xl h-full overflow-y-auto p-6 sm:p-8 space-y-6 shadow-2xl">
-            {/* Drawer Header */}
-            <div className="flex items-start justify-between pb-4 border-b border-slate-800">
-              <div>
-                <div className="flex items-center gap-2 text-xs text-slate-400 font-mono">
-                  <span>{selectedLead.referenceNumber}</span>
-                  <span aria-hidden="true">·</span>
-                  <span>Received {new Date(selectedLead.createdAt).toLocaleString('en-IN')}</span>
+      {/* Supabase Setup Modal */}
+      {showSupabaseModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-[#0D1527] border border-[#E5E9F2] dark:border-white/10 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-[#E5E9F2] dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <Server className="w-5 h-5 text-[#6654E8]" />
+                <h3 className="text-base font-bold font-display text-[#172033] dark:text-white">
+                  Supabase Integration & Database Setup
+                </h3>
+              </div>
+              <button
+                onClick={() => setShowSupabaseModal(false)}
+                className="p-1.5 text-slate-400 hover:text-black dark:hover:text-white rounded-lg cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Current Live State */}
+            <div className="p-4 rounded-xl bg-[#FAFBFF] dark:bg-[#070B14] border border-[#E5E9F2] dark:border-slate-800 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-[#647087] dark:text-slate-400 uppercase tracking-wider">
+                  Live Engine Status
+                </span>
+                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                  supabaseStatus?.connected
+                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                    : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+                }`}>
+                  {supabaseStatus?.connected ? 'Supabase Connected' : 'Local Persistent Mode'}
+                </span>
+              </div>
+              <p className="text-xs text-[#172033] dark:text-slate-300">
+                {supabaseStatus?.connected
+                  ? 'Your Supabase cloud database is actively receiving and serving customer leads with Row Level Security enabled.'
+                  : 'Supabase environment variables are currently pending. All customer leads are being safely recorded in local persistent storage (data/crm_leads.json), ensuring zero data loss.'}
+              </p>
+              {supabaseStatus?.error && (
+                <div className="text-[11px] text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 p-2 rounded-lg border border-amber-200 dark:border-amber-800">
+                  {supabaseStatus.error}
                 </div>
-                <h2 className="text-2xl font-bold font-display text-white mt-1">
-                  {selectedLead.fullName}
+              )}
+            </div>
+
+            {/* 3 Easy Setup Steps */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-bold text-[#172033] dark:text-white uppercase tracking-wider">
+                How to Connect Your Real Supabase Project:
+              </h4>
+
+              <div className="space-y-2.5 text-xs text-[#647087] dark:text-slate-300">
+                <div className="p-3 bg-slate-50 dark:bg-[#131D33] rounded-xl space-y-1">
+                  <div className="font-semibold text-[#172033] dark:text-white">Step 1: Create Supabase Project</div>
+                  <p>Visit <a href="https://supabase.com" target="_blank" rel="noreferrer" className="text-[#6654E8] dark:text-[#9689FF] underline">supabase.com</a>, create a new project, and select the region (e.g. Mumbai, India).</p>
+                </div>
+
+                <div className="p-3 bg-slate-50 dark:bg-[#131D33] rounded-xl space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-[#172033] dark:text-white">Step 2: Run SQL Schema in Supabase</span>
+                    <button
+                      type="button"
+                      onClick={copySqlSchema}
+                      className="px-2.5 py-1 bg-[#6654E8] hover:bg-[#5343D6] text-white rounded-lg text-[11px] font-semibold flex items-center gap-1 cursor-pointer"
+                    >
+                      {copiedSchema ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                      <span>{copiedSchema ? 'Copied SQL!' : 'Copy SQL Schema'}</span>
+                    </button>
+                  </div>
+                  <p>In your Supabase dashboard, open the <strong>SQL Editor</strong>, paste the schema from <code className="text-[#6654E8] font-mono">supabase/schema.sql</code>, and click <strong>Run</strong>.</p>
+                </div>
+
+                <div className="p-3 bg-slate-50 dark:bg-[#131D33] rounded-xl space-y-1">
+                  <div className="font-semibold text-[#172033] dark:text-white">Step 3: Add Environment Variables</div>
+                  <p>In your <code className="font-mono text-[#6654E8]">.env</code> or deployment dashboard, add:</p>
+                  <pre className="mt-1 p-2 bg-[#070B14] text-emerald-400 rounded-lg text-[11px] overflow-x-auto font-mono">
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-secret-key
+                  </pre>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-2 border-t border-[#E5E9F2] dark:border-slate-800">
+              <button
+                type="button"
+                onClick={checkSupabaseStatus}
+                disabled={isCheckingSupabase}
+                className="px-3 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-xs font-semibold rounded-xl flex items-center gap-1.5 cursor-pointer text-[#172033] dark:text-white disabled:opacity-50"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isCheckingSupabase ? 'animate-spin' : ''}`} />
+                <span>Test Supabase Connection</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowSupabaseModal(false)}
+                className="px-4 py-2 bg-[#6654E8] hover:bg-[#5343D6] text-white text-xs font-semibold rounded-xl cursor-pointer"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Lead Confirmation Modal */}
+      {leadToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-[#0D1527] border border-rose-200 dark:border-rose-900/60 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div className="w-12 h-12 rounded-xl bg-rose-50 dark:bg-rose-950/70 border border-rose-200 dark:border-rose-800 flex items-center justify-center text-rose-600 dark:text-rose-400 mx-auto">
+              <Trash2 className="w-6 h-6" />
+            </div>
+
+            <div className="text-center space-y-1.5">
+              <h3 className="text-base font-bold font-display text-[#172033] dark:text-white">
+                Delete Customer Lead?
+              </h3>
+              <p className="text-xs text-[#647087] dark:text-slate-300">
+                Are you sure you want to permanently delete the lead record for{' '}
+                <strong className="text-[#172033] dark:text-white">{leadToDelete.fullName || leadToDelete.customer_name}</strong>?
+              </p>
+              <div className="p-2.5 bg-slate-50 dark:bg-slate-900/60 rounded-xl text-[11px] font-mono text-[#647087] dark:text-slate-400 mt-2">
+                Reference: {leadToDelete.referenceNumber || leadToDelete.id}
+              </div>
+            </div>
+
+            <div className="text-[11px] text-rose-600 dark:text-rose-400 text-center font-medium">
+              This action cannot be undone. An audit record will be logged.
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setLeadToDelete(null)}
+                className="w-full py-2.5 px-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-[#172033] dark:text-slate-200 text-xs font-semibold rounded-xl cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeleteLead}
+                disabled={isDeleting}
+                className="w-full py-2.5 px-4 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+              >
+                {isDeleting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                <span>{isDeleting ? 'Deleting...' : 'Confirm Delete'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Lead Detail & Management Drawer */}
+      {selectedLead && (
+        <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-[#0D1527] border-l border-[#E5E9F2] dark:border-slate-800 w-full max-w-2xl h-full overflow-y-auto p-6 sm:p-8 space-y-6 shadow-2xl">
+            {/* Drawer Header */}
+            <div className="flex items-start justify-between pb-4 border-b border-[#E5E9F2] dark:border-slate-800">
+              <div>
+                <div className="flex items-center gap-2 text-xs text-[#647087] dark:text-slate-400 font-mono">
+                  <span>{selectedLead.referenceNumber || selectedLead.id}</span>
+                  <span aria-hidden="true">·</span>
+                  <span>Received {new Date(selectedLead.createdAt || selectedLead.created_at).toLocaleString('en-IN')}</span>
+                </div>
+                <h2 className="text-2xl font-bold font-display text-[#172033] dark:text-white mt-1">
+                  {selectedLead.fullName || selectedLead.customer_name}
                 </h2>
-                <div className="text-xs text-[#F3DC87]">
-                  {selectedLead.businessName || 'Individual Enterprise'}
+                <div className="text-xs text-[#6654E8] dark:text-[#9689FF] font-semibold flex items-center gap-1.5 mt-0.5">
+                  <Building2 className="w-3.5 h-3.5" />
+                  <span>{selectedLead.businessName || selectedLead.business_name || 'Individual Enterprise'}</span>
                 </div>
               </div>
 
               <button
                 onClick={() => setSelectedLead(null)}
-                className="p-1.5 text-slate-400 hover:text-white rounded-lg bg-[#070B14] border border-slate-800 focus:outline-none"
+                className="p-1.5 text-slate-400 hover:text-black dark:hover:text-white rounded-xl bg-slate-100 dark:bg-[#070B14] border border-slate-200 dark:border-slate-800 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Quick Contact & Info Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs bg-[#070B14] p-4 rounded-xl border border-slate-800">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs bg-[#F3F0FF]/30 dark:bg-[#070B14] p-4 rounded-2xl border border-[#E5E9F2] dark:border-slate-800">
               <div>
-                <span className="text-slate-500 block">Phone / WhatsApp</span>
-                <div className="font-mono text-white flex items-center gap-2 mt-0.5">
-                  <span>{selectedLead.phone}</span>
+                <span className="text-[#647087] dark:text-slate-500 block">Phone / WhatsApp</span>
+                <div className="font-mono font-medium text-[#172033] dark:text-white flex items-center gap-2 mt-0.5">
+                  <a href={`tel:${(selectedLead.phone || selectedLead.phone_number || '').replace(/\D/g, '')}`} className="hover:underline">
+                    {selectedLead.phone || selectedLead.phone_number}
+                  </a>
                   <a
-                    href={`https://wa.me/91${selectedLead.phone.replace(/[^\d]/g, '').slice(-10)}`}
+                    href={`https://wa.me/91${(selectedLead.phone || selectedLead.phone_number || '').replace(/[^\d]/g, '').slice(-10)}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-emerald-400 hover:underline inline-flex items-center gap-0.5 text-[11px]"
+                    className="text-emerald-600 hover:underline inline-flex items-center gap-0.5 text-[11px]"
                   >
                     <MessageSquare className="w-3 h-3" />
                     <span>WhatsApp</span>
@@ -1149,90 +1510,73 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
               </div>
 
               <div>
-                <span className="text-slate-500 block">Email Address</span>
-                <div className="text-white mt-0.5">
-                  <a href={`mailto:${selectedLead.email}`} className="hover:text-[#F3DC87] transition-colors">
+                <span className="text-[#647087] dark:text-slate-500 block">Email Address</span>
+                <div className="text-[#172033] dark:text-white mt-0.5">
+                  <a href={`mailto:${selectedLead.email}`} className="hover:text-[#6654E8] transition-colors">
                     {selectedLead.email}
                   </a>
                 </div>
               </div>
 
               <div>
-                <span className="text-slate-500 block">Required Service</span>
-                <div className="text-slate-200 capitalize mt-0.5">
-                  {selectedLead.requiredService.replace(/-/g, ' ')}
+                <span className="text-[#647087] dark:text-slate-500 block">Required Service</span>
+                <div className="text-[#172033] dark:text-slate-200 font-semibold capitalize mt-0.5">
+                  {(selectedLead.requiredService || selectedLead.service_interested || 'Website').replace(/-/g, ' ')}
                 </div>
               </div>
 
               <div>
-                <span className="text-slate-500 block">Budget Range</span>
-                <div className="text-[#F3DC87] font-mono mt-0.5">
-                  {selectedLead.budgetRange}
+                <span className="text-[#647087] dark:text-slate-500 block">Budget Range / Page</span>
+                <div className="text-[#6654E8] dark:text-[#9689FF] font-mono mt-0.5">
+                  {selectedLead.budgetRange || selectedLead.source_page || 'Website Lead'}
                 </div>
               </div>
             </div>
 
             {/* Project Requirements Brief */}
-            <div className="bg-[#070B14] p-4 rounded-xl border border-slate-800 space-y-1.5 text-xs">
-              <span className="font-semibold text-slate-400 uppercase tracking-wider text-[11px]">
-                Project Scope Description
+            <div className="bg-[#F3F0FF]/30 dark:bg-[#070B14] p-4 rounded-2xl border border-[#E5E9F2] dark:border-slate-800 space-y-1.5 text-xs">
+              <span className="font-semibold text-[#647087] dark:text-slate-400 uppercase tracking-wider text-[11px]">
+                Project Scope & Client Message
               </span>
-              <p className="text-slate-200 leading-relaxed whitespace-pre-wrap">
-                {selectedLead.projectDescription}
+              <p className="text-[#172033] dark:text-slate-200 leading-relaxed whitespace-pre-wrap">
+                {selectedLead.projectDescription || selectedLead.message || 'No project description provided.'}
               </p>
             </div>
 
-            {/* Operational Controls: Status, Follow-Up, Estimated Value */}
-            <div className="bg-[#090F20] border border-[#D4AF37]/30 rounded-xl p-5 space-y-4 text-xs">
-              <h3 className="font-bold text-white uppercase tracking-wider text-[11px] text-[#F3DC87]">
-                Lead Status & Operations
-              </h3>
+            {/* Operational Controls: Status */}
+            <div className="bg-white dark:bg-[#131D33] border border-[#6654E8]/20 rounded-2xl p-4 space-y-3 text-xs shadow-sm">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-[#172033] dark:text-white uppercase tracking-wider text-[11px]">
+                  Update Lead Status
+                </span>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${getStatusColor(selectedLead.status)}`}>
+                  Current: {selectedLead.status}
+                </span>
+              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-slate-400 mb-1">Pipeline Status</label>
-                  <select
-                    value={selectedLead.status}
-                    onChange={(e) => handleStatusChange(selectedLead.id, e.target.value as LeadStatus)}
-                    className="w-full bg-[#070B14] border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:outline-none focus:border-[#D4AF37]"
+              <div className="flex flex-wrap gap-2">
+                {['New', 'Contacted', 'Interested', 'Converted', 'Not Interested'].map((st) => (
+                  <button
+                    key={st}
+                    type="button"
+                    onClick={() => handleStatusChange(selectedLead.id, st)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
+                      selectedLead.status === st
+                        ? 'bg-[#6654E8] text-white border-[#6654E8]'
+                        : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#6654E8]'
+                    }`}
                   >
-                    <option value="New">New</option>
-                    <option value="Contacted">Contacted</option>
-                    <option value="Qualified">Qualified</option>
-                    <option value="Proposal Sent">Proposal Sent</option>
-                    <option value="Won">Won</option>
-                    <option value="Lost">Lost</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-slate-400 mb-1">Follow-Up Date</label>
-                  <input
-                    type="date"
-                    value={selectedLead.followUpDate || ''}
-                    onChange={(e) => handleFollowUpChange(selectedLead.id, e.target.value)}
-                    className="w-full bg-[#070B14] border border-slate-700 rounded-lg px-3 py-1.5 text-white focus:outline-none focus:border-[#D4AF37]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-slate-400 mb-1">Est. Deal Value (₹)</label>
-                  <input
-                    type="number"
-                    defaultValue={selectedLead.internalEstimatedValueINR || ''}
-                    onBlur={(e) => handleValueChange(selectedLead.id, e.target.value)}
-                    placeholder="e.g. 50000"
-                    className="w-full bg-[#070B14] border border-slate-700 rounded-lg px-3 py-1.5 text-white focus:outline-none focus:border-[#D4AF37] font-mono"
-                  />
-                </div>
+                    {st}
+                  </button>
+                ))}
               </div>
             </div>
 
             {/* Internal Notes Timeline */}
             <div className="space-y-3 text-xs">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-slate-200 uppercase tracking-wider text-[11px]">
-                  Internal Team Notes ({selectedLead.notes.length})
+                <h3 className="font-semibold text-[#172033] dark:text-slate-200 uppercase tracking-wider text-[11px]">
+                  Internal Notes & Follow-up History
                 </h3>
               </div>
 
@@ -1241,53 +1585,63 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                   type="text"
                   value={newNoteText}
                   onChange={(e) => setNewNoteText(e.target.value)}
-                  placeholder="Add note (e.g., Client discussed Razorpay integration, follow up next Tuesday)..."
-                  className="flex-1 bg-[#070B14] border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#D4AF37]"
+                  placeholder="Add administrative note (e.g., Sent proposal over WhatsApp, scheduled demo)..."
+                  className="flex-1 bg-[#F3F0FF]/40 dark:bg-[#070B14] border border-[#E5E9F2] dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-[#172033] dark:text-white focus:outline-none focus:border-[#6654E8]"
                 />
                 <button
                   type="submit"
                   disabled={isUpdating || !newNoteText.trim()}
-                  className="px-4 py-2 bg-[#E5C158] hover:bg-[#F3DC87] text-[#070B14] font-semibold text-xs rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
+                  className="px-4 py-2 bg-[#6654E8] hover:bg-[#5343D6] text-white font-semibold text-xs rounded-xl transition-colors disabled:opacity-50 cursor-pointer flex items-center gap-1 shrink-0"
                 >
-                  Add Note
+                  <Send className="w-3 h-3" />
+                  <span>Save</span>
                 </button>
               </form>
 
+              {/* Notes list */}
               <div className="space-y-2 mt-2">
-                {selectedLead.notes.length === 0 ? (
-                  <p className="text-slate-500 italic text-[11px]">No internal notes yet.</p>
+                {(!selectedLead.notes || selectedLead.notes.length === 0) && !selectedLead.admin_notes ? (
+                  <p className="text-slate-400 italic text-[11px]">No internal notes recorded yet.</p>
                 ) : (
-                  selectedLead.notes.map((note) => (
-                    <div key={note.id} className="p-3 bg-[#070B14] rounded-lg border border-slate-800 space-y-1">
-                      <div className="flex items-center justify-between text-[10px] text-slate-400">
-                        <span className="font-semibold text-slate-300">{note.authorName}</span>
-                        <span>{new Date(note.createdAt).toLocaleString('en-IN')}</span>
+                  <>
+                    {selectedLead.admin_notes && (
+                      <div className="p-3 bg-slate-50 dark:bg-[#070B14] rounded-xl border border-slate-200 dark:border-slate-800 space-y-1">
+                        <div className="text-[10px] text-[#6654E8] font-semibold">Supabase Admin Remarks</div>
+                        <p className="text-slate-800 dark:text-slate-200 whitespace-pre-wrap">{selectedLead.admin_notes}</p>
                       </div>
-                      <p className="text-slate-200">{note.content}</p>
-                    </div>
-                  ))
+                    )}
+                    {selectedLead.notes?.map((note: any) => (
+                      <div key={note.id} className="p-3 bg-slate-50 dark:bg-[#070B14] rounded-xl border border-slate-200 dark:border-slate-800 space-y-1">
+                        <div className="flex items-center justify-between text-[10px] text-slate-500">
+                          <span className="font-semibold text-[#172033] dark:text-slate-300">{note.authorName}</span>
+                          <span>{new Date(note.createdAt).toLocaleString('en-IN')}</span>
+                        </div>
+                        <p className="text-slate-800 dark:text-slate-200">{note.content}</p>
+                      </div>
+                    ))}
+                  </>
                 )}
               </div>
             </div>
 
-            {/* Activity History Log for this Lead */}
-            <div className="space-y-2 pt-2 border-t border-slate-800 text-xs">
-              <h3 className="font-semibold text-slate-400 uppercase tracking-wider text-[11px]">
-                Lifecycle Activity Stream
-              </h3>
-              <div className="space-y-1.5 font-mono text-[11px]">
-                {selectedLead.activityHistory.map((act) => (
-                  <div key={act.id} className="p-2 bg-[#070B14]/60 rounded border border-slate-800/80 flex items-start justify-between gap-2">
-                    <div>
-                      <span className="text-[#D4AF37] font-semibold">{act.performedBy}: </span>
-                      <span className="text-slate-300 font-sans">{act.details}</span>
-                    </div>
-                    <span className="text-slate-500 whitespace-nowrap text-[10px]">
-                      {new Date(act.timestamp).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                ))}
-              </div>
+            {/* Bottom Actions */}
+            <div className="pt-4 border-t border-[#E5E9F2] dark:border-slate-800 flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setLeadToDelete(selectedLead)}
+                className="px-3 py-1.5 text-xs text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition-colors cursor-pointer flex items-center gap-1"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Delete Lead</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSelectedLead(null)}
+                className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-[#172033] dark:text-slate-200 hover:bg-slate-200 rounded-xl text-xs font-semibold cursor-pointer"
+              >
+                Close Drawer
+              </button>
             </div>
 
           </div>

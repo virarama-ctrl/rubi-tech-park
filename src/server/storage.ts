@@ -376,6 +376,16 @@ export class CRMStorage {
     return lead;
   }
 
+  public deleteLead(id: string): boolean {
+    const leads = readJson<StoredLead[]>(LEADS_FILE, []);
+    const index = leads.findIndex((l) => l.id === id);
+    if (index === -1) return false;
+
+    leads.splice(index, 1);
+    atomicWriteJson(LEADS_FILE, leads);
+    return true;
+  }
+
   // --- Audit Logs ---
   public addAuditLog(entry: Partial<AuditLogEntry>): void {
     const logs = readJson<AuditLogEntry[]>(AUDIT_FILE, []);

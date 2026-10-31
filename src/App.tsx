@@ -27,17 +27,20 @@ function AppContent() {
   const [selectedServiceForQuote, setSelectedServiceForQuote] = useState<RequiredService>('business-website');
   const { language, t } = useLanguage();
 
-  // Sync route with window.location.hash for browser history support
+  // Sync route with window.location.hash and window.location.pathname for deep linking
   useEffect(() => {
-    const handleHashChange = () => {
+    const handleRouteChange = () => {
       const rawHash = window.location.hash.replace(/^#\/?/, '');
-      if (!rawHash) {
+      const rawPath = window.location.pathname.replace(/^\//, '');
+      const target = rawHash || rawPath;
+
+      if (!target) {
         setCurrentRoute('home');
         return;
       }
 
       // Map friendly aliases
-      if (rawHash === 'admin' || rawHash === 'admin/dashboard') {
+      if (target === 'admin' || target === 'admin/dashboard') {
         const token = sessionStorage.getItem('rtp_admin_token') || sessionStorage.getItem('edh_admin_token');
         if (!token) {
           setCurrentRoute('admin-login');
@@ -47,7 +50,7 @@ function AppContent() {
         return;
       }
 
-      if (rawHash === 'admin/login') {
+      if (target === 'admin/login') {
         setCurrentRoute('admin-login');
         return;
       }
@@ -71,18 +74,22 @@ function AppContent() {
         'admin-dashboard'
       ];
 
-      if (validRoutes.includes(rawHash as PageRoute)) {
-        setCurrentRoute(rawHash as PageRoute);
+      if (validRoutes.includes(target as PageRoute)) {
+        setCurrentRoute(target as PageRoute);
       } else {
         setCurrentRoute('not-found');
       }
     };
 
-    // Initialize from current hash
-    handleHashChange();
+    // Initialize from current location
+    handleRouteChange();
 
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    window.addEventListener('hashchange', handleRouteChange);
+    window.addEventListener('popstate', handleRouteChange);
+    return () => {
+      window.removeEventListener('hashchange', handleRouteChange);
+      window.removeEventListener('popstate', handleRouteChange);
+    };
   }, []);
 
   // Update Page Title and Meta Description dynamically based on route and language

@@ -26,6 +26,7 @@ import {
   BUSINESS_NAME,
   TRUSTED_PRICING_CATALOG
 } from './src/server/payments';
+import { supabaseService } from './src/server/supabase';
 
 dotenv.config();
 
@@ -74,14 +75,31 @@ function requireAdminAuth(req: AuthenticatedRequest, res: Response, next: NextFu
 }
 
 // -------------------------------------------------------------
-// Public Endpoints
+// Public Endpoints & Lead Form Submission
 // -------------------------------------------------------------
 
+// In-memory cache for duplicate prevention within 15 seconds
+interface CachedSubmission {
+  timestamp: number;
+  referenceId: string;
+  lead: any;
+}
+const recentSubmissions = new Map<string, CachedSubmission>();
+
+// Cleanup old cache entries every 5 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, val] of recentSubmissions.entries()) {
+    if (now - val.timestamp > 60000) {
+      recentSubmissions.delete(key);
+    }
+  }
+}, 300000);
+
 /**
- * Public Lead Form Submission
- * POST /api/enquiries
+ * Common lead submission processor supporting both camelCase and snake_case payloads
  */
-app.post('/api/enquiries', (req: Request, res: Response) => {
+async function handleLeadSubmission(req: Request, res: Response) {
   const ip = getClientIp(req);
 
   // 1. Rate Limiting Check
@@ -95,7 +113,7 @@ app.post('/api/enquiries', (req: Request, res: Response) => {
   }
 
   // 2. Bot / Honeypot Check
-  if (isHoneypotTriggered(req.body)) {
+  if (isHoneypotTriggered(req.body) || req.body.honeypot) {
     // Silently acknowledge without polluting the database
     res.status(200).json({
       success: true,
@@ -105,39 +123,92 @@ app.post('/api/enquiries', (req: Request, res: Response) => {
     return;
   }
 
-  // 3. Extract and Sanitize Inputs
-  const rawData: Partial<LeadFormData> = {
-    fullName: sanitizeText(req.body.fullName),
-    businessName: sanitizeText(req.body.businessName),
-    email: sanitizeEmail(req.body.email),
-    phone: sanitizePhone(req.body.phone),
-    businessType: req.body.businessType,
-    requiredService: req.body.requiredService,
-    budgetRange: req.body.budgetRange,
-    projectDescription: sanitizeText(req.body.projectDescription),
-    preferredContactMethod: req.body.preferredContactMethod || 'WhatsApp',
-    consentAgreed: Boolean(req.body.consentAgreed)
-  };
+  // 3. Extract and Sanitize Inputs (support camelCase and snake_case)
+  const fullName = sanitizeText(req.body.fullName || req.body.customer_name);
+  const businessName = sanitizeText(req.body.businessName || req.body.business_name);
+  const email = sanitizeEmail(req.body.email);
+  const phone = sanitizePhone(req.body.phone || req.body.phone_number);
+  const requiredService = (req.body.requiredService || req.body.service_interested || 'business-website').trim();
+  const projectDescription = sanitizeText(req.body.projectDescription || req.body.message);
+  const businessType = req.body.businessType || 'other';
+  const budgetRange = req.body.budgetRange || '₹15,000 - ₹35,000';
+  const preferredContactMethod = req.body.preferredContactMethod || 'WhatsApp';
+  const sourcePage = sanitizeText(req.body.source || req.body.source_page || 'Website');
 
-  // 4. Server-Side Schema Validation
-  const validation = validateLeadForm(rawData);
-  if (!validation.isValid) {
-    res.status(400).json({
-      error: 'Validation Failed',
-      message: 'The submitted inquiry failed server-side validation.',
-      errors: validation.errors
+  // 4. Duplicate Prevention (15-second window)
+  const dedupKey = `${phone}_${email}`.toLowerCase();
+  const existing = recentSubmissions.get(dedupKey);
+  const now = Date.now();
+  if (existing && now - existing.timestamp < 15000) {
+    res.status(200).json({
+      success: true,
+      referenceId: existing.referenceId,
+      lead: existing.lead,
+      duplicate: true,
+      message: 'Your enquiry was already received. A representative will contact you shortly.'
     });
     return;
   }
 
-  // 5. Save to Persistent Database
+  // 5. Server-side Validation
+  const errors: Record<string, string> = {};
+  if (!fullName || fullName.length < 2) {
+    errors.fullName = 'Full name must be at least 2 characters.';
+  }
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  if (!email || !emailRegex.test(email)) {
+    errors.email = 'Please provide a valid business email address.';
+  }
+  const digitsOnly = phone.replace(/\D/g, '');
+  const indianMobileRegex = /^(?:(?:\+|0{0,2})91(\s*[-]\s*)?|[0]?)?[6-9]\d{9}$/;
+  if (!phone || !indianMobileRegex.test(digitsOnly)) {
+    errors.phone = 'Please provide a valid 10-digit Indian mobile number.';
+  }
+  if (!requiredService) {
+    errors.requiredService = 'Please select a service.';
+  }
+
+  if (Object.keys(errors).length > 0) {
+    res.status(400).json({
+      error: 'Validation Failed',
+      message: 'The submitted inquiry failed server-side validation.',
+      errors
+    });
+    return;
+  }
+
+  // 6. Save to Supabase + Persistent Storage
   try {
-    const newLead = crmStorage.createLead(rawData as LeadFormData, ip);
+    const result = await supabaseService.createLead(
+      {
+        customer_name: fullName,
+        phone_number: phone,
+        email,
+        business_name: businessName,
+        service_interested: requiredService,
+        message: projectDescription,
+        source_page: sourcePage
+      },
+      ip
+    );
+
+    const refId = result.lead?.referenceNumber || `RTP-${(result.lead?.id || 'LEAD').slice(0, 8).toUpperCase()}`;
+
+    // Record for duplicate detection
+    recentSubmissions.set(dedupKey, {
+      timestamp: now,
+      referenceId: refId,
+      lead: result.lead
+    });
+
     res.status(201).json({
       success: true,
-      referenceId: newLead.referenceNumber,
-      lead: newLead,
-      message: 'Enquiry validated and recorded in persistent CRM database.'
+      referenceId: refId,
+      lead: result.lead,
+      storage: result.storage,
+      message: result.storage === 'supabase'
+        ? 'Enquiry recorded in Supabase cloud database.'
+        : 'Enquiry recorded in persistent CRM database.'
     });
   } catch (err) {
     console.error('Error recording lead:', err);
@@ -146,7 +217,13 @@ app.post('/api/enquiries', (req: Request, res: Response) => {
       message: 'Unable to save enquiry at this moment. Please try again or reach out on WhatsApp.'
     });
   }
-});
+}
+
+/**
+ * Public Lead Form Submission - Endpoints
+ */
+app.post('/api/enquiries', handleLeadSubmission);
+app.post('/api/leads', handleLeadSubmission);
 
 // -------------------------------------------------------------
 // Online Payment Endpoints (UPI, Cards, Net Banking)
@@ -466,36 +543,37 @@ app.get('/api/admin/me', requireAdminAuth, (req: AuthenticatedRequest, res: Resp
 // -------------------------------------------------------------
 
 /**
- * Get All Leads with Filters and Dashboard Metrics
+ * Check live Supabase connection status & configuration state
+ * GET /api/admin/supabase-status
+ */
+app.get('/api/admin/supabase-status', async (_req: Request, res: Response) => {
+  try {
+    const status = await supabaseService.getStatus();
+    res.status(200).json(status);
+  } catch (err: any) {
+    res.status(500).json({ error: 'Status Check Failed', message: err.message });
+  }
+});
+
+/**
+ * Get All Leads with Filters and Dashboard Metrics (from Supabase or persistent fallback)
  * GET /api/admin/leads
  */
-app.get('/api/admin/leads', requireAdminAuth, (req: AuthenticatedRequest, res: Response) => {
-  const { searchTerm, status, service, businessType } = req.query;
+app.get('/api/admin/leads', requireAdminAuth, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { searchTerm, status, service, businessType, dateFilter } = req.query;
 
-  const leads = crmStorage.getAllLeads({
-    searchTerm: typeof searchTerm === 'string' ? searchTerm : undefined,
-    status: typeof status === 'string' ? (status as any) : undefined,
-    service: typeof service === 'string' ? (service as any) : undefined,
-    businessType: typeof businessType === 'string' ? (businessType as any) : undefined
-  });
+    const result = await supabaseService.getLeads({
+      searchTerm: typeof searchTerm === 'string' ? searchTerm : undefined,
+      status: typeof status === 'string' ? status : undefined,
+      dateFilter: typeof dateFilter === 'string' ? dateFilter : undefined
+    });
 
-  // Calculate dashboard statistics across ALL leads
-  const allLeads = crmStorage.getAllLeads();
-  const stats = {
-    total: allLeads.length,
-    new: allLeads.filter((l) => l.status === 'New').length,
-    contacted: allLeads.filter((l) => l.status === 'Contacted').length,
-    qualified: allLeads.filter((l) => l.status === 'Qualified').length,
-    proposalSent: allLeads.filter((l) => l.status === 'Proposal Sent').length,
-    won: allLeads.filter((l) => l.status === 'Won').length,
-    lost: allLeads.filter((l) => l.status === 'Lost').length,
-    totalPipelineValueINR: allLeads.reduce(
-      (sum, l) => sum + (l.internalEstimatedValueINR || 0),
-      0
-    )
-  };
-
-  res.status(200).json({ leads, stats });
+    res.status(200).json(result);
+  } catch (err: any) {
+    console.error('Error in /api/admin/leads:', err);
+    res.status(500).json({ error: 'Server Error', message: 'Unable to fetch leads at this time.' });
+  }
 });
 
 /**
@@ -512,12 +590,22 @@ app.get('/api/admin/leads/:id', requireAdminAuth, (req: AuthenticatedRequest, re
 });
 
 /**
- * Update Lead Status
+ * Update Lead Status (Supabase + Persistent Mirror)
  * PATCH /api/admin/leads/:id/status
  */
-app.patch('/api/admin/leads/:id/status', requireAdminAuth, (req: AuthenticatedRequest, res: Response) => {
+app.patch('/api/admin/leads/:id/status', requireAdminAuth, async (req: AuthenticatedRequest, res: Response) => {
   const { status } = req.body;
-  const validStatuses: LeadStatus[] = ['New', 'Contacted', 'Qualified', 'Proposal Sent', 'Won', 'Lost'];
+  const validStatuses: string[] = [
+    'New',
+    'Contacted',
+    'Interested',
+    'Converted',
+    'Not Interested',
+    'Qualified',
+    'Proposal Sent',
+    'Won',
+    'Lost'
+  ];
 
   if (!status || !validStatuses.includes(status)) {
     res.status(400).json({
@@ -527,7 +615,7 @@ app.patch('/api/admin/leads/:id/status', requireAdminAuth, (req: AuthenticatedRe
     return;
   }
 
-  const updated = crmStorage.updateLeadStatus(
+  const updated = await supabaseService.updateLeadStatus(
     req.params.id,
     status,
     req.adminSession!.userName
@@ -542,10 +630,10 @@ app.patch('/api/admin/leads/:id/status', requireAdminAuth, (req: AuthenticatedRe
 });
 
 /**
- * Add Internal Note to Lead
+ * Add Internal Note to Lead (Supabase + Persistent Mirror)
  * POST /api/admin/leads/:id/notes
  */
-app.post('/api/admin/leads/:id/notes', requireAdminAuth, (req: AuthenticatedRequest, res: Response) => {
+app.post('/api/admin/leads/:id/notes', requireAdminAuth, async (req: AuthenticatedRequest, res: Response) => {
   const content = sanitizeText(req.body.content);
   if (!content || content.length < 2) {
     res.status(400).json({
@@ -556,11 +644,10 @@ app.post('/api/admin/leads/:id/notes', requireAdminAuth, (req: AuthenticatedRequ
   }
 
   const session = req.adminSession!;
-  const note = crmStorage.addLeadNote(
+  const note = await supabaseService.addNote(
     req.params.id,
-    session.userId,
-    session.userName,
-    content
+    content,
+    session.userName
   );
 
   if (!note) {
@@ -569,6 +656,30 @@ app.post('/api/admin/leads/:id/notes', requireAdminAuth, (req: AuthenticatedRequ
   }
 
   res.status(201).json({ success: true, note });
+});
+
+/**
+ * Delete Lead by ID (Admin Only with Audit Trail)
+ * DELETE /api/admin/leads/:id
+ */
+app.delete('/api/admin/leads/:id', requireAdminAuth, async (req: AuthenticatedRequest, res: Response) => {
+  const success = await supabaseService.deleteLead(req.params.id);
+  if (!success) {
+    res.status(404).json({ error: 'Not Found', message: 'Lead not found or could not be deleted.' });
+    return;
+  }
+
+  crmStorage.addAuditLog({
+    userId: req.adminSession!.userId,
+    userEmail: req.adminSession!.userEmail,
+    userRole: req.adminSession!.userRole,
+    action: 'LEAD_DELETE',
+    ipAddress: getClientIp(req),
+    resource: `LEAD_${req.params.id}`,
+    success: true
+  });
+
+  res.status(200).json({ success: true, message: 'Lead successfully deleted.' });
 });
 
 /**

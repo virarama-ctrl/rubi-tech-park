@@ -1,5 +1,488 @@
 [
   {
+    "id": "lead_1793375017384_91b0c058",
+    "referenceNumber": "RTP-2026-7020",
+    "createdAt": "2026-10-30T15:43:37.384Z",
+    "updatedAt": "2026-10-30T15:43:37.384Z",
+    "status": "New",
+    "fullName": "Anand Kumar",
+    "businessName": "",
+    "email": "test.client.1793375017376@rubitechpark.com",
+    "phone": "9845112233",
+    "businessType": "other",
+    "requiredService": "ecommerce-store",
+    "budgetRange": "₹15,000 - ₹35,000",
+    "projectDescription": "Online jewellery catalog with WhatsApp integration.",
+    "preferredContactMethod": "WhatsApp",
+    "consentAgreed": true,
+    "notes": [],
+    "activityHistory": [
+      {
+        "id": "act_1793375017384",
+        "leadId": "lead_1793375017384_91b0c058",
+        "performedBy": "System Webhook",
+        "action": "STATUS_CHANGE",
+        "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+        "timestamp": "2026-10-30T15:43:37.384Z"
+      }
+    ]
+  },
+  {
+    "id": "lead_1793375016944_3cde2a5b",
+    "referenceNumber": "RTP-2026-8756",
+    "createdAt": "2026-10-30T15:43:36.944Z",
+    "updatedAt": "2026-10-30T15:43:37.103Z",
+    "status": "Contacted",
+    "fullName": "Integration Test Client 1793375016936",
+    "businessName": "Test Enterprises Ltd",
+    "email": "integration@testenterprise.in",
+    "phone": "9876543210",
+    "businessType": "other",
+    "requiredService": "custom-crm",
+    "budgetRange": "₹15,000 - ₹35,000",
+    "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+    "preferredContactMethod": "WhatsApp",
+    "consentAgreed": true,
+    "notes": [
+      {
+        "id": "note_1793375017097",
+        "authorId": "admin",
+        "authorName": "Executive Admin",
+        "content": "Discovery call scheduled with Managing Director.",
+        "createdAt": "2026-10-30T15:43:37.097Z"
+      }
+    ],
+    "activityHistory": [
+      {
+        "id": "act_1793375017103",
+        "leadId": "lead_1793375016944_3cde2a5b",
+        "performedBy": "Executive Admin",
+        "action": "FOLLOWUP_SCHEDULED",
+        "details": "Follow-up scheduled for 2026-11-10",
+        "timestamp": "2026-10-30T15:43:37.103Z"
+      },
+      {
+        "id": "act_1793375017097",
+        "leadId": "lead_1793375016944_3cde2a5b",
+        "performedBy": "Executive Admin",
+        "action": "NOTE_ADDED",
+        "details": "Internal note added: \"Discovery call scheduled with Managing Director.\"",
+        "timestamp": "2026-10-30T15:43:37.097Z"
+      },
+      {
+        "id": "act_1793375017091",
+        "leadId": "lead_1793375016944_3cde2a5b",
+        "performedBy": "Executive Admin",
+        "action": "STATUS_CHANGE",
+        "details": "Status changed from \"New\" to \"Contacted\"",
+        "timestamp": "2026-10-30T15:43:37.091Z"
+      },
+      {
+        "id": "act_1793375016944",
+        "leadId": "lead_1793375016944_3cde2a5b",
+        "performedBy": "System Webhook",
+        "action": "STATUS_CHANGE",
+        "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+        "timestamp": "2026-10-30T15:43:36.944Z"
+      }
+    ],
+    "followUpDate": "2026-11-10"
+  },
+  {
+    "id": "lead_1793374717293_96027135",
+    "referenceNumber": "RTP-2026-6242",
+    "createdAt": "2026-10-30T15:38:37.293Z",
+    "updatedAt": "2026-10-30T15:38:37.293Z",
+    "status": "New",
+    "fullName": "Anand Kumar",
+    "businessName": "",
+    "email": "test.client.1793374717286@rubitechpark.com",
+    "phone": "9845112233",
+    "businessType": "other",
+    "requiredService": "ecommerce-store",
+    "budgetRange": "₹15,000 - ₹35,000",
+    "projectDescription": "Online jewellery catalog with WhatsApp integration.",
+    "preferredContactMethod": "WhatsApp",
+    "consentAgreed": true,
+    "notes": [],
+    "activityHistory": [
+      {
+        "id": "act_1793374717294",
+        "leadId": "lead_1793374717293_96027135",
+        "performedBy": "System Webhook",
+        "action": "STATUS_CHANGE",
+        "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+        "timestamp": "2026-10-30T15:38:37.293Z"
+      }
+    ]
+  },
+  {
+    "id": "lead_1793374716849_b612c056",
+    "referenceNumber": "RTP-2026-6877",
+    "createdAt": "2026-10-30T15:38:36.849Z",
+    "updatedAt": "2026-10-30T15:38:36.984Z",
+    "status": "Contacted",
+    "fullName": "Integration Test Client 1793374716840",
+    "businessName": "Test Enterprises Ltd",
+    "email": "integration@testenterprise.in",
+    "phone": "9876543210",
+    "businessType": "other",
+    "requiredService": "custom-crm",
+    "budgetRange": "₹15,000 - ₹35,000",
+    "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+    "preferredContactMethod": "WhatsApp",
+    "consentAgreed": true,
+    "notes": [
+      {
+        "id": "note_1793374716976",
+        "authorId": "admin",
+        "authorName": "Executive Admin",
+        "content": "Discovery call scheduled with Managing Director.",
+        "createdAt": "2026-10-30T15:38:36.976Z"
+      }
+    ],
+    "activityHistory": [
+      {
+        "id": "act_1793374716984",
+        "leadId": "lead_1793374716849_b612c056",
+        "performedBy": "Executive Admin",
+        "action": "FOLLOWUP_SCHEDULED",
+        "details": "Follow-up scheduled for 2026-11-10",
+        "timestamp": "2026-10-30T15:38:36.984Z"
+      },
+      {
+        "id": "act_1793374716976",
+        "leadId": "lead_1793374716849_b612c056",
+        "performedBy": "Executive Admin",
+        "action": "NOTE_ADDED",
+        "details": "Internal note added: \"Discovery call scheduled with Managing Director.\"",
+        "timestamp": "2026-10-30T15:38:36.976Z"
+      },
+      {
+        "id": "act_1793374716929",
+        "leadId": "lead_1793374716849_b612c056",
+        "performedBy": "Executive Admin",
+        "action": "STATUS_CHANGE",
+        "details": "Status changed from \"New\" to \"Contacted\"",
+        "timestamp": "2026-10-30T15:38:36.929Z"
+      },
+      {
+        "id": "act_1793374716849",
+        "leadId": "lead_1793374716849_b612c056",
+        "performedBy": "System Webhook",
+        "action": "STATUS_CHANGE",
+        "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+        "timestamp": "2026-10-30T15:38:36.849Z"
+      }
+    ],
+    "followUpDate": "2026-11-10"
+  },
+  {
+    "id": "lead_1793374673731_276cd302",
+    "referenceNumber": "RTP-2026-5084",
+    "createdAt": "2026-10-30T15:37:53.731Z",
+    "updatedAt": "2026-10-30T15:37:53.877Z",
+    "status": "Contacted",
+    "fullName": "Integration Test Client 1793374673726",
+    "businessName": "Test Enterprises Ltd",
+    "email": "integration@testenterprise.in",
+    "phone": "9876543210",
+    "businessType": "manufacturing",
+    "requiredService": "custom-crm",
+    "budgetRange": "₹35,000 - ₹75,000",
+    "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+    "preferredContactMethod": "WhatsApp",
+    "consentAgreed": true,
+    "notes": [
+      {
+        "id": "note_1793374673870",
+        "authorId": "usr_admin_01",
+        "authorName": "Executive Admin",
+        "content": "Discovery call scheduled with Managing Director.",
+        "createdAt": "2026-10-30T15:37:53.870Z"
+      }
+    ],
+    "activityHistory": [
+      {
+        "id": "act_1793374673877",
+        "leadId": "lead_1793374673731_276cd302",
+        "performedBy": "Executive Admin",
+        "action": "FOLLOWUP_SCHEDULED",
+        "details": "Follow-up scheduled for 2026-11-10",
+        "timestamp": "2026-10-30T15:37:53.877Z"
+      },
+      {
+        "id": "act_1793374673870",
+        "leadId": "lead_1793374673731_276cd302",
+        "performedBy": "Executive Admin",
+        "action": "NOTE_ADDED",
+        "details": "Internal note added: \"Discovery call scheduled with Managing Director.\"",
+        "timestamp": "2026-10-30T15:37:53.870Z"
+      },
+      {
+        "id": "act_1793374673865",
+        "leadId": "lead_1793374673731_276cd302",
+        "performedBy": "Executive Admin",
+        "action": "STATUS_CHANGE",
+        "details": "Status changed from \"New\" to \"Contacted\"",
+        "timestamp": "2026-10-30T15:37:53.865Z"
+      },
+      {
+        "id": "act_1793374673731",
+        "leadId": "lead_1793374673731_276cd302",
+        "performedBy": "System Webhook",
+        "action": "STATUS_CHANGE",
+        "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+        "timestamp": "2026-10-30T15:37:53.731Z"
+      }
+    ],
+    "followUpDate": "2026-11-10"
+  },
+  {
+    "id": "lead_1793374488904_8edf9d6b",
+    "referenceNumber": "RTP-2026-5050",
+    "createdAt": "2026-10-30T15:34:48.904Z",
+    "updatedAt": "2026-10-30T15:34:49.001Z",
+    "status": "Contacted",
+    "fullName": "Integration Test Client 1793374488898",
+    "businessName": "Test Enterprises Ltd",
+    "email": "integration@testenterprise.in",
+    "phone": "9876543210",
+    "businessType": "manufacturing",
+    "requiredService": "custom-crm",
+    "budgetRange": "₹35,000 - ₹75,000",
+    "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+    "preferredContactMethod": "WhatsApp",
+    "consentAgreed": true,
+    "notes": [
+      {
+        "id": "note_1793374488997",
+        "authorId": "usr_admin_01",
+        "authorName": "Executive Admin",
+        "content": "Discovery call scheduled with Managing Director.",
+        "createdAt": "2026-10-30T15:34:48.997Z"
+      }
+    ],
+    "activityHistory": [
+      {
+        "id": "act_1793374489001",
+        "leadId": "lead_1793374488904_8edf9d6b",
+        "performedBy": "Executive Admin",
+        "action": "FOLLOWUP_SCHEDULED",
+        "details": "Follow-up scheduled for 2026-11-10",
+        "timestamp": "2026-10-30T15:34:49.001Z"
+      },
+      {
+        "id": "act_1793374488997",
+        "leadId": "lead_1793374488904_8edf9d6b",
+        "performedBy": "Executive Admin",
+        "action": "NOTE_ADDED",
+        "details": "Internal note added: \"Discovery call scheduled with Managing Director.\"",
+        "timestamp": "2026-10-30T15:34:48.997Z"
+      },
+      {
+        "id": "act_1793374488959",
+        "leadId": "lead_1793374488904_8edf9d6b",
+        "performedBy": "Executive Admin",
+        "action": "STATUS_CHANGE",
+        "details": "Status changed from \"New\" to \"Contacted\"",
+        "timestamp": "2026-10-30T15:34:48.959Z"
+      },
+      {
+        "id": "act_1793374488904",
+        "leadId": "lead_1793374488904_8edf9d6b",
+        "performedBy": "System Webhook",
+        "action": "STATUS_CHANGE",
+        "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+        "timestamp": "2026-10-30T15:34:48.904Z"
+      }
+    ],
+    "followUpDate": "2026-11-10"
+  },
+  {
+    "id": "lead_1793372599197_812d12ca",
+    "referenceNumber": "RTP-2026-3917",
+    "createdAt": "2026-10-30T15:03:19.197Z",
+    "updatedAt": "2026-10-30T15:03:19.294Z",
+    "status": "Contacted",
+    "fullName": "Integration Test Client 1793372599158",
+    "businessName": "Test Enterprises Ltd",
+    "email": "integration@testenterprise.in",
+    "phone": "9876543210",
+    "businessType": "manufacturing",
+    "requiredService": "custom-crm",
+    "budgetRange": "₹35,000 - ₹75,000",
+    "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+    "preferredContactMethod": "WhatsApp",
+    "consentAgreed": true,
+    "notes": [
+      {
+        "id": "note_1793372599286",
+        "authorId": "usr_admin_01",
+        "authorName": "Executive Admin",
+        "content": "Discovery call scheduled with Managing Director.",
+        "createdAt": "2026-10-30T15:03:19.286Z"
+      }
+    ],
+    "activityHistory": [
+      {
+        "id": "act_1793372599294",
+        "leadId": "lead_1793372599197_812d12ca",
+        "performedBy": "Executive Admin",
+        "action": "FOLLOWUP_SCHEDULED",
+        "details": "Follow-up scheduled for 2026-11-10",
+        "timestamp": "2026-10-30T15:03:19.294Z"
+      },
+      {
+        "id": "act_1793372599286",
+        "leadId": "lead_1793372599197_812d12ca",
+        "performedBy": "Executive Admin",
+        "action": "NOTE_ADDED",
+        "details": "Internal note added: \"Discovery call scheduled with Managing Director.\"",
+        "timestamp": "2026-10-30T15:03:19.286Z"
+      },
+      {
+        "id": "act_1793372599281",
+        "leadId": "lead_1793372599197_812d12ca",
+        "performedBy": "Executive Admin",
+        "action": "STATUS_CHANGE",
+        "details": "Status changed from \"New\" to \"Contacted\"",
+        "timestamp": "2026-10-30T15:03:19.281Z"
+      },
+      {
+        "id": "act_1793372599197",
+        "leadId": "lead_1793372599197_812d12ca",
+        "performedBy": "System Webhook",
+        "action": "STATUS_CHANGE",
+        "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+        "timestamp": "2026-10-30T15:03:19.197Z"
+      }
+    ],
+    "followUpDate": "2026-11-10"
+  },
+  {
+    "id": "lead_1793371862211_369a12fc",
+    "referenceNumber": "RTP-2026-9664",
+    "createdAt": "2026-10-30T14:51:02.211Z",
+    "updatedAt": "2026-10-30T14:51:02.334Z",
+    "status": "Contacted",
+    "fullName": "Integration Test Client 1793371862207",
+    "businessName": "Test Enterprises Ltd",
+    "email": "integration@testenterprise.in",
+    "phone": "9876543210",
+    "businessType": "manufacturing",
+    "requiredService": "custom-crm",
+    "budgetRange": "₹35,000 - ₹75,000",
+    "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+    "preferredContactMethod": "WhatsApp",
+    "consentAgreed": true,
+    "notes": [
+      {
+        "id": "note_1793371862331",
+        "authorId": "usr_admin_01",
+        "authorName": "Executive Admin",
+        "content": "Discovery call scheduled with Managing Director.",
+        "createdAt": "2026-10-30T14:51:02.331Z"
+      }
+    ],
+    "activityHistory": [
+      {
+        "id": "act_1793371862334",
+        "leadId": "lead_1793371862211_369a12fc",
+        "performedBy": "Executive Admin",
+        "action": "FOLLOWUP_SCHEDULED",
+        "details": "Follow-up scheduled for 2026-11-10",
+        "timestamp": "2026-10-30T14:51:02.334Z"
+      },
+      {
+        "id": "act_1793371862331",
+        "leadId": "lead_1793371862211_369a12fc",
+        "performedBy": "Executive Admin",
+        "action": "NOTE_ADDED",
+        "details": "Internal note added: \"Discovery call scheduled with Managing Director.\"",
+        "timestamp": "2026-10-30T14:51:02.331Z"
+      },
+      {
+        "id": "act_1793371862324",
+        "leadId": "lead_1793371862211_369a12fc",
+        "performedBy": "Executive Admin",
+        "action": "STATUS_CHANGE",
+        "details": "Status changed from \"New\" to \"Contacted\"",
+        "timestamp": "2026-10-30T14:51:02.324Z"
+      },
+      {
+        "id": "act_1793371862211",
+        "leadId": "lead_1793371862211_369a12fc",
+        "performedBy": "System Webhook",
+        "action": "STATUS_CHANGE",
+        "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+        "timestamp": "2026-10-30T14:51:02.211Z"
+      }
+    ],
+    "followUpDate": "2026-11-10"
+  },
+  {
+    "id": "lead_1793371106261_5600337c",
+    "referenceNumber": "RTP-2026-8514",
+    "createdAt": "2026-10-30T14:38:26.261Z",
+    "updatedAt": "2026-10-30T14:38:26.395Z",
+    "status": "Contacted",
+    "fullName": "Integration Test Client 1793371106249",
+    "businessName": "Test Enterprises Ltd",
+    "email": "integration@testenterprise.in",
+    "phone": "9876543210",
+    "businessType": "manufacturing",
+    "requiredService": "custom-crm",
+    "budgetRange": "₹35,000 - ₹75,000",
+    "projectDescription": "We need an automated multi-stage inventory and order dispatch system for Indian operations.",
+    "preferredContactMethod": "WhatsApp",
+    "consentAgreed": true,
+    "notes": [
+      {
+        "id": "note_1793371106388",
+        "authorId": "usr_admin_01",
+        "authorName": "Executive Admin",
+        "content": "Discovery call scheduled with Managing Director.",
+        "createdAt": "2026-10-30T14:38:26.388Z"
+      }
+    ],
+    "activityHistory": [
+      {
+        "id": "act_1793371106395",
+        "leadId": "lead_1793371106261_5600337c",
+        "performedBy": "Executive Admin",
+        "action": "FOLLOWUP_SCHEDULED",
+        "details": "Follow-up scheduled for 2026-11-10",
+        "timestamp": "2026-10-30T14:38:26.395Z"
+      },
+      {
+        "id": "act_1793371106388",
+        "leadId": "lead_1793371106261_5600337c",
+        "performedBy": "Executive Admin",
+        "action": "NOTE_ADDED",
+        "details": "Internal note added: \"Discovery call scheduled with Managing Director.\"",
+        "timestamp": "2026-10-30T14:38:26.388Z"
+      },
+      {
+        "id": "act_1793371106341",
+        "leadId": "lead_1793371106261_5600337c",
+        "performedBy": "Executive Admin",
+        "action": "STATUS_CHANGE",
+        "details": "Status changed from \"New\" to \"Contacted\"",
+        "timestamp": "2026-10-30T14:38:26.341Z"
+      },
+      {
+        "id": "act_1793371106261",
+        "leadId": "lead_1793371106261_5600337c",
+        "performedBy": "System Webhook",
+        "action": "STATUS_CHANGE",
+        "details": "Enquiry received from 127.0.0.1 and registered in pipeline.",
+        "timestamp": "2026-10-30T14:38:26.261Z"
+      }
+    ],
+    "followUpDate": "2026-11-10"
+  },
+  {
     "id": "lead_1793293275641_2d5e993d",
     "referenceNumber": "RTP-2026-7385",
     "createdAt": "2026-10-29T17:01:15.641Z",

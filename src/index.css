@@ -1,40 +1,69 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
     --font-sans: 'Plus Jakarta Sans', 'Noto Sans Tamil', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-display: 'Outfit', 'Noto Sans Tamil', 'Plus Jakarta Sans', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
 
-    /* Theme Tokens - Dark Mode Default */
-    --theme-bg-main: #070B14;
-    --theme-bg-surface: #0D1527;
-    --theme-bg-card: rgba(16, 25, 53, 0.7);
-    --theme-bg-card-solid: #0F1A36;
-    --theme-bg-elevated: #111C3A;
+    /* Primary Palette - Premium Light Mode (Default) */
+    --theme-bg-main: #FAFBFF;
+    --theme-bg-surface: #FFFFFF;
+    --theme-bg-secondary: #F3F0FF;
+    --theme-bg-soft-blue: #EAF3FF;
+    --theme-bg-light-aqua: #E5FAF7;
+    --theme-bg-pale-pink: #FFF0F5;
+    
+    --theme-brand-purple: #6654E8;
+    --theme-brand-purple-hover: #5542D9;
+    --theme-accent-blue: #4388FF;
+    --theme-accent-mint: #35C9B0;
+    
+    --theme-text-primary: #172033;
+    --theme-text-secondary: #647087;
+    --theme-text-muted: #8F9BB3;
+    
+    --theme-border-card: #E5E9F2;
+    --theme-border-subtle: #EEF2F6;
+    --theme-border-focus: rgba(102, 84, 232, 0.4);
+    
+    --theme-card-shadow: 0 10px 30px -5px rgba(23, 32, 51, 0.05), 0 4px 12px -2px rgba(23, 32, 51, 0.03);
+    --theme-card-shadow-hover: 0 20px 40px -10px rgba(102, 84, 232, 0.12), 0 8px 20px -4px rgba(67, 136, 255, 0.08);
+
+    /* Metallic Gold & Ruby branding accents */
+    --theme-gold-accent: #B8860B;
+    --theme-ruby-accent: #DC2626;
+  }
+
+  html.dark {
+    /* Primary Palette - Obsidian Luxury Dark Mode */
+    --theme-bg-main: #0B0F19;
+    --theme-bg-surface: #121829;
+    --theme-bg-secondary: #172038;
+    --theme-bg-soft-blue: #162444;
+    --theme-bg-light-aqua: #0E292E;
+    --theme-bg-pale-pink: #24142B;
+    
+    --theme-brand-purple: #8172F8;
+    --theme-brand-purple-hover: #9689FF;
+    --theme-accent-blue: #60A5FA;
+    --theme-accent-mint: #34D399;
+    
     --theme-text-primary: #F8FAFC;
     --theme-text-secondary: #94A3B8;
     --theme-text-muted: #64748B;
-    --theme-border-subtle: rgba(51, 65, 85, 0.7);
-    --theme-border-gold: rgba(212, 175, 55, 0.25);
+    
+    --theme-border-card: rgba(255, 255, 255, 0.1);
+    --theme-border-subtle: rgba(255, 255, 255, 0.06);
+    --theme-border-focus: rgba(129, 114, 248, 0.5);
+    
+    --theme-card-shadow: 0 10px 35px -5px rgba(0, 0, 0, 0.5);
+    --theme-card-shadow-hover: 0 20px 45px -8px rgba(0, 0, 0, 0.7), 0 0 25px -4px rgba(129, 114, 248, 0.2);
+
     --theme-gold-accent: #D4AF37;
     --theme-ruby-accent: #EF4444;
-  }
-
-  html.light {
-    /* Theme Tokens - Light Mode */
-    --theme-bg-main: #F8FAFC;
-    --theme-bg-surface: #FFFFFF;
-    --theme-bg-card: #FFFFFF;
-    --theme-bg-card-solid: #FFFFFF;
-    --theme-bg-elevated: #F1F5F9;
-    --theme-text-primary: #0F172A;
-    --theme-text-secondary: #475569;
-    --theme-text-muted: #64748B;
-    --theme-border-subtle: #E2E8F0;
-    --theme-border-gold: rgba(184, 134, 11, 0.35);
-    --theme-gold-accent: #B8860B;
-    --theme-ruby-accent: #DC2626;
   }
 
   body {
@@ -50,170 +79,175 @@
   }
 }
 
-/* Custom subtle gold gradient glow and hairline utilities */
+/* 3D Visual Depth & Perspective Utilities */
+.perspective-1200 {
+  perspective: 1200px;
+}
+
+.perspective-800 {
+  perspective: 800px;
+}
+
+.transform-3d {
+  transform-style: preserve-3d;
+}
+
+/* Glassmorphism & SaaS Card Styles */
+.saas-card {
+  background-color: var(--theme-bg-surface);
+  border: 1px solid var(--theme-border-card);
+  border-radius: 1rem;
+  box-shadow: var(--theme-card-shadow);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.saas-card-glass {
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--theme-border-card);
+  border-radius: 1rem;
+  box-shadow: var(--theme-card-shadow);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.dark .saas-card-glass {
+  background-color: rgba(18, 24, 41, 0.82);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.saas-card-hover {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+}
+
+.saas-card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--theme-card-shadow-hover);
+  border-color: rgba(102, 84, 232, 0.35);
+}
+
+html.dark .saas-card-hover:hover {
+  border-color: rgba(129, 114, 248, 0.4);
+}
+
+/* Backward compatibility for gold-card class */
+.gold-card {
+  background-color: var(--theme-bg-surface);
+  border: 1px solid var(--theme-border-card);
+  border-radius: 1rem;
+  box-shadow: var(--theme-card-shadow);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gold-card-hover {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+}
+
+.gold-card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--theme-card-shadow-hover);
+  border-color: rgba(102, 84, 232, 0.35);
+}
+
+html.dark .gold-card-hover:hover {
+  border-color: rgba(129, 114, 248, 0.4);
+}
+
+/* Brand Purple & Gold Gradient Accents */
+.brand-gradient-text {
+  background: linear-gradient(135deg, #6654E8 0%, #4388FF 60%, #35C9B0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+html.dark .brand-gradient-text {
+  background: linear-gradient(135deg, #9689FF 0%, #60A5FA 60%, #34D399 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 .gold-gradient-text {
+  background: linear-gradient(135deg, #8B6508 0%, #B8860B 50%, #D4AF37 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+html.dark .gold-gradient-text {
   background: linear-gradient(135deg, #FFF0BD 0%, #D4AF37 50%, #AA820A 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-html.light .gold-gradient-text {
-  background: linear-gradient(135deg, #B8860B 0%, #996515 50%, #7A4E00 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.brand-gradient-button {
+  background: linear-gradient(135deg, #6654E8 0%, #5240E0 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px 0 rgba(102, 84, 232, 0.35);
+  transition: all 0.2s ease;
 }
 
-.gold-border {
-  border-color: rgba(212, 175, 55, 0.25);
+.brand-gradient-button:hover {
+  background: linear-gradient(135deg, #5844E2 0%, #4230D0 100%);
+  box-shadow: 0 6px 20px 0 rgba(102, 84, 232, 0.45);
+  transform: translateY(-1px);
 }
 
-html.light .gold-border {
-  border-color: rgba(184, 134, 11, 0.35);
+.brand-gradient-button:active {
+  transform: translateY(0);
 }
 
-.gold-border-focus:focus-visible {
-  outline: 2px solid rgba(212, 175, 55, 0.6);
-  outline-offset: 2px;
+/* Ambient Ambient Glow Mesh Backgrounds */
+.ambient-mesh-light {
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(243, 240, 255, 0.8) 0%, transparent 40%),
+    radial-gradient(circle at 90% 15%, rgba(234, 243, 255, 0.7) 0%, transparent 45%),
+    radial-gradient(circle at 50% 80%, rgba(229, 250, 247, 0.6) 0%, transparent 50%),
+    radial-gradient(circle at 80% 85%, rgba(255, 240, 245, 0.6) 0%, transparent 45%);
 }
 
-.gold-card {
-  background: linear-gradient(180deg, rgba(16, 25, 53, 0.7) 0%, rgba(11, 18, 36, 0.9) 100%);
-  border: 1px solid rgba(212, 175, 55, 0.18);
-  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.5);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+html.dark .ambient-mesh-light {
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(102, 84, 232, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 90% 15%, rgba(67, 136, 255, 0.1) 0%, transparent 45%),
+    radial-gradient(circle at 50% 80%, rgba(53, 201, 176, 0.08) 0%, transparent 50%);
 }
 
-html.light .gold-card {
-  background: #FFFFFF;
-  border: 1px solid rgba(184, 134, 11, 0.22);
-  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.07), 0 1px 3px rgba(0, 0, 0, 0.04);
-}
-
-.gold-card-hover {
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.gold-card-hover:hover {
-  border-color: rgba(212, 175, 55, 0.4);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.65), 0 0 16px -2px rgba(212, 175, 55, 0.12);
-}
-
-html.light .gold-card-hover:hover {
-  border-color: rgba(184, 134, 11, 0.5);
-  box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.12), 0 0 16px -2px rgba(212, 175, 55, 0.18);
-}
-
-/* Light Mode Comprehensive Typography, Backgrounds, and Borders */
-html.light {
-  /* Common Dark Navy backgrounds adapted to soft crisp Ivory/White */
-  & .bg-\[\#070B14\] {
-    background-color: #F8FAFC !important;
+/* Subtle Animated Floating Animation */
+@keyframes floatSubtle {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
   }
-  & .bg-\[\#070B14\]\/95 {
-    background-color: rgba(255, 255, 255, 0.95) !important;
-  }
-  & .bg-\[\#070B14\]\/90 {
-    background-color: rgba(255, 255, 255, 0.92) !important;
-  }
-  & .bg-\[\#0A1020\] {
-    background-color: #FFFFFF !important;
-  }
-  & .bg-\[\#0B132B\] {
-    background-color: #F1F5F9 !important;
-  }
-  & .bg-\[\#0B1224\] {
-    background-color: #FFFFFF !important;
-  }
-  & .bg-\[\#101935\] {
-    background-color: #F1F5F9 !important;
-  }
-  & .bg-\[\#0D1527\] {
-    background-color: #FFFFFF !important;
-  }
-  & .bg-\[\#0F172A\] {
-    background-color: #FFFFFF !important;
-  }
-  & .bg-slate-900 {
-    background-color: #F8FAFC !important;
-  }
-  & .bg-slate-900\/60,
-  & .bg-slate-900\/80,
-  & .bg-slate-900\/90 {
-    background-color: #FFFFFF !important;
-  }
-  & .bg-slate-950 {
-    background-color: #F1F5F9 !important;
-  }
-
-  /* Text readability */
-  & .text-white {
-    color: #0F172A !important;
-  }
-  & .text-slate-100 {
-    color: #0F172A !important;
-  }
-  & .text-slate-200 {
-    color: #1E293B !important;
-  }
-  & .text-slate-300 {
-    color: #334155 !important;
-  }
-  & .text-slate-400 {
-    color: #475569 !important;
-  }
-
-  /* Borders */
-  & .border-slate-800,
-  & .border-slate-800\/80,
-  & .border-slate-800\/60 {
-    border-color: #E2E8F0 !important;
-  }
-  & .border-slate-700,
-  & .border-slate-700\/80 {
-    border-color: #CBD5E1 !important;
-  }
-
-  /* Header and Navigation */
-  & header {
-    background-color: rgba(255, 255, 255, 0.95) !important;
-    border-bottom-color: #E2E8F0 !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  }
-
-  /* Subtle card inner elements */
-  & .bg-black {
-    background-color: #0F172A !important;
-  }
-
-  /* Form Inputs in light mode */
-  & input:not([type="checkbox"]):not([type="radio"]),
-  & select,
-  & textarea {
-    background-color: #FFFFFF !important;
-    color: #0F172A !important;
-    border-color: #CBD5E1 !important;
-  }
-  & input::placeholder,
-  & textarea::placeholder {
-    color: #94A3B8 !important;
-  }
-
-  /* Code / Pre blocks */
-  & pre, & code {
-    background-color: #F1F5F9 !important;
-    color: #0F172A !important;
+  50% {
+    transform: translateY(-8px) rotate(0.4deg);
   }
 }
 
-/* Ensure Logo container remains crisp and framed in both themes */
+.animate-float-subtle {
+  animation: floatSubtle 6s ease-in-out infinite;
+}
+
+@keyframes pulseMint {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.15);
+  }
+}
+
+.animate-pulse-mint {
+  animation: pulseMint 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Ensure Logo container remains framed and distinctive */
 .rtp-logo-container {
   background-color: #000000;
   border: 1px solid rgba(212, 175, 55, 0.6);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
-/* Printable Invoice / Receipt Styling */
+/* Printable Area for Receipts */
 @media print {
   body {
     background-color: #FFFFFF !important;
