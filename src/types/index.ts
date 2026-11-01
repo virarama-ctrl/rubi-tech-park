@@ -65,6 +65,8 @@ export interface CaseStudy {
   liveUrl?: string;
   isVerifiedReal: boolean;
   thumbnailUrl?: string;
+  isFeatured?: boolean;
+  featured?: boolean;
 }
 
 export type BusinessType =

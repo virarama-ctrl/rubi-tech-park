@@ -600,7 +600,46 @@ export const SERVICES_DATA: ServiceDetail[] = [
 // PORTFOLIO / CASE STUDIES: PRESERVE REAL PROJECTS & ADD 3 SHOWCASES
 // -------------------------------------------------------------------
 export const CASE_STUDIES: CaseStudy[] = [
-  // Showcase 1: Kuralvaani
+  // 1. Primary Featured Project: Tamil Gold Buyer
+  {
+    id: 'tamil-gold-buyer',
+    projectName: 'Tamil Gold Buyer',
+    title: 'Tamil Gold Buyer – Gold & Silver Valuation Platform',
+    clientName: 'Developed by RUBI TECH PARK',
+    industry: 'Precious Metals & FinTech',
+    categoryTag: 'E-Commerce / FinTech Solutions',
+    location: 'Tamil Nadu, India',
+    status: 'Published Website',
+    isFeatured: true,
+    featured: true,
+    summary: 'A specialised digital platform for gold and silver buyers, featuring valuation tools, gold and silver rate information, and online precious metal product sales.',
+    challenge: 'Retail and scrap gold and silver sellers needed transparent, real-time rate calculators accounting for various karat purities (24K, 22K, 18K) and live precious metal market prices.',
+    solution: 'Built a comprehensive valuation web portal with real-time rate APIs, multi-item calculation breakdown, purity estimation tools, and coin/bar e-commerce catalog.',
+    keyDeliverables: [
+      'Gold valuation calculator',
+      'Silver valuation calculator',
+      'Multiple gold and silver item entries',
+      'Custom weight and purity calculation options',
+      'Gold and silver rate integration',
+      'Gold and silver coin and bar product showcase',
+      'Online purchase workflow',
+      'Customer-friendly interface'
+    ],
+    keyFeatures: [
+      'Gold valuation calculator',
+      'Silver valuation calculator',
+      'Multiple gold and silver item entries',
+      'Custom weight and purity calculation options',
+      'Gold and silver rate integration',
+      'Gold and silver coin and bar product showcase',
+      'Online purchase workflow',
+      'Customer-friendly interface'
+    ],
+    technologies: ['React', 'TypeScript', 'Valuation Engine', 'Indian Precious Metal APIs', 'Tailwind CSS'],
+    liveUrl: 'https://goldandsilverbuyer.live/',
+    isVerifiedReal: true
+  },
+  // 2. Kuralvaani
   {
     id: 'kuralvaani',
     projectName: 'Kuralvaani',
@@ -630,51 +669,13 @@ export const CASE_STUDIES: CaseStudy[] = [
       'Responsive application interface'
     ],
     technologies: ['TypeScript', 'Tamil TTS Pipeline', 'Gemini Audio Synthesis', 'Tailwind CSS', 'User Auth'],
-    liveUrl: 'https://ai.studio/apps/f1e3cb9e-f4ba-4a33-a642-0d746bf6cec1?fullscreenApplet=true',
     isVerifiedReal: true
   },
-  // Showcase 2: Tamil Gold Buyer
-  {
-    id: 'tamil-gold-buyer',
-    projectName: 'Tamil Gold Buyer',
-    title: 'Tamil Gold Buyer – Gold & Silver Valuation Platform',
-    clientName: 'Developed by RUBI TECH PARK',
-    industry: 'Precious Metals & FinTech',
-    categoryTag: 'E-Commerce / FinTech Solutions',
-    location: 'Tamil Nadu, India',
-    status: 'Published Website',
-    summary: 'A specialised digital platform for gold and silver buyers, featuring valuation tools, gold and silver rate information, and online precious metal product sales.',
-    challenge: 'Retail and scrap gold and silver sellers needed transparent, real-time rate calculators accounting for various karat purities (24K, 22K, 18K) and live precious metal market prices.',
-    solution: 'Built a comprehensive valuation web portal with real-time rate APIs, multi-item calculation breakdown, purity estimation tools, and coin/bar e-commerce catalog.',
-    keyDeliverables: [
-      'Gold valuation calculator',
-      'Silver valuation calculator',
-      'Multiple gold and silver item entries',
-      'Custom weight and purity calculation options',
-      'Gold and silver rate integration',
-      'Gold and silver coin and bar product showcase',
-      'Online purchase workflow',
-      'Customer-friendly interface'
-    ],
-    keyFeatures: [
-      'Gold valuation calculator',
-      'Silver valuation calculator',
-      'Multiple gold and silver item entries',
-      'Custom weight and purity calculation options',
-      'Gold and silver rate integration',
-      'Gold and silver coin and bar product showcase',
-      'Online purchase workflow',
-      'Customer-friendly interface'
-    ],
-    technologies: ['React', 'TypeScript', 'Valuation Engine', 'Indian Precious Metal APIs', 'Tailwind CSS'],
-    liveUrl: 'https://www.goldandsilverbuyer.live/',
-    isVerifiedReal: true
-  },
-  // Showcase 3: Bulkmate
+  // 3. BulkMate
   {
     id: 'bulkmate',
-    projectName: 'Bulkmate',
-    title: 'Bulkmate – Bulk Messaging Management Software',
+    projectName: 'BulkMate',
+    title: 'BulkMate – Bulk Messaging Management Software',
     clientName: 'Developed by RUBI TECH PARK',
     industry: 'Enterprise Messaging & Communications',
     categoryTag: 'Business Software',
@@ -700,7 +701,6 @@ export const CASE_STUDIES: CaseStudy[] = [
       'Subscription and billing architecture planned for future expansion'
     ],
     technologies: ['TypeScript', 'Node.js', 'Messaging Queue Architecture', 'Campaign Scheduler', 'Tailwind UI'],
-    liveUrl: 'https://ai.studio/apps/f7fd26dd-b697-41f1-8a40-7d60744916a7',
     isVerifiedReal: true
   },
   // Existing Project 4: RUBI Gold & Silver

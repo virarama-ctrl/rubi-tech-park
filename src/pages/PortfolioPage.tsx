@@ -20,7 +20,19 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
   const filteredStudies =
     activeFilter === 'All'
       ? CASE_STUDIES
-      : CASE_STUDIES.filter((s) => s.status === activeFilter);
+      : CASE_STUDIES.filter((s) => {
+          if (activeFilter === 'Live') {
+            return s.status === 'Live' || s.status === 'Published Website';
+          }
+          if (activeFilter === 'In Progress') {
+            return (
+              s.status === 'In Progress' ||
+              s.status === 'Development / Enhancement' ||
+              s.status === 'Development / Commercial Preparation'
+            );
+          }
+          return s.status === activeFilter;
+        });
 
   const handleRequestQuote = (study: CaseStudy) => {
     if (onSelectProjectForQuote) {
