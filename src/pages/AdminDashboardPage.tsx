@@ -533,20 +533,20 @@ CREATE POLICY "Allow service role full lead access" ON public.leads FOR ALL TO s
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFBFF] dark:bg-[#070B14] text-[#172033] dark:text-slate-100 pb-20 transition-colors">
+    <div className="min-h-screen bg-[#E9EEF3] dark:bg-[#101B2C] text-[#182638] dark:text-[#F1F5F9] pb-20 transition-colors">
       {/* Toast Alert */}
       {toastMessage && (
-        <div className="fixed top-24 right-6 z-50 bg-white dark:bg-[#0B132B] border border-[#6654E8] dark:border-[#9689FF] px-4 py-3 rounded-xl shadow-2xl text-xs text-[#172033] dark:text-white flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="fixed top-24 right-6 z-50 bg-white dark:bg-[#1C2B40] border border-[#315D82] dark:border-[#6F9FC5] px-4 py-3 rounded-xl shadow-lg text-xs text-[#182638] dark:text-[#F1F5F9] flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
           <CheckCircle2 className="w-4 h-4 text-emerald-500" />
           <span className="font-medium">{toastMessage}</span>
         </div>
       )}
 
       {/* Top Admin Sub-Bar */}
-      <div className="bg-white/95 dark:bg-[#0A1020]/95 backdrop-blur-md border-b border-[#E5E9F2] dark:border-slate-800 sticky top-0 z-30 transition-colors">
+      <div className="bg-white/95 dark:bg-[#17263A]/95 backdrop-blur-md border-b border-[#D5DEE8] dark:border-[#30445B] sticky top-0 z-30 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl overflow-hidden border border-[#D4AF37]/50 bg-black flex items-center justify-center shrink-0 shadow-sm">
+            <div className="w-9 h-9 rounded-xl overflow-hidden border border-[#D5DEE8] dark:border-[#30445B] bg-black flex items-center justify-center shrink-0 shadow-sm">
               <img
                 src="/assets/aistudio/Ruby_Tech_Park_Luxury_Emblem_3b5d2b3d.png"
                 alt="RUBI TECH PARK"
@@ -555,14 +555,14 @@ CREATE POLICY "Allow service role full lead access" ON public.leads FOR ALL TO s
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-sm sm:text-base font-bold font-display text-[#172033] dark:text-white">
+                <h1 className="text-sm sm:text-base font-bold font-display text-[#182638] dark:text-[#F1F5F9]">
                   RUBI TECH PARK Admin
                 </h1>
-                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-[#6654E8]/10 text-[#6654E8] dark:bg-[#6654E8]/20 dark:text-[#9689FF] font-semibold">
+                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-[#315D82]/10 text-[#315D82] dark:bg-[#6F9FC5]/20 dark:text-[#6F9FC5] font-semibold">
                   CRM Console
                 </span>
               </div>
-              <div className="text-[11px] text-[#647087] dark:text-slate-400 flex items-center gap-2">
+              <div className="text-[11px] text-[#526477] dark:text-[#B8C5D4] flex items-center gap-2">
                 <span>{user?.name || 'Administrator'} ({user?.email || 'admin@rubitechpark.com'})</span>
               </div>
             </div>
@@ -585,24 +585,24 @@ CREATE POLICY "Allow service role full lead access" ON public.leads FOR ALL TO s
 
             <button
               onClick={() => onNavigate('home')}
-              className="hidden md:flex px-3 py-1.5 text-xs text-[#172033] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-lg transition-colors cursor-pointer items-center gap-1.5"
+              className="hidden md:flex px-3 py-1.5 text-xs text-[#182638] dark:text-[#F1F5F9] hover:bg-slate-100 dark:hover:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] rounded-lg transition-colors cursor-pointer items-center gap-1.5"
             >
               <span>Public Site</span>
-              <ExternalLink className="w-3 h-3 text-[#6654E8] dark:text-[#9689FF]" />
+              <ExternalLink className="w-3 h-3 text-[#315D82] dark:text-[#6F9FC5]" />
             </button>
 
             <button
               onClick={handleTriggerBackup}
               title="Record instant database backup snapshot"
-              className="hidden lg:flex px-3 py-1.5 text-xs text-[#172033] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-lg transition-colors cursor-pointer items-center gap-1.5"
+              className="hidden lg:flex px-3 py-1.5 text-xs text-[#182638] dark:text-[#F1F5F9] hover:bg-slate-100 dark:hover:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] rounded-lg transition-colors cursor-pointer items-center gap-1.5"
             >
-              <Database className="w-3.5 h-3.5 text-slate-400" />
+              <Database className="w-3.5 h-3.5 text-[#526477] dark:text-[#B8C5D4]" />
               <span>Snapshot</span>
             </button>
 
             <button
               onClick={handleExportCSV}
-              className="px-3 py-1.5 text-xs font-semibold text-white bg-gradient-to-r from-[#6654E8] to-[#4388FF] hover:opacity-95 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shadow-sm"
+              className="px-3 py-1.5 text-xs font-semibold text-white bg-[#315D82] dark:bg-[#416F98] hover:opacity-95 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shadow-xs"
             >
               <Download className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Export CSV</span>
@@ -610,7 +610,7 @@ CREATE POLICY "Allow service role full lead access" ON public.leads FOR ALL TO s
 
             <button
               onClick={handleLogoutClick}
-              className="p-2 text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 bg-white dark:bg-[#070B14] border border-slate-200 dark:border-slate-800 rounded-lg transition-colors cursor-pointer"
+              className="p-2 text-[#526477] hover:text-rose-600 dark:text-[#B8C5D4] dark:hover:text-rose-400 bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] rounded-lg transition-colors cursor-pointer"
               title="Sign Out of CRM"
             >
               <LogOut className="w-4 h-4" />

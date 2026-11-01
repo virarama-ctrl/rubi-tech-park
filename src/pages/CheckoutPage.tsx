@@ -499,20 +499,20 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   // Render: Main Checkout View
   // -------------------------------------------------------------
   return (
-    <div className="min-h-screen py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-slate-900 dark:text-white transition-colors">
+    <div className="min-h-screen py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-[#182638] dark:text-[#F1F5F9] transition-colors">
       {/* Header Breadcrumb / Title */}
       <div className="mb-8">
         <button
           onClick={() => onNavigate('pricing')}
-          className="text-xs font-semibold text-[#0284C7] dark:text-[#00D4FF] hover:underline flex items-center gap-1.5 mb-2 cursor-pointer"
+          className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1.5 mb-2 cursor-pointer"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>{language === 'ta' ? 'விலைப்பட்டியலுக்குத் திரும்பு' : 'Back to Pricing'}</span>
         </button>
-        <h1 className="text-3xl sm:text-4xl font-bold font-display text-slate-900 dark:text-white">
+        <h1 className="text-3xl sm:text-4xl font-bold font-display text-[#182638] dark:text-[#F1F5F9]">
           {t.checkout.checkoutHeading}
         </h1>
-        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{t.checkout.pageSubtitle}</p>
+        <p className="mt-1 text-sm text-[#526477] dark:text-[#B8C5D4]">{t.checkout.pageSubtitle}</p>
       </div>
 
       {errorMessage && (
@@ -529,9 +529,9 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
         <div className="lg:col-span-7 space-y-6">
           {!currentOrder ? (
             /* STEP 1: Plan Selection & Customer Billing Details */
-            <form onSubmit={handleInitiateOrder} className="saas-card rounded-2xl p-6 sm:p-8 space-y-6 border border-slate-200 dark:border-[#00D4FF]/20 bg-white dark:bg-[#0B1530]/80 shadow-md dark:shadow-xl">
+            <form onSubmit={handleInitiateOrder} className="rounded-2xl p-6 sm:p-8 space-y-6 border border-[#D5DEE8] dark:border-[#30445B] bg-white dark:bg-[#1C2B40] shadow-sm">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#0284C7] dark:text-[#00D4FF] mb-2">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#315D82] dark:text-[#6F9FC5] mb-2">
                   1. {t.checkout.selectPackage}
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -542,83 +542,83 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                       onClick={() => setSelectedPlanId(item.id)}
                       className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
                         selectedPlanId === item.id
-                          ? 'border-[#0284C7] dark:border-[#00D4FF] bg-blue-50/70 dark:bg-[#00D4FF]/10 ring-1 ring-[#0284C7] dark:ring-[#00D4FF]'
-                          : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#070B18] hover:border-blue-300 dark:hover:border-[#00D4FF]/40'
+                          ? 'border-[#315D82] dark:border-[#6F9FC5] bg-[#F2F5F8] dark:bg-[#17263A] ring-1 ring-[#315D82] dark:ring-[#6F9FC5]'
+                          : 'border-[#D5DEE8] dark:border-[#30445B] bg-[#F2F5F8] dark:bg-[#17263A] hover:border-[#315D82] dark:hover:border-[#6F9FC5]'
                       }`}
                     >
                       <div className="flex justify-between items-start">
-                        <span className="font-semibold text-sm text-slate-900 dark:text-white">{item.name}</span>
-                        <span className="font-mono text-xs font-bold text-[#0284C7] dark:text-[#00D4FF]">
+                        <span className="font-semibold text-sm text-[#182638] dark:text-[#F1F5F9]">{item.name}</span>
+                        <span className="font-mono text-xs font-bold text-[#315D82] dark:text-[#6F9FC5]">
                           ₹{item.basePrice.toLocaleString('en-IN')}
                         </span>
                       </div>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">{item.description}</p>
+                      <p className="text-[11px] text-[#526477] dark:text-[#B8C5D4] mt-1 line-clamp-2">{item.description}</p>
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* Customer Details */}
-              <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-4">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#0284C7] dark:text-[#00D4FF]">
+              <div className="pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] space-y-4">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#315D82] dark:text-[#6F9FC5]">
                   2. {t.checkout.customerDetails}
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs text-slate-600 dark:text-slate-400 mb-1">{t.checkout.fullName} *</label>
+                    <label className="block text-xs text-[#526477] dark:text-[#B8C5D4] mb-1">{t.checkout.fullName} *</label>
                     <div className="relative">
-                      <User className="w-4 h-4 absolute left-3 top-3 text-slate-400 dark:text-slate-500" />
+                      <User className="w-4 h-4 absolute left-3 top-3 text-[#526477] dark:text-[#8292AA]" />
                       <input
                         type="text"
                         required
                         value={customerName}
                         onChange={(e) => setCustomerName(e.target.value)}
                         placeholder="e.g. Ramesh Kumar"
-                        className="w-full bg-slate-50 dark:bg-[#070B18] border border-slate-200 dark:border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0284C7] dark:focus:ring-[#00D4FF]"
+                        className="w-full bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] rounded-lg pl-9 pr-3 py-2 text-sm text-[#182638] dark:text-[#F1F5F9] focus:outline-none focus:ring-2 focus:ring-[#315D82] dark:focus:ring-[#6F9FC5]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs text-slate-600 dark:text-slate-400 mb-1">{t.checkout.businessName}</label>
+                    <label className="block text-xs text-[#526477] dark:text-[#B8C5D4] mb-1">{t.checkout.businessName}</label>
                     <div className="relative">
-                      <Building2 className="w-4 h-4 absolute left-3 top-3 text-slate-400 dark:text-slate-500" />
+                      <Building2 className="w-4 h-4 absolute left-3 top-3 text-[#526477] dark:text-[#8292AA]" />
                       <input
                         type="text"
                         value={customerBusiness}
                         onChange={(e) => setCustomerBusiness(e.target.value)}
                         placeholder="e.g. Sri Krishna Enterprises"
-                        className="w-full bg-slate-50 dark:bg-[#070B18] border border-slate-200 dark:border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0284C7] dark:focus:ring-[#00D4FF]"
+                        className="w-full bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] rounded-lg pl-9 pr-3 py-2 text-sm text-[#182638] dark:text-[#F1F5F9] focus:outline-none focus:ring-2 focus:ring-[#315D82] dark:focus:ring-[#6F9FC5]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs text-slate-600 dark:text-slate-400 mb-1">{t.checkout.email} *</label>
+                    <label className="block text-xs text-[#526477] dark:text-[#B8C5D4] mb-1">{t.checkout.email} *</label>
                     <div className="relative">
-                      <Mail className="w-4 h-4 absolute left-3 top-3 text-slate-400 dark:text-slate-500" />
+                      <Mail className="w-4 h-4 absolute left-3 top-3 text-[#526477] dark:text-[#8292AA]" />
                       <input
                         type="email"
                         required
                         value={customerEmail}
                         onChange={(e) => setCustomerEmail(e.target.value)}
                         placeholder="ramesh@company.in"
-                        className="w-full bg-slate-50 dark:bg-[#070B18] border border-slate-200 dark:border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0284C7] dark:focus:ring-[#00D4FF]"
+                        className="w-full bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] rounded-lg pl-9 pr-3 py-2 text-sm text-[#182638] dark:text-[#F1F5F9] focus:outline-none focus:ring-2 focus:ring-[#315D82] dark:focus:ring-[#6F9FC5]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs text-slate-600 dark:text-slate-400 mb-1">{t.checkout.phone} *</label>
+                    <label className="block text-xs text-[#526477] dark:text-[#B8C5D4] mb-1">{t.checkout.phone} *</label>
                     <div className="relative">
-                      <Phone className="w-4 h-4 absolute left-3 top-3 text-slate-400 dark:text-slate-500" />
+                      <Phone className="w-4 h-4 absolute left-3 top-3 text-[#526477] dark:text-[#8292AA]" />
                       <input
                         type="tel"
                         required
                         value={customerPhone}
                         onChange={(e) => setCustomerPhone(e.target.value)}
                         placeholder="+91 98765 43210"
-                        className="w-full bg-slate-50 dark:bg-[#070B18] border border-slate-200 dark:border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0284C7] dark:focus:ring-[#00D4FF]"
+                        className="w-full bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] rounded-lg pl-9 pr-3 py-2 text-sm text-[#182638] dark:text-[#F1F5F9] focus:outline-none focus:ring-2 focus:ring-[#315D82] dark:focus:ring-[#6F9FC5]"
                       />
                     </div>
                   </div>
@@ -626,8 +626,8 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
               </div>
 
               {/* Payment Method Selector */}
-              <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#0284C7] dark:text-[#00D4FF] mb-2">
+              <div className="pt-4 border-t border-[#D5DEE8] dark:border-[#30445B]">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#315D82] dark:text-[#6F9FC5] mb-2">
                   3. {t.checkout.paymentMethod}
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
@@ -636,11 +636,11 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     onClick={() => setActiveMethod('upi_qr')}
                     className={`p-2.5 rounded-lg border text-center transition-all cursor-pointer ${
                       activeMethod === 'upi_qr'
-                        ? 'border-[#0284C7] dark:border-[#00D4FF] bg-blue-50 dark:bg-[#00D4FF]/15 text-[#0284C7] dark:text-[#00D4FF] font-semibold'
-                        : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#070B18] text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700'
+                        ? 'border-[#315D82] dark:border-[#6F9FC5] bg-[#F2F5F8] dark:bg-[#17263A] text-[#315D82] dark:text-[#6F9FC5] font-semibold'
+                        : 'border-[#D5DEE8] dark:border-[#30445B] bg-white dark:bg-[#1C2B40] text-[#526477] dark:text-[#B8C5D4] hover:border-[#315D82] dark:hover:border-[#6F9FC5]'
                     }`}
                   >
-                    <QrCode className="w-4 h-4 mx-auto mb-1 text-[#0284C7] dark:text-[#00D4FF]" />
+                    <QrCode className="w-4 h-4 mx-auto mb-1 text-[#315D82] dark:text-[#6F9FC5]" />
                     <span>{t.checkout.payWithUpi}</span>
                   </button>
 
@@ -649,11 +649,11 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     onClick={() => setActiveMethod('card')}
                     className={`p-2.5 rounded-lg border text-center transition-all cursor-pointer ${
                       activeMethod === 'card'
-                        ? 'border-[#0284C7] dark:border-[#00D4FF] bg-blue-50 dark:bg-[#00D4FF]/15 text-[#0284C7] dark:text-[#00D4FF] font-semibold'
-                        : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#070B18] text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700'
+                        ? 'border-[#315D82] dark:border-[#6F9FC5] bg-[#F2F5F8] dark:bg-[#17263A] text-[#315D82] dark:text-[#6F9FC5] font-semibold'
+                        : 'border-[#D5DEE8] dark:border-[#30445B] bg-white dark:bg-[#1C2B40] text-[#526477] dark:text-[#B8C5D4] hover:border-[#315D82] dark:hover:border-[#6F9FC5]'
                     }`}
                   >
-                    <CreditCard className="w-4 h-4 mx-auto mb-1 text-[#0284C7] dark:text-[#00D4FF]" />
+                    <CreditCard className="w-4 h-4 mx-auto mb-1 text-[#315D82] dark:text-[#6F9FC5]" />
                     <span>{t.checkout.debitCard} / {t.checkout.creditCard}</span>
                   </button>
 
@@ -662,11 +662,11 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     onClick={() => setActiveMethod('netbanking')}
                     className={`p-2.5 rounded-lg border text-center transition-all cursor-pointer ${
                       activeMethod === 'netbanking'
-                        ? 'border-[#0284C7] dark:border-[#00D4FF] bg-blue-50 dark:bg-[#00D4FF]/15 text-[#0284C7] dark:text-[#00D4FF] font-semibold'
-                        : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#070B18] text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700'
+                        ? 'border-[#315D82] dark:border-[#6F9FC5] bg-[#F2F5F8] dark:bg-[#17263A] text-[#315D82] dark:text-[#6F9FC5] font-semibold'
+                        : 'border-[#D5DEE8] dark:border-[#30445B] bg-white dark:bg-[#1C2B40] text-[#526477] dark:text-[#B8C5D4] hover:border-[#315D82] dark:hover:border-[#6F9FC5]'
                     }`}
                   >
-                    <Building2 className="w-4 h-4 mx-auto mb-1 text-[#0284C7] dark:text-[#00D4FF]" />
+                    <Building2 className="w-4 h-4 mx-auto mb-1 text-[#315D82] dark:text-[#6F9FC5]" />
                     <span>{t.checkout.netBanking}</span>
                   </button>
 
@@ -675,11 +675,11 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     onClick={() => setActiveMethod('upi_intent')}
                     className={`p-2.5 rounded-lg border text-center transition-all cursor-pointer ${
                       activeMethod === 'upi_intent'
-                        ? 'border-[#0284C7] dark:border-[#00D4FF] bg-blue-50 dark:bg-[#00D4FF]/15 text-[#0284C7] dark:text-[#00D4FF] font-semibold'
-                        : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#070B18] text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700'
+                        ? 'border-[#315D82] dark:border-[#6F9FC5] bg-[#F2F5F8] dark:bg-[#17263A] text-[#315D82] dark:text-[#6F9FC5] font-semibold'
+                        : 'border-[#D5DEE8] dark:border-[#30445B] bg-white dark:bg-[#1C2B40] text-[#526477] dark:text-[#B8C5D4] hover:border-[#315D82] dark:hover:border-[#6F9FC5]'
                     }`}
                   >
-                    <Sparkles className="w-4 h-4 mx-auto mb-1 text-[#0284C7] dark:text-[#00D4FF]" />
+                    <Sparkles className="w-4 h-4 mx-auto mb-1 text-[#315D82] dark:text-[#6F9FC5]" />
                     <span>GPay / PhonePe</span>
                   </button>
                 </div>
@@ -688,7 +688,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3.5 rounded-xl cyber-button-primary text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-50"
+                className="w-full py-3.5 rounded-xl bg-[#315D82] dark:bg-[#416F98] text-white font-bold text-sm shadow-xs hover:opacity-95 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-50"
               >
                 <span>{isSubmitting ? '...' : t.checkout.payNow}</span>
                 <ArrowRight className="w-4 h-4" />
@@ -955,38 +955,38 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
         {/* Right 5 Columns: Order Summary Card */}
         <div className="lg:col-span-5 sticky top-24">
-          <div className="saas-card rounded-2xl p-6 space-y-4 border border-slate-200 dark:border-[#00D4FF]/20 bg-white dark:bg-[#0B1530]/80 shadow-md dark:shadow-xl">
-            <h2 className="text-base font-bold font-display text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-3">
+          <div className="rounded-2xl p-6 space-y-4 border border-[#D5DEE8] dark:border-[#30445B] bg-white dark:bg-[#1C2B40] shadow-sm">
+            <h2 className="text-base font-bold font-display text-[#182638] dark:text-[#F1F5F9] border-b border-[#D5DEE8] dark:border-[#30445B] pb-3">
               {language === 'ta' ? 'ஆர்டர் சுருக்கம்' : 'Order Summary'}
             </h2>
 
             <div className="space-y-3 text-xs">
               <div className="flex justify-between items-start">
                 <div>
-                  <span className="font-semibold text-slate-900 dark:text-white text-sm block">
+                  <span className="font-semibold text-[#182638] dark:text-[#F1F5F9] text-sm block">
                     {selectedPlan.name}
                   </span>
-                  <span className="text-slate-500 dark:text-slate-400 text-[11px] block mt-0.5">
+                  <span className="text-[#526477] dark:text-[#B8C5D4] text-[11px] block mt-0.5">
                     {selectedPlan.description}
                   </span>
                 </div>
-                <span className="font-mono font-bold text-slate-900 dark:text-white text-sm">
+                <span className="font-mono font-bold text-[#182638] dark:text-[#F1F5F9] text-sm">
                   ₹{basePrice.toLocaleString('en-IN')}
                 </span>
               </div>
 
-              <div className="pt-3 border-t border-slate-200 dark:border-slate-800/80 space-y-2">
-                <div className="flex justify-between text-slate-600 dark:text-slate-400">
+              <div className="pt-3 border-t border-[#D5DEE8] dark:border-[#30445B] space-y-2">
+                <div className="flex justify-between text-[#526477] dark:text-[#B8C5D4]">
                   <span>{t.checkout.basePrice}</span>
                   <span>₹{basePrice.toLocaleString('en-IN')}</span>
                 </div>
-                <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                <div className="flex justify-between text-[#526477] dark:text-[#B8C5D4]">
                   <span>{t.checkout.gstTax}</span>
                   <span>₹{gstTax.toLocaleString('en-IN')}</span>
                 </div>
-                <div className="flex justify-between text-sm font-bold text-slate-900 dark:text-white pt-2 border-t border-slate-200 dark:border-slate-800">
+                <div className="flex justify-between text-sm font-bold text-[#182638] dark:text-[#F1F5F9] pt-2 border-t border-[#D5DEE8] dark:border-[#30445B]">
                   <span>{t.checkout.amountPayable}</span>
-                  <span className="text-lg font-mono text-[#0284C7] dark:text-[#00D4FF]">
+                  <span className="text-lg font-mono text-[#315D82] dark:text-[#6F9FC5]">
                     ₹{totalAmount.toLocaleString('en-IN')}
                   </span>
                 </div>
@@ -994,7 +994,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
             </div>
 
             {/* Security Marker */}
-            <div className="pt-4 border-t border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 space-y-2">
+            <div className="pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] text-[11px] text-[#526477] dark:text-[#B8C5D4] space-y-2">
               <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium">
                 <ShieldCheck className="w-4 h-4 shrink-0" />
                 <span>256-Bit SSL Encrypted Checkout</span>

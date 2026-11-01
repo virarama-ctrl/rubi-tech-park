@@ -288,16 +288,16 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
   }
 
   return (
-    <div className="bg-white dark:bg-[#0B1530]/90 backdrop-blur-xl border border-slate-200 dark:border-[#00D4FF]/25 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-2xl dark:shadow-black/80 overflow-hidden transition-colors">
+    <div className="bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] rounded-2xl shadow-xs overflow-hidden transition-colors">
       {/* 4 Dedicated Tabs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 bg-slate-50 dark:bg-[#070B18]/95 border-b border-slate-200 dark:border-[#00D4FF]/15 text-xs font-mono font-semibold">
+      <div className="grid grid-cols-2 lg:grid-cols-4 bg-[#F2F5F8] dark:bg-[#17263A] border-b border-[#D5DEE8] dark:border-[#30445B] text-xs font-mono font-semibold">
         <button
           type="button"
           onClick={() => handleTabChange('general')}
           className={`py-3.5 px-3 flex items-center justify-center gap-1.5 transition-colors border-b-2 cursor-pointer ${
             activeTab === 'general'
-              ? 'border-[#0284C7] dark:border-[#00D4FF] text-[#0284C7] dark:text-[#00D4FF] bg-white dark:bg-[#0B1530]'
-              : 'border-transparent text-slate-600 dark:text-[#CBD5E1] hover:text-slate-900 dark:hover:text-white'
+              ? 'border-[#315D82] dark:border-[#6F9FC5] text-[#315D82] dark:text-[#6F9FC5] bg-white dark:bg-[#1C2B40]'
+              : 'border-transparent text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-[#F1F5F9]'
           }`}
         >
           <HelpCircle className="w-4 h-4 shrink-0" />
@@ -309,8 +309,8 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           onClick={() => handleTabChange('software')}
           className={`py-3.5 px-3 flex items-center justify-center gap-1.5 transition-colors border-b-2 cursor-pointer ${
             activeTab === 'software'
-              ? 'border-[#0284C7] dark:border-[#00D4FF] text-[#0284C7] dark:text-[#00D4FF] bg-white dark:bg-[#0B1530]'
-              : 'border-transparent text-slate-600 dark:text-[#CBD5E1] hover:text-slate-900 dark:hover:text-white'
+              ? 'border-[#315D82] dark:border-[#6F9FC5] text-[#315D82] dark:text-[#6F9FC5] bg-white dark:bg-[#1C2B40]'
+              : 'border-transparent text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-[#F1F5F9]'
           }`}
         >
           <Code2 className="w-4 h-4 shrink-0" />
@@ -322,8 +322,8 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           onClick={() => handleTabChange('compliance')}
           className={`py-3.5 px-3 flex items-center justify-center gap-1.5 transition-colors border-b-2 cursor-pointer ${
             activeTab === 'compliance'
-              ? 'border-blue-600 dark:border-[#356BFF] text-blue-600 dark:text-[#356BFF] bg-white dark:bg-[#0B1530]'
-              : 'border-transparent text-slate-600 dark:text-[#CBD5E1] hover:text-slate-900 dark:hover:text-white'
+              ? 'border-[#315D82] dark:border-[#6F9FC5] text-[#315D82] dark:text-[#6F9FC5] bg-white dark:bg-[#1C2B40]'
+              : 'border-transparent text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-[#F1F5F9]'
           }`}
         >
           <Shield className="w-4 h-4 shrink-0" />
@@ -335,8 +335,8 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           onClick={() => handleTabChange('eservice')}
           className={`py-3.5 px-3 flex items-center justify-center gap-1.5 transition-colors border-b-2 cursor-pointer ${
             activeTab === 'eservice'
-              ? 'border-emerald-600 dark:border-[#00E5A3] text-emerald-700 dark:text-[#00E5A3] bg-white dark:bg-[#0B1530]'
-              : 'border-transparent text-slate-600 dark:text-[#CBD5E1] hover:text-slate-900 dark:hover:text-white'
+              ? 'border-[#315D82] dark:border-[#6F9FC5] text-[#315D82] dark:text-[#6F9FC5] bg-white dark:bg-[#1C2B40]'
+              : 'border-transparent text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-[#F1F5F9]'
           }`}
         >
           <FileText className="w-4 h-4 shrink-0" />
@@ -347,36 +347,36 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
       <div className="p-6 sm:p-8">
         {/* Banner Explaining Selected Tab */}
         {activeTab === 'eservice' && (
-          <div className="mb-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-xs text-emerald-900 dark:text-emerald-200 space-y-1.5">
-            <div className="font-bold flex items-center gap-1.5">
-              <Info className="w-4 h-4 text-emerald-600" />
+          <div className="mb-6 p-4 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] text-xs text-[#182638] dark:text-[#F1F5F9] space-y-1.5">
+            <div className="font-bold flex items-center gap-1.5 text-[#315D82] dark:text-[#6F9FC5]">
+              <Info className="w-4 h-4" />
               <span>Mandatory Citizen E-Service Booking Deposit Rule</span>
             </div>
-            <p className="leading-relaxed">
+            <p className="leading-relaxed text-[#526477] dark:text-[#B8C5D4]">
               Book your e-service by paying <strong>₹236 (₹200 base charge + 18% GST ₹36)</strong>. The remaining service charges will be communicated after reviewing your requirements and collected after completion of the work. Applicable government fees and additional charges, if any, will be informed separately.
             </p>
           </div>
         )}
 
         {activeTab === 'compliance' && (
-          <div className="mb-6 p-4 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/60 text-xs text-purple-900 dark:text-purple-200 space-y-1.5">
-            <div className="font-bold flex items-center gap-1.5">
-              <Shield className="w-4 h-4 text-purple-600" />
+          <div className="mb-6 p-4 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] text-xs text-[#182638] dark:text-[#F1F5F9] space-y-1.5">
+            <div className="font-bold flex items-center gap-1.5 text-[#315D82] dark:text-[#6F9FC5]">
+              <Shield className="w-4 h-4" />
               <span>Statutory Compliance & Registration Guidance</span>
             </div>
-            <p className="leading-relaxed">
+            <p className="leading-relaxed text-[#526477] dark:text-[#B8C5D4]">
               Services are subject to eligibility, document verification, and applicable government rules. Government official fees and professional charges are separate, and customized work-based quotations are offered after initial document review.
             </p>
           </div>
         )}
 
         {activeTab === 'software' && (
-          <div className="mb-6 p-4 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 text-xs text-blue-900 dark:text-blue-200 space-y-1.5">
-            <div className="font-bold flex items-center gap-1.5">
-              <Code2 className="w-4 h-4 text-blue-600" />
+          <div className="mb-6 p-4 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] text-xs text-[#182638] dark:text-[#F1F5F9] space-y-1.5">
+            <div className="font-bold flex items-center gap-1.5 text-[#315D82] dark:text-[#6F9FC5]">
+              <Code2 className="w-4 h-4" />
               <span>Custom Software & Digital Solutions Quotation</span>
             </div>
-            <p className="leading-relaxed">
+            <p className="leading-relaxed text-[#526477] dark:text-[#B8C5D4]">
               Pricing is work-based upon project complexity, technical deliverables, and agreed milestones. Share your brief below to receive an architectural scope estimate.
             </p>
           </div>
@@ -404,7 +404,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           {/* Row 1: Full Name & Customer Type */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
+              <label className="block text-xs font-semibold text-[#182638] dark:text-[#F1F5F9] mb-1.5">
                 Full Name *
               </label>
               <input
@@ -412,21 +412,21 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="e.g. Ramesh Kumar"
-                className={`w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 dark:bg-[#070B18] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 ${
-                  errors.fullName ? 'border-rose-500 focus:ring-rose-500/20' : 'border-slate-200 dark:border-slate-800 focus:ring-[#0284C7]/20 focus:border-[#0284C7]'
+                className={`w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-[#F2F5F8] dark:bg-[#17263A] text-[#182638] dark:text-[#F1F5F9] placeholder-[#526477]/60 dark:placeholder-[#B8C5D4]/60 focus:outline-none focus:ring-2 ${
+                  errors.fullName ? 'border-rose-500 focus:ring-rose-500/20' : 'border-[#D5DEE8] dark:border-[#30445B] focus:ring-[#315D82]/20 focus:border-[#315D82]'
                 }`}
               />
               {errors.fullName && <p className="text-[11px] text-rose-500 mt-1">{errors.fullName}</p>}
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
+              <label className="block text-xs font-semibold text-[#182638] dark:text-[#F1F5F9] mb-1.5">
                 Customer Type
               </label>
               <select
                 value={customerType}
                 onChange={(e) => setCustomerType(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs sm:text-sm bg-slate-50 dark:bg-[#070B18] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0284C7]/20 focus:border-[#0284C7]"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5DEE8] dark:border-[#30445B] text-xs sm:text-sm bg-[#F2F5F8] dark:bg-[#17263A] text-[#182638] dark:text-[#F1F5F9] focus:outline-none focus:ring-2 focus:ring-[#315D82]/20 focus:border-[#315D82]"
               >
                 <option value="Business">Registered Business / Company</option>
                 <option value="Startup">Early-Stage Startup</option>
@@ -439,18 +439,18 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           {/* Row 2: Mobile Number & WhatsApp */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
+              <label className="block text-xs font-semibold text-[#182638] dark:text-[#F1F5F9] mb-1.5">
                 Mobile Number (Calling) *
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-2.5 text-xs text-slate-500 font-semibold">+91</span>
+                <span className="absolute left-3 top-2.5 text-xs text-[#526477] font-semibold">+91</span>
                 <input
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="98765 43210"
-                  className={`w-full pl-12 pr-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 dark:bg-[#070B18] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 ${
-                    errors.phone ? 'border-rose-500 focus:ring-rose-500/20' : 'border-slate-200 dark:border-slate-800 focus:ring-[#0284C7]/20 focus:border-[#0284C7]'
+                  className={`w-full pl-12 pr-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-[#F2F5F8] dark:bg-[#17263A] text-[#182638] dark:text-[#F1F5F9] placeholder-[#526477]/60 dark:placeholder-[#B8C5D4]/60 focus:outline-none focus:ring-2 ${
+                    errors.phone ? 'border-rose-500 focus:ring-rose-500/20' : 'border-[#D5DEE8] dark:border-[#30445B] focus:ring-[#315D82]/20 focus:border-[#315D82]'
                   }`}
                 />
               </div>
@@ -458,7 +458,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
+              <label className="block text-xs font-semibold text-[#182638] dark:text-[#F1F5F9] mb-1.5">
                 Email Address *
               </label>
               <input
@@ -466,8 +466,8 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@company.com"
-                className={`w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 dark:bg-[#070B18] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 ${
-                  errors.email ? 'border-rose-500 focus:ring-rose-500/20' : 'border-slate-200 dark:border-slate-800 focus:ring-[#0284C7]/20 focus:border-[#0284C7]'
+                className={`w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-[#F2F5F8] dark:bg-[#17263A] text-[#182638] dark:text-[#F1F5F9] placeholder-[#526477]/60 dark:placeholder-[#B8C5D4]/60 focus:outline-none focus:ring-2 ${
+                  errors.email ? 'border-rose-500 focus:ring-rose-500/20' : 'border-[#D5DEE8] dark:border-[#30445B] focus:ring-[#315D82]/20 focus:border-[#315D82]'
                 }`}
               />
               {errors.email && <p className="text-[11px] text-rose-500 mt-1">{errors.email}</p>}
@@ -481,26 +481,26 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
               id="sameAsPhone"
               checked={sameAsPhone}
               onChange={(e) => setSameAsPhone(e.target.checked)}
-              className="rounded text-[#0284C7] focus:ring-[#0284C7] cursor-pointer"
+              className="rounded text-[#315D82] focus:ring-[#315D82] cursor-pointer"
             />
-            <label htmlFor="sameAsPhone" className="text-xs text-slate-600 dark:text-slate-400 cursor-pointer">
+            <label htmlFor="sameAsPhone" className="text-xs text-[#526477] dark:text-[#B8C5D4] cursor-pointer">
               WhatsApp number is the same as calling number (+91 {phone || '...' })
             </label>
           </div>
 
           {!sameAsPhone && (
             <div>
-              <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
+              <label className="block text-xs font-semibold text-[#182638] dark:text-[#F1F5F9] mb-1.5">
                 WhatsApp Number
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-2.5 text-xs text-slate-500 font-semibold">+91</span>
+                <span className="absolute left-3 top-2.5 text-xs text-[#526477] font-semibold">+91</span>
                 <input
                   type="tel"
                   value={whatsappNumber}
                   onChange={(e) => setWhatsappNumber(e.target.value)}
                   placeholder="98765 43210"
-                  className="w-full pl-12 pr-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs sm:text-sm bg-slate-50 dark:bg-[#070B18] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0284C7]/20 focus:border-[#0284C7]"
+                  className="w-full pl-12 pr-3.5 py-2.5 rounded-xl border border-[#D5DEE8] dark:border-[#30445B] text-xs sm:text-sm bg-[#F2F5F8] dark:bg-[#17263A] text-[#182638] dark:text-[#F1F5F9] focus:outline-none focus:ring-2 focus:ring-[#315D82]/20 focus:border-[#315D82]"
                 />
               </div>
             </div>
@@ -508,13 +508,13 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
 
           {/* Row 3: Service Selection Dropdown */}
           <div>
-            <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
+            <label className="block text-xs font-semibold text-[#182638] dark:text-[#F1F5F9] mb-1.5">
               Select Specific Service *
             </label>
             <select
               value={selectedService}
               onChange={(e) => setSelectedService(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs sm:text-sm bg-slate-50 dark:bg-[#070B18] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0284C7]/20 focus:border-[#0284C7]"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5DEE8] dark:border-[#30445B] text-xs sm:text-sm bg-[#F2F5F8] dark:bg-[#17263A] text-[#182638] dark:text-[#F1F5F9] focus:outline-none focus:ring-2 focus:ring-[#315D82]/20 focus:border-[#315D82]"
             >
               {activeTab === 'software' &&
                 SOFTWARE_SERVICES.map((s) => (
@@ -550,7 +550,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
 
           {/* Row 4: Requirement Textarea */}
           <div>
-            <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
+            <label className="block text-xs font-semibold text-[#182638] dark:text-[#F1F5F9] mb-1.5">
               Requirement Details / Scope Overview *
             </label>
             <textarea
@@ -566,7 +566,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
                   ? 'Mention existing document details or corrections needed for your application...'
                   : 'How can we help your business achieve digital excellence?'
               }
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs sm:text-sm bg-slate-50 dark:bg-[#070B18] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0284C7]/20 focus:border-[#0284C7]"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5DEE8] dark:border-[#30445B] text-xs sm:text-sm bg-[#F2F5F8] dark:bg-[#17263A] text-[#182638] dark:text-[#F1F5F9] placeholder-[#526477]/60 dark:placeholder-[#B8C5D4]/60 focus:outline-none focus:ring-2 focus:ring-[#315D82]/20 focus:border-[#315D82]"
             />
           </div>
 
@@ -578,14 +578,14 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
                 id="consentCheck"
                 checked={consentAgreed}
                 onChange={(e) => setConsentAgreed(e.target.checked)}
-                className="mt-1 rounded text-[#6654E8] focus:ring-[#6654E8] cursor-pointer"
+                className="mt-1 rounded text-[#315D82] focus:ring-[#315D82] cursor-pointer"
               />
-              <label htmlFor="consentCheck" className="text-xs text-[#647087] dark:text-slate-400 leading-relaxed cursor-pointer">
+              <label htmlFor="consentCheck" className="text-xs text-[#526477] dark:text-[#B8C5D4] leading-relaxed cursor-pointer">
                 I agree to the{' '}
                 <button
                   type="button"
                   onClick={onNavigateToPrivacy}
-                  className="text-[#6654E8] dark:text-[#9689FF] underline hover:no-underline font-medium"
+                  className="text-[#315D82] dark:text-[#6F9FC5] underline hover:no-underline font-medium"
                 >
                   Privacy Policy
                 </button>{' '}
@@ -599,7 +599,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-3.5 px-6 rounded-xl cyber-button-primary disabled:opacity-50 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg cursor-pointer"
+            className="w-full py-3.5 px-6 rounded-xl cyber-button-primary disabled:opacity-50 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs cursor-pointer"
           >
             {isSubmitting ? (
               <>

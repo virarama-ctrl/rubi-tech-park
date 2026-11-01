@@ -16,24 +16,20 @@ export const ContactPage: React.FC<ContactPageProps> = ({
   const { t, language } = useLanguage();
 
   return (
-    <div className="relative futuristic-mesh-bg min-h-screen text-slate-900 dark:text-white transition-colors">
-      {/* Background Cyber Grid */}
-      <div className="absolute inset-0 cyber-grid opacity-20 dark:opacity-30 pointer-events-none -z-10" />
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#00D4FF]/10 blur-[130px] pointer-events-none -z-10" />
-
+    <div className="relative min-h-screen bg-[#E9EEF3] dark:bg-[#101B2C] text-[#182638] dark:text-[#F1F5F9] transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-16 relative z-10">
         {/* Header */}
         <div className="max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-[#0B1530] border border-slate-200 dark:border-[#00D4FF]/30 text-xs font-mono text-[#0284C7] dark:text-[#00D4FF] shadow-xs">
-            <Sparkles className="w-3.5 h-3.5 text-[#0284C7] dark:text-[#00D4FF]" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F2F5F8] dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] text-xs font-mono text-[#315D82] dark:text-[#6F9FC5] shadow-xs">
+            <Sparkles className="w-3.5 h-3.5 text-[#315D82] dark:text-[#6F9FC5]" />
             <span>{t.header.contact}</span>
-            <span aria-hidden="true" className="text-slate-400 dark:text-[#8292AA]">·</span>
+            <span aria-hidden="true" className="text-[#526477] dark:text-[#B8C5D4]">·</span>
             <span>{t.brand.name}</span>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-bold font-display text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-3xl sm:text-5xl font-bold font-display text-[#182638] dark:text-[#F1F5F9] tracking-tight">
             {t.contact.title}
           </h1>
-          <p className="text-base text-slate-600 dark:text-[#CBD5E1] leading-relaxed">
+          <p className="text-base text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
             {t.contact.subtitle}
           </p>
         </div>
@@ -41,23 +37,23 @@ export const ContactPage: React.FC<ContactPageProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           {/* Left Column: Direct Channels & Verified Contacts */}
           <div className="lg:col-span-4 space-y-6">
-            <div className="saas-card rounded-2xl p-6 sm:p-7 space-y-5 bg-white dark:bg-[#0B1530]/80 backdrop-blur-xl border border-slate-200 dark:border-[#00D4FF]/25 shadow-md dark:shadow-xl">
-              <h2 className="text-base font-bold font-display text-slate-900 dark:text-white flex items-center gap-2">
-                <Terminal className="w-4 h-4 text-[#0284C7] dark:text-[#00D4FF]" />
+            <div className="rounded-2xl p-6 sm:p-7 space-y-5 bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-sm">
+              <h2 className="text-base font-bold font-display text-[#182638] dark:text-[#F1F5F9] flex items-center gap-2">
+                <Terminal className="w-4 h-4 text-[#315D82] dark:text-[#6F9FC5]" />
                 <span>{t.contact.directChannels}</span>
               </h2>
 
-              <div className="space-y-4 text-xs text-slate-600 dark:text-[#CBD5E1]">
+              <div className="space-y-4 text-xs text-[#526477] dark:text-[#B8C5D4]">
                 {/* Phone */}
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-cyan-50 dark:bg-[#00D4FF]/10 border border-cyan-200 dark:border-[#00D4FF]/30 flex items-center justify-center text-[#0284C7] dark:text-[#00D4FF] shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] shrink-0">
                     <Phone className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="text-slate-500 dark:text-[#8292AA] block text-[11px] font-mono">{t.contact.phoneLabel}</span>
+                    <span className="text-[#526477] dark:text-[#B8C5D4] block text-[11px] font-mono">{t.contact.phoneLabel}</span>
                     <a
                       href={t.brand.phoneFormatted}
-                      className="font-semibold text-slate-900 dark:text-white hover:text-[#0284C7] dark:hover:text-[#00D4FF] transition-colors text-sm"
+                      className="font-semibold text-[#182638] dark:text-[#F1F5F9] hover:text-[#315D82] dark:hover:text-[#6F9FC5] transition-colors text-sm"
                     >
                       {t.brand.phone}
                     </a>
@@ -66,14 +62,14 @@ export const ContactPage: React.FC<ContactPageProps> = ({
 
                 {/* Email */}
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-[#356BFF]/10 border border-blue-200 dark:border-[#356BFF]/30 flex items-center justify-center text-blue-600 dark:text-[#356BFF] shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] shrink-0">
                     <Mail className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="text-slate-500 dark:text-[#8292AA] block text-[11px] font-mono">{t.contact.emailLabel}</span>
+                    <span className="text-[#526477] dark:text-[#B8C5D4] block text-[11px] font-mono">{t.contact.emailLabel}</span>
                     <a
                       href={`mailto:${t.brand.email}`}
-                      className="font-semibold text-slate-900 dark:text-white hover:text-[#0284C7] dark:hover:text-[#00D4FF] transition-colors text-sm"
+                      className="font-semibold text-[#182638] dark:text-[#F1F5F9] hover:text-[#315D82] dark:hover:text-[#6F9FC5] transition-colors text-sm"
                     >
                       {t.brand.email}
                     </a>
@@ -82,12 +78,12 @@ export const ContactPage: React.FC<ContactPageProps> = ({
 
                 {/* Location */}
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-[#00E5A3]/10 border border-emerald-200 dark:border-[#00E5A3]/30 flex items-center justify-center text-emerald-600 dark:text-[#00E5A3] shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] shrink-0">
                     <MapPin className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="text-slate-500 dark:text-[#8292AA] block text-[11px] font-mono">{t.contact.addressLabel}</span>
-                    <span className="font-medium text-slate-900 dark:text-white leading-relaxed block">
+                    <span className="text-[#526477] dark:text-[#B8C5D4] block text-[11px] font-mono">{t.contact.addressLabel}</span>
+                    <span className="font-medium text-[#182638] dark:text-[#F1F5F9] leading-relaxed block">
                       {t.brand.fullLocation}
                     </span>
                   </div>
@@ -95,12 +91,12 @@ export const ContactPage: React.FC<ContactPageProps> = ({
 
                 {/* Working Hours */}
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-purple-50 dark:bg-[#8057FF]/10 border border-purple-200 dark:border-[#8057FF]/30 flex items-center justify-center text-purple-600 dark:text-[#8057FF] shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] shrink-0">
                     <Clock className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="text-slate-500 dark:text-[#8292AA] block text-[11px] font-mono">{language === 'ta' ? 'பணி நேரம்' : 'Working Hours'}</span>
-                    <span className="font-medium text-slate-900 dark:text-white">
+                    <span className="text-[#526477] dark:text-[#B8C5D4] block text-[11px] font-mono">{language === 'ta' ? 'பணி நேரம்' : 'Working Hours'}</span>
+                    <span className="font-medium text-[#182638] dark:text-[#F1F5F9]">
                       {language === 'ta' ? 'திங்கள் – சனி: காலை 9:30 – இரவு 7:30 IST' : 'Monday – Saturday: 9:30 AM – 7:30 PM IST'}
                     </span>
                   </div>
@@ -108,12 +104,12 @@ export const ContactPage: React.FC<ContactPageProps> = ({
               </div>
 
               {/* Direct WhatsApp Callout */}
-              <div className="pt-4 border-t border-slate-200 dark:border-[#00D4FF]/15">
+              <div className="pt-4 border-t border-[#D5DEE8] dark:border-[#30445B]">
                 <a
                   href={`https://wa.me/${t.brand.whatsAppNumber}?text=${encodeURIComponent(t.whatsApp.prefilledMessage)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-2.5 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-600/20 dark:hover:bg-emerald-600/30 border border-emerald-300 dark:border-emerald-500/40 text-emerald-700 dark:text-[#00E5A3] font-semibold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                  className="w-full py-2.5 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 border border-emerald-300 dark:border-emerald-700/50 text-emerald-800 dark:text-emerald-300 font-semibold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
                 >
                   <MessageSquare className="w-4 h-4" />
                   <span>{t.contact.openWhatsAppBtn}</span>
@@ -123,12 +119,12 @@ export const ContactPage: React.FC<ContactPageProps> = ({
             </div>
 
             {/* Turnaround Transparency Pill Box */}
-            <div className="p-4 bg-slate-50 dark:bg-[#0B1530]/60 border border-slate-200 dark:border-[#00D4FF]/20 rounded-2xl text-xs text-slate-700 dark:text-[#CBD5E1] space-y-2">
-              <div className="flex items-center gap-2 font-semibold text-slate-900 dark:text-white">
-                <ShieldCheck className="w-4 h-4 text-[#0284C7] dark:text-[#00D4FF]" />
+            <div className="p-4 bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] rounded-2xl text-xs text-[#182638] dark:text-[#F1F5F9] space-y-2">
+              <div className="flex items-center gap-2 font-semibold text-[#182638] dark:text-[#F1F5F9]">
+                <ShieldCheck className="w-4 h-4 text-[#315D82] dark:text-[#6F9FC5]" />
                 <span>Response Time SLA: &lt; 2 Hours</span>
               </div>
-              <p className="text-[11px] text-slate-500 dark:text-[#8292AA] leading-relaxed">
+              <p className="text-[11px] text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
                 {language === 'ta'
                   ? 'அனைத்து வணிக வினவல்களும் எங்கள் முதன்மை மென்பொருள் பொறியாளர்களால் மதிப்பாய்வு செய்யப்பட்டு 2 வணிக மணிநேரத்திற்குள் பதிலளிக்கப்படும்.'
                   : 'All architectural inquiries and compliance requests are triaged directly by senior engineering leads within 2 business hours.'}
