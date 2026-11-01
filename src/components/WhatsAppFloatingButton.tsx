@@ -21,7 +21,7 @@ export const WhatsAppFloatingButton: React.FC = () => {
       {/* Floating Action Button */}
       <div className="fixed bottom-6 right-6 z-50 flex items-center group">
         {/* Tooltip */}
-        <div className="hidden sm:block mr-3 px-3 py-1.5 rounded-md bg-[#0B132B] text-[#F3DC87] text-xs font-medium border border-[#D4AF37]/40 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+        <div className="hidden sm:block mr-3 px-3 py-1.5 rounded-md bg-[#070B18]/95 text-[#CBD5E1] text-xs font-mono font-medium border border-[#00D4FF]/30 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
           {t.whatsApp.tooltip}
         </div>
 
@@ -37,7 +37,7 @@ export const WhatsAppFloatingButton: React.FC = () => {
       {/* Optional Direct Chat Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#0B132B] border border-[#D4AF37]/50 rounded-xl max-w-md w-full p-6 shadow-2xl relative">
+          <div className="bg-[#0B1530] border border-[#00D4FF]/30 rounded-xl max-w-md w-full p-6 shadow-2xl relative">
             <button
               onClick={() => setModalOpen(false)}
               className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-lg focus:outline-none cursor-pointer"
@@ -72,7 +72,7 @@ export const WhatsAppFloatingButton: React.FC = () => {
                 <div className="text-[11px] text-slate-400 mb-1">
                   {language === 'ta' ? 'முன்னமைக்கப்பட்ட செய்தி:' : 'Prefilled Message:'}
                 </div>
-                <div className="text-[11px] text-[#F3DC87] italic">"{defaultMessage}"</div>
+                <div className="text-[11px] text-[#00D4FF] font-mono italic">"{defaultMessage}"</div>
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-2">

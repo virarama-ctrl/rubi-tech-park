@@ -288,55 +288,55 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
   }
 
   return (
-    <div className="bg-white dark:bg-[#121829] border border-[#E5E9F2] dark:border-white/10 rounded-2xl shadow-xl overflow-hidden transition-colors">
+    <div className="bg-white dark:bg-[#0B1530]/90 backdrop-blur-xl border border-slate-200 dark:border-[#00D4FF]/25 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-2xl dark:shadow-black/80 overflow-hidden transition-colors">
       {/* 4 Dedicated Tabs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 bg-[#FAFBFF] dark:bg-[#172038] border-b border-[#E5E9F2] dark:border-white/10 text-xs font-semibold">
+      <div className="grid grid-cols-2 lg:grid-cols-4 bg-slate-50 dark:bg-[#070B18]/95 border-b border-slate-200 dark:border-[#00D4FF]/15 text-xs font-mono font-semibold">
         <button
           type="button"
           onClick={() => handleTabChange('general')}
-          className={`py-3.5 px-3 flex items-center justify-center gap-1.5 transition-colors border-b-2 ${
+          className={`py-3.5 px-3 flex items-center justify-center gap-1.5 transition-colors border-b-2 cursor-pointer ${
             activeTab === 'general'
-              ? 'border-[#6654E8] text-[#6654E8] dark:text-[#9689FF] bg-white dark:bg-[#121829]'
-              : 'border-transparent text-[#647087] dark:text-slate-400 hover:text-[#172033] dark:hover:text-white'
+              ? 'border-[#0284C7] dark:border-[#00D4FF] text-[#0284C7] dark:text-[#00D4FF] bg-white dark:bg-[#0B1530]'
+              : 'border-transparent text-slate-600 dark:text-[#CBD5E1] hover:text-slate-900 dark:hover:text-white'
           }`}
         >
           <HelpCircle className="w-4 h-4 shrink-0" />
-          <span className="truncate">General Enquiry</span>
+          <span className="truncate">General Discovery</span>
         </button>
 
         <button
           type="button"
           onClick={() => handleTabChange('software')}
-          className={`py-3.5 px-3 flex items-center justify-center gap-1.5 transition-colors border-b-2 ${
+          className={`py-3.5 px-3 flex items-center justify-center gap-1.5 transition-colors border-b-2 cursor-pointer ${
             activeTab === 'software'
-              ? 'border-[#6654E8] text-[#6654E8] dark:text-[#9689FF] bg-white dark:bg-[#121829]'
-              : 'border-transparent text-[#647087] dark:text-slate-400 hover:text-[#172033] dark:hover:text-white'
+              ? 'border-[#0284C7] dark:border-[#00D4FF] text-[#0284C7] dark:text-[#00D4FF] bg-white dark:bg-[#0B1530]'
+              : 'border-transparent text-slate-600 dark:text-[#CBD5E1] hover:text-slate-900 dark:hover:text-white'
           }`}
         >
           <Code2 className="w-4 h-4 shrink-0" />
-          <span className="truncate">Software Project</span>
+          <span className="truncate">Software Architecture</span>
         </button>
 
         <button
           type="button"
           onClick={() => handleTabChange('compliance')}
-          className={`py-3.5 px-3 flex items-center justify-center gap-1.5 transition-colors border-b-2 ${
+          className={`py-3.5 px-3 flex items-center justify-center gap-1.5 transition-colors border-b-2 cursor-pointer ${
             activeTab === 'compliance'
-              ? 'border-[#6654E8] text-[#6654E8] dark:text-[#9689FF] bg-white dark:bg-[#121829]'
-              : 'border-transparent text-[#647087] dark:text-slate-400 hover:text-[#172033] dark:hover:text-white'
+              ? 'border-blue-600 dark:border-[#356BFF] text-blue-600 dark:text-[#356BFF] bg-white dark:bg-[#0B1530]'
+              : 'border-transparent text-slate-600 dark:text-[#CBD5E1] hover:text-slate-900 dark:hover:text-white'
           }`}
         >
           <Shield className="w-4 h-4 shrink-0" />
-          <span className="truncate">Statutory / GST</span>
+          <span className="truncate">Statutory / Compliance</span>
         </button>
 
         <button
           type="button"
           onClick={() => handleTabChange('eservice')}
-          className={`py-3.5 px-3 flex items-center justify-center gap-1.5 transition-colors border-b-2 ${
+          className={`py-3.5 px-3 flex items-center justify-center gap-1.5 transition-colors border-b-2 cursor-pointer ${
             activeTab === 'eservice'
-              ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400 bg-white dark:bg-[#121829]'
-              : 'border-transparent text-[#647087] dark:text-slate-400 hover:text-[#172033] dark:hover:text-white'
+              ? 'border-emerald-600 dark:border-[#00E5A3] text-emerald-700 dark:text-[#00E5A3] bg-white dark:bg-[#0B1530]'
+              : 'border-transparent text-slate-600 dark:text-[#CBD5E1] hover:text-slate-900 dark:hover:text-white'
           }`}
         >
           <FileText className="w-4 h-4 shrink-0" />
@@ -404,7 +404,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           {/* Row 1: Full Name & Customer Type */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-[#172033] dark:text-slate-200 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
                 Full Name *
               </label>
               <input
@@ -412,21 +412,21 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="e.g. Ramesh Kumar"
-                className={`w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-[#FAFBFF] dark:bg-[#172038] text-[#172033] dark:text-white placeholder-[#647087]/50 focus:outline-none focus:ring-2 ${
-                  errors.fullName ? 'border-rose-500 focus:ring-rose-500/20' : 'border-[#E5E9F2] dark:border-white/10 focus:ring-[#6654E8]/20 focus:border-[#6654E8]'
+                className={`w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 dark:bg-[#070B18] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 ${
+                  errors.fullName ? 'border-rose-500 focus:ring-rose-500/20' : 'border-slate-200 dark:border-slate-800 focus:ring-[#0284C7]/20 focus:border-[#0284C7]'
                 }`}
               />
               {errors.fullName && <p className="text-[11px] text-rose-500 mt-1">{errors.fullName}</p>}
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-[#172033] dark:text-slate-200 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
                 Customer Type
               </label>
               <select
                 value={customerType}
                 onChange={(e) => setCustomerType(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E9F2] dark:border-white/10 text-xs sm:text-sm bg-[#FAFBFF] dark:bg-[#172038] text-[#172033] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6654E8]/20 focus:border-[#6654E8]"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs sm:text-sm bg-slate-50 dark:bg-[#070B18] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0284C7]/20 focus:border-[#0284C7]"
               >
                 <option value="Business">Registered Business / Company</option>
                 <option value="Startup">Early-Stage Startup</option>
@@ -439,18 +439,18 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           {/* Row 2: Mobile Number & WhatsApp */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-[#172033] dark:text-slate-200 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
                 Mobile Number (Calling) *
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-2.5 text-xs text-[#647087] font-semibold">+91</span>
+                <span className="absolute left-3 top-2.5 text-xs text-slate-500 font-semibold">+91</span>
                 <input
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="98765 43210"
-                  className={`w-full pl-12 pr-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-[#FAFBFF] dark:bg-[#172038] text-[#172033] dark:text-white placeholder-[#647087]/50 focus:outline-none focus:ring-2 ${
-                    errors.phone ? 'border-rose-500 focus:ring-rose-500/20' : 'border-[#E5E9F2] dark:border-white/10 focus:ring-[#6654E8]/20 focus:border-[#6654E8]'
+                  className={`w-full pl-12 pr-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 dark:bg-[#070B18] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 ${
+                    errors.phone ? 'border-rose-500 focus:ring-rose-500/20' : 'border-slate-200 dark:border-slate-800 focus:ring-[#0284C7]/20 focus:border-[#0284C7]'
                   }`}
                 />
               </div>
@@ -458,7 +458,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-[#172033] dark:text-slate-200 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
                 Email Address *
               </label>
               <input
@@ -466,8 +466,8 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@company.com"
-                className={`w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-[#FAFBFF] dark:bg-[#172038] text-[#172033] dark:text-white placeholder-[#647087]/50 focus:outline-none focus:ring-2 ${
-                  errors.email ? 'border-rose-500 focus:ring-rose-500/20' : 'border-[#E5E9F2] dark:border-white/10 focus:ring-[#6654E8]/20 focus:border-[#6654E8]'
+                className={`w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-slate-50 dark:bg-[#070B18] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 ${
+                  errors.email ? 'border-rose-500 focus:ring-rose-500/20' : 'border-slate-200 dark:border-slate-800 focus:ring-[#0284C7]/20 focus:border-[#0284C7]'
                 }`}
               />
               {errors.email && <p className="text-[11px] text-rose-500 mt-1">{errors.email}</p>}
@@ -481,26 +481,26 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
               id="sameAsPhone"
               checked={sameAsPhone}
               onChange={(e) => setSameAsPhone(e.target.checked)}
-              className="rounded text-[#6654E8] focus:ring-[#6654E8] cursor-pointer"
+              className="rounded text-[#0284C7] focus:ring-[#0284C7] cursor-pointer"
             />
-            <label htmlFor="sameAsPhone" className="text-xs text-[#647087] dark:text-slate-400 cursor-pointer">
+            <label htmlFor="sameAsPhone" className="text-xs text-slate-600 dark:text-slate-400 cursor-pointer">
               WhatsApp number is the same as calling number (+91 {phone || '...' })
             </label>
           </div>
 
           {!sameAsPhone && (
             <div>
-              <label className="block text-xs font-semibold text-[#172033] dark:text-slate-200 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
                 WhatsApp Number
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-2.5 text-xs text-[#647087] font-semibold">+91</span>
+                <span className="absolute left-3 top-2.5 text-xs text-slate-500 font-semibold">+91</span>
                 <input
                   type="tel"
                   value={whatsappNumber}
                   onChange={(e) => setWhatsappNumber(e.target.value)}
                   placeholder="98765 43210"
-                  className="w-full pl-12 pr-3.5 py-2.5 rounded-xl border border-[#E5E9F2] dark:border-white/10 text-xs sm:text-sm bg-[#FAFBFF] dark:bg-[#172038] text-[#172033] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6654E8]/20 focus:border-[#6654E8]"
+                  className="w-full pl-12 pr-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs sm:text-sm bg-slate-50 dark:bg-[#070B18] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0284C7]/20 focus:border-[#0284C7]"
                 />
               </div>
             </div>
@@ -508,13 +508,13 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
 
           {/* Row 3: Service Selection Dropdown */}
           <div>
-            <label className="block text-xs font-semibold text-[#172033] dark:text-slate-200 mb-1.5">
+            <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
               Select Specific Service *
             </label>
             <select
               value={selectedService}
               onChange={(e) => setSelectedService(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E9F2] dark:border-white/10 text-xs sm:text-sm bg-[#FAFBFF] dark:bg-[#172038] text-[#172033] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6654E8]/20 focus:border-[#6654E8]"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs sm:text-sm bg-slate-50 dark:bg-[#070B18] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0284C7]/20 focus:border-[#0284C7]"
             >
               {activeTab === 'software' &&
                 SOFTWARE_SERVICES.map((s) => (
@@ -550,7 +550,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
 
           {/* Row 4: Requirement Textarea */}
           <div>
-            <label className="block text-xs font-semibold text-[#172033] dark:text-slate-200 mb-1.5">
+            <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
               Requirement Details / Scope Overview *
             </label>
             <textarea
@@ -566,7 +566,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
                   ? 'Mention existing document details or corrections needed for your application...'
                   : 'How can we help your business achieve digital excellence?'
               }
-              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E9F2] dark:border-white/10 text-xs sm:text-sm bg-[#FAFBFF] dark:bg-[#172038] text-[#172033] dark:text-white placeholder-[#647087]/50 focus:outline-none focus:ring-2 focus:ring-[#6654E8]/20 focus:border-[#6654E8]"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs sm:text-sm bg-slate-50 dark:bg-[#070B18] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0284C7]/20 focus:border-[#0284C7]"
             />
           </div>
 
@@ -599,7 +599,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#6654E8] via-[#5542E5] to-[#4388FF] hover:opacity-95 disabled:opacity-50 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer"
+            className="w-full py-3.5 px-6 rounded-xl cyber-button-primary disabled:opacity-50 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg cursor-pointer"
           >
             {isSubmitting ? (
               <>

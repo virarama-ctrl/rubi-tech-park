@@ -19,10 +19,13 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (stored === 'light' || stored === 'dark') {
         return stored;
       }
+      if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        return 'light';
+      }
     } catch {
       // LocalStorage unavailable
     }
-    return 'light'; // Default to Light Mode as requested by user
+    return 'dark'; // Default to Futuristic Midnight Navy Dark Mode
   });
 
   const applyThemeToDOM = (newTheme: Theme) => {

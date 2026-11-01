@@ -280,7 +280,7 @@ function AppContent() {
   const isAdminDashboard = currentRoute === 'admin-dashboard';
 
   return (
-    <div className="min-h-screen bg-[var(--theme-bg-main)] text-[var(--theme-text-primary)] flex flex-col font-sans selection:bg-[#D4AF37]/25 selection:text-[#F3DC87] transition-colors duration-200">
+    <div className="min-h-screen bg-[var(--theme-bg-main)] text-[var(--theme-text-primary)] flex flex-col font-sans selection:bg-[#00D4FF]/30 selection:text-white transition-colors duration-200">
       {/* Top Header with official logo, language switcher, and theme toggle */}
       {!isAdminDashboard && <Header currentRoute={currentRoute} onNavigate={navigateTo} />}
 

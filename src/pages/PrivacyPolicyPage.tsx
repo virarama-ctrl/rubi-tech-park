@@ -21,8 +21,8 @@ export const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = ({ onNavigate
       </button>
 
       <div className="space-y-3 pb-6 border-b border-slate-800">
-        <div className="flex items-center gap-2 text-xs font-semibold text-[#E5C158] uppercase tracking-wider">
-          <Shield className="w-4 h-4 text-[#D4AF37]" />
+        <div className="flex items-center gap-2 text-xs font-semibold text-[#00D4FF] uppercase tracking-wider">
+          <Shield className="w-4 h-4 text-[#00D4FF]" />
           <span>{t.footer.legalHeading}</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-bold font-display text-white">

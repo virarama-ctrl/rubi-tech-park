@@ -12,12 +12,12 @@ export const NotFoundPage: React.FC<NotFoundPageProps> = ({ onNavigate }) => {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-24 text-center space-y-6">
-      <div className="w-16 h-16 rounded-2xl bg-[#0B132B] border border-[#D4AF37]/30 flex items-center justify-center text-[#E5C158] mx-auto shadow-xl">
+      <div className="w-16 h-16 rounded-2xl bg-[#0B1530] border border-[#00D4FF]/30 flex items-center justify-center text-[#00D4FF] mx-auto shadow-[0_0_25px_rgba(0,212,255,0.15)]">
         <Compass className="w-8 h-8" />
       </div>
 
       <div className="space-y-2">
-        <div className="text-xs font-mono text-[#D4AF37] uppercase tracking-wider">
+        <div className="text-xs font-mono text-[#00D4FF] uppercase tracking-wider">
           {language === 'ta' ? 'பிழை 404 · பக்கம் கிடைக்கவில்லை' : 'Error 404 · Page Not Found'}
         </div>
         <h1 className="text-3xl sm:text-4xl font-bold font-display text-white">
@@ -33,7 +33,7 @@ export const NotFoundPage: React.FC<NotFoundPageProps> = ({ onNavigate }) => {
       <div className="pt-4 flex flex-wrap items-center justify-center gap-3">
         <button
           onClick={() => onNavigate('home')}
-          className="px-6 py-3 bg-[#D4AF37] hover:bg-[#E5C158] text-[#070B14] font-semibold text-xs rounded-lg transition-colors flex items-center gap-2 shadow cursor-pointer"
+          className="cyber-button-primary px-6 py-3 font-semibold text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer text-white"
         >
           <Home className="w-4 h-4" />
           <span>{language === 'ta' ? 'முகப்பு பக்கத்திற்கு செல்ல' : 'Return to Home'}</span>
@@ -41,14 +41,14 @@ export const NotFoundPage: React.FC<NotFoundPageProps> = ({ onNavigate }) => {
 
         <button
           onClick={() => onNavigate('services')}
-          className="px-5 py-3 text-xs font-medium text-slate-300 hover:text-white bg-[#0B132B] border border-slate-700 hover:border-slate-500 rounded-lg transition-colors cursor-pointer"
+          className="cyber-button-secondary px-5 py-3 text-xs font-medium text-slate-300 hover:text-white rounded-xl transition-all cursor-pointer"
         >
           {t.header.services}
         </button>
 
         <button
           onClick={() => onNavigate('contact')}
-          className="px-5 py-3 text-xs font-medium text-slate-300 hover:text-white bg-[#0B132B] border border-slate-700 hover:border-slate-500 rounded-lg transition-colors cursor-pointer"
+          className="cyber-button-secondary px-5 py-3 text-xs font-medium text-slate-300 hover:text-white rounded-xl transition-all cursor-pointer"
         >
           {t.header.contact}
         </button>

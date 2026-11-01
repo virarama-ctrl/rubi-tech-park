@@ -8,62 +8,80 @@
     --font-display: 'Outfit', 'Noto Sans Tamil', 'Plus Jakarta Sans', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
 
-    /* Primary Palette - Premium Light Mode (Default) */
-    --theme-bg-main: #FAFBFF;
-    --theme-bg-surface: #FFFFFF;
-    --theme-bg-secondary: #F3F0FF;
-    --theme-bg-soft-blue: #EAF3FF;
-    --theme-bg-light-aqua: #E5FAF7;
-    --theme-bg-pale-pink: #FFF0F5;
-    
-    --theme-brand-purple: #6654E8;
-    --theme-brand-purple-hover: #5542D9;
-    --theme-accent-blue: #4388FF;
-    --theme-accent-mint: #35C9B0;
-    
-    --theme-text-primary: #172033;
-    --theme-text-secondary: #647087;
-    --theme-text-muted: #8F9BB3;
-    
-    --theme-border-card: #E5E9F2;
-    --theme-border-subtle: #EEF2F6;
-    --theme-border-focus: rgba(102, 84, 232, 0.4);
-    
-    --theme-card-shadow: 0 10px 30px -5px rgba(23, 32, 51, 0.05), 0 4px 12px -2px rgba(23, 32, 51, 0.03);
-    --theme-card-shadow-hover: 0 20px 40px -10px rgba(102, 84, 232, 0.12), 0 8px 20px -4px rgba(67, 136, 255, 0.08);
+    /* Futuristic Technology Color System (Default & Dark) */
+    --theme-bg-main: #070B18; /* Midnight Navy */
+    --theme-bg-secondary: #0B1530; /* Deep Blue */
+    --theme-bg-surface: #0E1A3C;
+    --theme-bg-glass: rgba(11, 21, 48, 0.72);
+    --theme-bg-glass-hover: rgba(14, 26, 60, 0.85);
 
-    /* Metallic Gold & Ruby branding accents */
-    --theme-gold-accent: #B8860B;
-    --theme-ruby-accent: #DC2626;
+    /* Accents */
+    --theme-accent-cyan: #00D4FF; /* Electric Cyan */
+    --theme-accent-royal: #356BFF; /* Royal Blue */
+    --theme-accent-violet: #8057FF; /* Violet */
+    --theme-accent-emerald: #00E5A3;
+
+    /* Text */
+    --theme-text-primary: #FFFFFF;
+    --theme-text-secondary: #CBD5E1; /* Cool Light Grey */
+    --theme-text-muted: #8292AA;
+
+    /* Technical Borders & Highlights */
+    --theme-border-card: rgba(0, 212, 255, 0.15);
+    --theme-border-subtle: rgba(53, 107, 255, 0.12);
+    --theme-border-glow: rgba(0, 212, 255, 0.4);
+
+    --theme-card-shadow: 0 12px 36px -8px rgba(0, 0, 0, 0.65), 0 0 1px 1px rgba(0, 212, 255, 0.08);
+    --theme-card-shadow-hover: 0 20px 48px -10px rgba(0, 212, 255, 0.16), 0 0 20px -2px rgba(53, 107, 255, 0.22);
   }
 
-  html.dark {
-    /* Primary Palette - Obsidian Luxury Dark Mode */
-    --theme-bg-main: #0B0F19;
-    --theme-bg-surface: #121829;
-    --theme-bg-secondary: #172038;
-    --theme-bg-soft-blue: #162444;
-    --theme-bg-light-aqua: #0E292E;
-    --theme-bg-pale-pink: #24142B;
-    
-    --theme-brand-purple: #8172F8;
-    --theme-brand-purple-hover: #9689FF;
-    --theme-accent-blue: #60A5FA;
-    --theme-accent-mint: #34D399;
-    
-    --theme-text-primary: #F8FAFC;
-    --theme-text-secondary: #94A3B8;
-    --theme-text-muted: #64748B;
-    
-    --theme-border-card: rgba(255, 255, 255, 0.1);
-    --theme-border-subtle: rgba(255, 255, 255, 0.06);
-    --theme-border-focus: rgba(129, 114, 248, 0.5);
-    
-    --theme-card-shadow: 0 10px 35px -5px rgba(0, 0, 0, 0.5);
-    --theme-card-shadow-hover: 0 20px 45px -8px rgba(0, 0, 0, 0.7), 0 0 25px -4px rgba(129, 114, 248, 0.2);
+  html.dark, html {
+    --theme-bg-main: #070B18;
+    --theme-bg-secondary: #0B1530;
+    --theme-bg-surface: #0E1A3C;
+    --theme-bg-glass: rgba(11, 21, 48, 0.72);
+    --theme-bg-glass-hover: rgba(14, 26, 60, 0.85);
 
-    --theme-gold-accent: #D4AF37;
-    --theme-ruby-accent: #EF4444;
+    --theme-accent-cyan: #00D4FF;
+    --theme-accent-royal: #356BFF;
+    --theme-accent-violet: #8057FF;
+    --theme-accent-emerald: #00E5A3;
+
+    --theme-text-primary: #FFFFFF;
+    --theme-text-secondary: #CBD5E1;
+    --theme-text-muted: #8292AA;
+
+    --theme-border-card: rgba(0, 212, 255, 0.15);
+    --theme-border-subtle: rgba(53, 107, 255, 0.12);
+    --theme-border-glow: rgba(0, 212, 255, 0.4);
+
+    --theme-card-shadow: 0 12px 36px -8px rgba(0, 0, 0, 0.65), 0 0 1px 1px rgba(0, 212, 255, 0.08);
+    --theme-card-shadow-hover: 0 20px 48px -10px rgba(0, 212, 255, 0.16), 0 0 20px -2px rgba(53, 107, 255, 0.22);
+  }
+
+  /* Explicit light theme support: clean white and light blue-grey, deep navy text, royal blue & electric cyan accents */
+  html.light {
+    --theme-bg-main: #FFFFFF;
+    --theme-bg-secondary: #F8FAFC;
+    --theme-bg-surface: #FFFFFF;
+    --theme-bg-glass: rgba(255, 255, 255, 0.92);
+    --theme-bg-glass-hover: #F8FAFC;
+
+    --theme-accent-cyan: #0284C7;
+    --theme-accent-royal: #2563EB;
+    --theme-accent-violet: #7C3AED;
+    --theme-accent-emerald: #059669;
+
+    --theme-text-primary: #0B1530; /* Deep Navy */
+    --theme-text-secondary: #334155; /* Slate 700 - high contrast (>7:1) */
+    --theme-text-muted: #64748B; /* Slate 500 */
+
+    --theme-border-card: rgba(37, 99, 235, 0.12);
+    --theme-border-subtle: rgba(2, 132, 199, 0.1);
+    --theme-border-glow: rgba(2, 132, 199, 0.35);
+
+    --theme-card-shadow: 0 8px 24px -4px rgba(11, 21, 48, 0.06), 0 1px 2px rgba(11, 21, 48, 0.04);
+    --theme-card-shadow-hover: 0 16px 36px -8px rgba(37, 99, 235, 0.12), 0 0 12px rgba(2, 132, 199, 0.1);
   }
 
   body {
@@ -92,137 +110,284 @@
   transform-style: preserve-3d;
 }
 
-/* Glassmorphism & SaaS Card Styles */
-.saas-card {
-  background-color: var(--theme-bg-surface);
-  border: 1px solid var(--theme-border-card);
+/* ===================================================================
+   FUTURISTIC BACKGROUNDS & VISUAL GRID INFRASTRUCTURE
+   =================================================================== */
+
+/* Fine Technical Grid Lines */
+.cyber-grid {
+  background-size: 48px 48px;
+  background-image: 
+    linear-gradient(to right, rgba(0, 212, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 212, 255, 0.04) 1px, transparent 1px);
+}
+
+html.light .cyber-grid {
+  background-size: 48px 48px;
+  background-image: 
+    linear-gradient(to right, rgba(37, 99, 235, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(37, 99, 235, 0.05) 1px, transparent 1px);
+}
+
+.cyber-grid-dense {
+  background-size: 24px 24px;
+  background-image: 
+    linear-gradient(to right, rgba(53, 107, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(53, 107, 255, 0.05) 1px, transparent 1px);
+}
+
+html.light .cyber-grid-dense {
+  background-size: 24px 24px;
+  background-image: 
+    linear-gradient(to right, rgba(37, 99, 235, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(37, 99, 235, 0.07) 1px, transparent 1px);
+}
+
+/* Layered Deep Navy & Blue Gradient Mesh */
+.futuristic-mesh-bg {
+  background-color: #070B18;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(53, 107, 255, 0.18), transparent 70%),
+    radial-gradient(circle at 10% 25%, rgba(0, 212, 255, 0.12), transparent 45%),
+    radial-gradient(circle at 90% 40%, rgba(128, 87, 255, 0.11), transparent 50%),
+    radial-gradient(ellipse 60% 40% at 50% 90%, rgba(11, 21, 48, 0.9), transparent 80%),
+    linear-gradient(180deg, #070B18 0%, #0B1530 50%, #070B18 100%);
+}
+
+html.light .futuristic-mesh-bg {
+  background-color: #FFFFFF;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(37, 99, 235, 0.07), transparent 70%),
+    radial-gradient(circle at 10% 25%, rgba(2, 132, 199, 0.05), transparent 45%),
+    radial-gradient(circle at 90% 40%, rgba(124, 58, 237, 0.04), transparent 50%),
+    radial-gradient(ellipse 60% 40% at 50% 90%, rgba(241, 245, 249, 0.8), transparent 80%),
+    linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 50%, #F1F5F9 100%);
+}
+
+.ambient-mesh-light {
+  background-color: #070B18;
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(0, 212, 255, 0.09) 0%, transparent 40%),
+    radial-gradient(circle at 85% 30%, rgba(128, 87, 255, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 50% 75%, rgba(53, 107, 255, 0.07) 0%, transparent 50%);
+}
+
+html.light .ambient-mesh-light {
+  background-color: #F8FAFC;
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(2, 132, 199, 0.06) 0%, transparent 40%),
+    radial-gradient(circle at 85% 30%, rgba(124, 58, 237, 0.05) 0%, transparent 45%),
+    radial-gradient(circle at 50% 75%, rgba(37, 99, 235, 0.05) 0%, transparent 50%);
+}
+
+/* Subtle Circuit Traces Pattern */
+.circuit-overlay {
+  background-image: radial-gradient(rgba(0, 212, 255, 0.15) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+html.light .circuit-overlay {
+  background-image: radial-gradient(rgba(37, 99, 235, 0.12) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* ===================================================================
+   GLASSMORPHISM & SURFACES (DUAL THEME)
+   =================================================================== */
+
+.saas-card, .gold-card {
+  background-color: rgba(11, 21, 48, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 212, 255, 0.14);
   border-radius: 1rem;
-  box-shadow: var(--theme-card-shadow);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 12px 36px -8px rgba(0, 0, 0, 0.65), 0 0 1px 1px rgba(0, 212, 255, 0.06);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.light .saas-card, html.light .gold-card {
+  background-color: #FFFFFF;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(37, 99, 235, 0.12);
+  box-shadow: 0 8px 24px -4px rgba(11, 21, 48, 0.06), 0 1px 2px rgba(11, 21, 48, 0.04);
 }
 
 .saas-card-glass {
-  background-color: rgba(255, 255, 255, 0.85);
+  background-color: rgba(11, 21, 48, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 212, 255, 0.18);
+  border-radius: 1rem;
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.7), 0 0 20px -5px rgba(0, 212, 255, 0.08);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.light .saas-card-glass {
+  background-color: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--theme-border-card);
-  border-radius: 1rem;
-  box-shadow: var(--theme-card-shadow);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  box-shadow: 0 12px 32px -6px rgba(11, 21, 48, 0.08), 0 0 15px -3px rgba(2, 132, 199, 0.08);
 }
 
-html.dark .saas-card-glass {
-  background-color: rgba(18, 24, 41, 0.82);
-  border-color: rgba(255, 255, 255, 0.08);
+.saas-card-hover, .gold-card-hover {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease;
 }
 
-.saas-card-hover {
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
-}
-
-.saas-card-hover:hover {
+.saas-card-hover:hover, .gold-card-hover:hover {
   transform: translateY(-3px);
-  box-shadow: var(--theme-card-shadow-hover);
-  border-color: rgba(102, 84, 232, 0.35);
+  box-shadow: 0 20px 48px -10px rgba(0, 212, 255, 0.18), 0 0 25px -4px rgba(53, 107, 255, 0.25);
+  border-color: rgba(0, 212, 255, 0.45);
 }
 
-html.dark .saas-card-hover:hover {
-  border-color: rgba(129, 114, 248, 0.4);
-}
-
-/* Backward compatibility for gold-card class */
-.gold-card {
-  background-color: var(--theme-bg-surface);
-  border: 1px solid var(--theme-border-card);
-  border-radius: 1rem;
-  box-shadow: var(--theme-card-shadow);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.gold-card-hover {
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
-}
-
-.gold-card-hover:hover {
+html.light .saas-card-hover:hover, html.light .gold-card-hover:hover {
   transform: translateY(-3px);
-  box-shadow: var(--theme-card-shadow-hover);
-  border-color: rgba(102, 84, 232, 0.35);
+  box-shadow: 0 18px 36px -8px rgba(37, 99, 235, 0.14), 0 0 16px -2px rgba(2, 132, 199, 0.15);
+  border-color: rgba(37, 99, 235, 0.35);
 }
 
-html.dark .gold-card-hover:hover {
-  border-color: rgba(129, 114, 248, 0.4);
-}
+/* ===================================================================
+   GRADIENT TYPOGRAPHY & BUTTONS
+   =================================================================== */
 
-/* Brand Purple & Gold Gradient Accents */
+/* Electric Cyan + Royal Blue + Violet Gradient Text */
 .brand-gradient-text {
-  background: linear-gradient(135deg, #6654E8 0%, #4388FF 60%, #35C9B0 100%);
+  background: linear-gradient(135deg, #FFFFFF 0%, #00D4FF 50%, #8057FF 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-html.dark .brand-gradient-text {
-  background: linear-gradient(135deg, #9689FF 0%, #60A5FA 60%, #34D399 100%);
+html.light .brand-gradient-text {
+  background: linear-gradient(135deg, #0B1530 0%, #0284C7 50%, #7C3AED 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.cyan-gradient-text {
+  background: linear-gradient(135deg, #E0F8FF 0%, #00D4FF 60%, #356BFF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+html.light .cyan-gradient-text {
+  background: linear-gradient(135deg, #0B1530 0%, #0284C7 60%, #2563EB 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .gold-gradient-text {
-  background: linear-gradient(135deg, #8B6508 0%, #B8860B 50%, #D4AF37 100%);
+  background: linear-gradient(135deg, #FFFFFF 0%, #00D4FF 50%, #356BFF 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-html.dark .gold-gradient-text {
-  background: linear-gradient(135deg, #FFF0BD 0%, #D4AF37 50%, #AA820A 100%);
+html.light .gold-gradient-text {
+  background: linear-gradient(135deg, #0B1530 0%, #0284C7 50%, #2563EB 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.brand-gradient-button {
-  background: linear-gradient(135deg, #6654E8 0%, #5240E0 100%);
+/* Primary Electric Cyan -> Royal Blue CTA Button */
+.brand-gradient-button, .cyber-button-primary {
+  background: linear-gradient(135deg, #00D4FF 0%, #356BFF 100%);
   color: #FFFFFF;
-  box-shadow: 0 4px 14px 0 rgba(102, 84, 232, 0.35);
-  transition: all 0.2s ease;
+  font-weight: 600;
+  box-shadow: 0 4px 18px 0 rgba(0, 212, 255, 0.35);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
-.brand-gradient-button:hover {
-  background: linear-gradient(135deg, #5844E2 0%, #4230D0 100%);
-  box-shadow: 0 6px 20px 0 rgba(102, 84, 232, 0.45);
-  transform: translateY(-1px);
+.brand-gradient-button:hover, .cyber-button-primary:hover {
+  background: linear-gradient(135deg, #2CE0FF 0%, #4B7CFF 100%);
+  box-shadow: 0 6px 26px 0 rgba(0, 212, 255, 0.55), 0 0 15px rgba(53, 107, 255, 0.4);
+  transform: translateY(-1.5px);
 }
 
-.brand-gradient-button:active {
+.brand-gradient-button:active, .cyber-button-primary:active {
   transform: translateY(0);
 }
 
-/* Ambient Ambient Glow Mesh Backgrounds */
-.ambient-mesh-light {
-  background-image: 
-    radial-gradient(circle at 10% 20%, rgba(243, 240, 255, 0.8) 0%, transparent 40%),
-    radial-gradient(circle at 90% 15%, rgba(234, 243, 255, 0.7) 0%, transparent 45%),
-    radial-gradient(circle at 50% 80%, rgba(229, 250, 247, 0.6) 0%, transparent 50%),
-    radial-gradient(circle at 80% 85%, rgba(255, 240, 245, 0.6) 0%, transparent 45%);
+/* Secondary Glassmorphism Tech Button */
+.cyber-button-secondary {
+  background: rgba(11, 21, 48, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #FFFFFF;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-html.dark .ambient-mesh-light {
-  background-image: 
-    radial-gradient(circle at 10% 20%, rgba(102, 84, 232, 0.12) 0%, transparent 40%),
-    radial-gradient(circle at 90% 15%, rgba(67, 136, 255, 0.1) 0%, transparent 45%),
-    radial-gradient(circle at 50% 80%, rgba(53, 201, 176, 0.08) 0%, transparent 50%);
+.cyber-button-secondary:hover {
+  background: rgba(14, 26, 60, 0.9);
+  border-color: rgba(0, 212, 255, 0.7);
+  box-shadow: 0 6px 20px rgba(0, 212, 255, 0.2);
+  transform: translateY(-1px);
 }
 
-/* Subtle Animated Floating Animation */
-@keyframes floatSubtle {
+html.light .cyber-button-secondary {
+  background: #FFFFFF;
+  color: #0B1530;
+  border: 1px solid rgba(37, 99, 235, 0.22);
+  box-shadow: 0 2px 8px rgba(11, 21, 48, 0.05);
+}
+
+html.light .cyber-button-secondary:hover {
+  background: #F8FAFC;
+  border-color: rgba(37, 99, 235, 0.5);
+  color: #1D4ED8;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.12);
+}
+
+/* ===================================================================
+   TECHNICAL ANIMATIONS & DATA FLOW
+   =================================================================== */
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.85;
+    box-shadow: 0 0 12px rgba(0, 212, 255, 0.4);
+  }
+  50% {
+    opacity: 0.4;
+    box-shadow: 0 0 4px rgba(0, 212, 255, 0.2);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2.5s ease-in-out infinite;
+}
+
+@keyframes dataFlow {
+  0% {
+    stroke-dashoffset: 100;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-data-flow {
+  stroke-dasharray: 8 12;
+  animation: dataFlow 4s linear infinite;
+}
+
+@keyframes nodeFloat {
   0%, 100% {
     transform: translateY(0px) rotate(0deg);
   }
   50% {
-    transform: translateY(-8px) rotate(0.4deg);
+    transform: translateY(-6px) rotate(0.5deg);
   }
 }
 
+.animate-node-float {
+  animation: nodeFloat 5s ease-in-out infinite;
+}
+
 .animate-float-subtle {
-  animation: floatSubtle 6s ease-in-out infinite;
+  animation: nodeFloat 6s ease-in-out infinite;
 }
 
 @keyframes pulseMint {
@@ -240,14 +405,30 @@ html.dark .ambient-mesh-light {
   animation: pulseMint 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Ensure Logo container remains framed and distinctive */
+/* Emblem Logo Container with Cybernetic Frame */
 .rtp-logo-container {
-  background-color: #000000;
-  border: 1px solid rgba(212, 175, 55, 0.6);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  background: #070B18;
+  border: 1px solid rgba(0, 212, 255, 0.4);
+  box-shadow: 0 0 14px rgba(0, 212, 255, 0.15);
 }
 
-/* Printable Area for Receipts */
+html.light .rtp-logo-container {
+  background: #FFFFFF;
+  border: 1px solid rgba(37, 99, 235, 0.25);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+}
+
+/* Accessibility: Respect Reduced Motion Preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Printable Area */
 @media print {
   body {
     background-color: #FFFFFF !important;

@@ -86,7 +86,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
         width: 240,
         margin: 2,
         color: {
-          dark: '#070B14',
+          dark: '#070B18',
           light: '#FFFFFF'
         }
       })
@@ -254,25 +254,25 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   // -------------------------------------------------------------
   if (currentOrder && currentOrder.status === 'paid') {
     return (
-      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto">
-        <div className="printable-area gold-card rounded-2xl p-6 sm:p-10 border border-emerald-500/30">
-          <div className="flex items-center justify-between border-b border-slate-700/60 pb-6 mb-6">
+      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto text-slate-900 dark:text-white transition-colors">
+        <div className="printable-area saas-card rounded-2xl p-6 sm:p-10 border border-emerald-500/30 bg-white dark:bg-[#0B1530]/85 shadow-lg">
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700/60 pb-6 mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/40">
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-300 dark:border-emerald-500/40">
                 <Check className="w-7 h-7" />
               </div>
               <div>
-                <span className="text-xs font-semibold uppercase tracking-wider text-emerald-400">
+                <span className="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                   {t.checkout.paymentReceipt}
                 </span>
-                <h1 className="text-2xl font-bold font-display text-white">
+                <h1 className="text-2xl font-bold font-display text-slate-900 dark:text-white">
                   {t.checkout.paymentSuccessful}
                 </h1>
               </div>
             </div>
             <div className="text-right hidden sm:block">
-              <div className="text-xs text-slate-400">{t.checkout.orderReference}</div>
-              <div className="font-mono text-sm font-bold text-[#F3DC87]">
+              <div className="text-xs text-slate-500 dark:text-slate-400">{t.checkout.orderReference}</div>
+              <div className="font-mono text-sm font-bold text-[#0284C7] dark:text-[#00D4FF]">
                 {currentOrder.orderRef}
               </div>
             </div>
@@ -280,14 +280,14 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
           {/* Receipt Breakdown Table */}
           <div className="space-y-4 text-sm">
-            <div className="grid grid-cols-2 gap-4 pb-4 border-b border-slate-800">
+            <div className="grid grid-cols-2 gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
               <div>
-                <span className="text-xs text-slate-400 block">{t.checkout.serviceName}</span>
-                <span className="font-semibold text-white">{currentOrder.serviceTitle}</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 block">{t.checkout.serviceName}</span>
+                <span className="font-semibold text-slate-900 dark:text-white">{currentOrder.serviceTitle}</span>
               </div>
               <div>
-                <span className="text-xs text-slate-400 block">{t.checkout.fullName}</span>
-                <span className="font-semibold text-white">{currentOrder.customerName}</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 block">{t.checkout.fullName}</span>
+                <span className="font-semibold text-slate-900 dark:text-white">{currentOrder.customerName}</span>
               </div>
             </div>
 
@@ -307,7 +307,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 <span className="text-xs text-slate-400 block">
                   {language === 'ta' ? 'ரசீது எண்' : 'Receipt No'}
                 </span>
-                <span className="font-mono text-sm text-[#F3DC87]">
+                <span className="font-mono text-sm text-[#00D4FF]">
                   {currentOrder.receiptNumber || 'RTP-REC-VERIFIED'}
                 </span>
               </div>
@@ -335,7 +335,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
               </div>
               <div className="flex justify-between text-base font-bold text-white pt-2 border-t border-slate-800">
                 <span>{t.checkout.amountPayable}</span>
-                <span className="text-[#F3DC87] text-lg font-mono">
+                <span className="text-[#00D4FF] text-lg font-mono">
                   ₹{currentOrder.totalAmountINR.toLocaleString('en-IN')}
                 </span>
               </div>
@@ -363,7 +363,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
             </button>
             <button
               onClick={handlePrintReceipt}
-              className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-gradient-to-r from-[#F3DC87] via-[#E5C158] to-[#D4AF37] text-[#070B14] font-semibold text-sm shadow hover:from-[#FFF0BD] cursor-pointer flex items-center justify-center gap-2 active:scale-98"
+              className="w-full sm:w-auto px-6 py-2.5 rounded-xl cyber-button-primary text-white font-semibold text-sm shadow cursor-pointer flex items-center justify-center gap-2 active:scale-98"
             >
               <Printer className="w-4 h-4" />
               <span>{t.checkout.printReceipt}</span>
@@ -378,13 +378,13 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   if (currentOrder && currentOrder.status === 'pending_verification') {
     return (
       <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto">
-        <div className="gold-card rounded-2xl p-6 sm:p-10 border border-amber-500/30">
+        <div className="saas-card rounded-2xl p-6 sm:p-10 border border-[#00D4FF]/30">
           <div className="flex items-center gap-3 border-b border-slate-700/60 pb-6 mb-6">
-            <div className="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/40">
+            <div className="w-12 h-12 rounded-xl bg-[#00D4FF]/10 text-[#00D4FF] flex items-center justify-center border border-[#00D4FF]/30 shadow-[0_0_15px_rgba(0,212,255,0.2)]">
               <Clock className="w-7 h-7" />
             </div>
             <div>
-              <span className="text-xs font-semibold uppercase tracking-wider text-amber-400">
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#00D4FF]">
                 {t.checkout.paymentPending}
               </span>
               <h1 className="text-2xl font-bold font-display text-white">
@@ -394,16 +394,16 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
           </div>
 
           <div className="space-y-4 text-sm text-slate-300">
-            <div className="p-4 rounded-xl bg-[#0B132B] border border-slate-800">
+            <div className="p-4 rounded-xl bg-[#0B1530] border border-[#00D4FF]/20">
               <div className="flex justify-between items-center pb-2 border-b border-slate-800">
                 <span className="text-xs text-slate-400">{t.checkout.orderReference}</span>
-                <span className="font-mono font-bold text-[#F3DC87]">
+                <span className="font-mono font-bold text-[#00D4FF]">
                   {currentOrder.orderRef}
                 </span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-slate-800">
                 <span className="text-xs text-slate-400">{t.checkout.transactionId}</span>
-                <span className="font-mono text-amber-300 font-semibold">
+                <span className="font-mono text-[#00D4FF] font-semibold">
                   {currentOrder.upiTransactionRef}
                 </span>
               </div>
@@ -415,8 +415,8 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-amber-950/20 border border-amber-500/30 text-amber-200 text-xs leading-relaxed space-y-2">
-              <p className="font-semibold">{t.checkout.manualVerificationNotice}</p>
+            <div className="p-4 rounded-xl bg-[#0B1530]/80 border border-[#00D4FF]/20 text-slate-300 text-xs leading-relaxed space-y-2">
+              <p className="font-semibold text-white">{t.checkout.manualVerificationNotice}</p>
               <p>
                 {language === 'ta'
                   ? 'உங்கள் UTR குறிப்பு எண் கணினி பதிவில் வைக்கப்பட்டுள்ளது. வணிக நேரங்களில் 15-30 நிமிடங்களில் சரிபார்க்கப்படும். உதவி தேவைப்பட்டால் உங்கள் ஆர்டர் குறிப்பு எண்ணுடன் எங்கள் வாட்ஸ்அப் எண்ணிற்குச் செய்தி அனுப்பலாம்.'
@@ -454,7 +454,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   if (currentOrder && currentOrder.status === 'failed') {
     return (
       <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 max-w-2xl mx-auto">
-        <div className="gold-card rounded-2xl p-6 sm:p-10 border border-rose-500/30">
+        <div className="saas-card rounded-2xl p-6 sm:p-10 border border-rose-500/30">
           <div className="flex items-center gap-3 border-b border-slate-700/60 pb-6 mb-6">
             <div className="w-12 h-12 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center border border-rose-500/40">
               <AlertCircle className="w-7 h-7" />
@@ -478,14 +478,14 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
           <div className="flex flex-col sm:flex-row gap-4">
             <button
               onClick={handleResetCheckout}
-              className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-gradient-to-r from-[#F3DC87] to-[#D4AF37] text-[#070B14] font-semibold text-sm flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-6 py-2.5 rounded-xl cyber-button-primary text-white font-semibold text-sm flex items-center justify-center gap-2 cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
               <span>{t.checkout.retryPayment}</span>
             </button>
             <button
               onClick={() => onNavigate('contact')}
-              className="w-full sm:w-auto px-5 py-2.5 rounded-lg border border-slate-700 text-sm font-semibold text-slate-300 hover:text-white"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-slate-700 text-sm font-semibold text-slate-300 hover:text-white"
             >
               {language === 'ta' ? 'உதவி பெறவும்' : 'Get Help'}
             </button>
@@ -499,25 +499,25 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   // Render: Main Checkout View
   // -------------------------------------------------------------
   return (
-    <div className="min-h-screen py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div className="min-h-screen py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-slate-900 dark:text-white transition-colors">
       {/* Header Breadcrumb / Title */}
       <div className="mb-8">
         <button
           onClick={() => onNavigate('pricing')}
-          className="text-xs font-semibold text-[#F3DC87] hover:underline flex items-center gap-1.5 mb-2 cursor-pointer"
+          className="text-xs font-semibold text-[#0284C7] dark:text-[#00D4FF] hover:underline flex items-center gap-1.5 mb-2 cursor-pointer"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>{language === 'ta' ? 'விலைப்பட்டியலுக்குத் திரும்பு' : 'Back to Pricing'}</span>
         </button>
-        <h1 className="text-3xl sm:text-4xl font-bold font-display text-white">
+        <h1 className="text-3xl sm:text-4xl font-bold font-display text-slate-900 dark:text-white">
           {t.checkout.checkoutHeading}
         </h1>
-        <p className="mt-1 text-sm text-slate-400">{t.checkout.pageSubtitle}</p>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{t.checkout.pageSubtitle}</p>
       </div>
 
       {errorMessage && (
-        <div className="mb-6 p-4 rounded-xl bg-rose-950/40 border border-rose-500/40 text-rose-300 text-sm flex items-start gap-2.5">
-          <AlertCircle className="w-5 h-5 shrink-0 text-rose-400 mt-0.5" />
+        <div className="mb-6 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-500/40 text-rose-700 dark:text-rose-300 text-sm flex items-start gap-2.5">
+          <AlertCircle className="w-5 h-5 shrink-0 text-rose-600 dark:text-rose-400 mt-0.5" />
           <span>{errorMessage}</span>
         </div>
       )}
@@ -529,9 +529,9 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
         <div className="lg:col-span-7 space-y-6">
           {!currentOrder ? (
             /* STEP 1: Plan Selection & Customer Billing Details */
-            <form onSubmit={handleInitiateOrder} className="gold-card rounded-2xl p-6 sm:p-8 space-y-6">
+            <form onSubmit={handleInitiateOrder} className="saas-card rounded-2xl p-6 sm:p-8 space-y-6 border border-slate-200 dark:border-[#00D4FF]/20 bg-white dark:bg-[#0B1530]/80 shadow-md dark:shadow-xl">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#F3DC87] mb-2">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#0284C7] dark:text-[#00D4FF] mb-2">
                   1. {t.checkout.selectPackage}
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -542,83 +542,83 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                       onClick={() => setSelectedPlanId(item.id)}
                       className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
                         selectedPlanId === item.id
-                          ? 'border-[#D4AF37] bg-[#D4AF37]/10 ring-1 ring-[#D4AF37]'
-                          : 'border-slate-800 bg-[#070B14] hover:border-slate-600'
+                          ? 'border-[#0284C7] dark:border-[#00D4FF] bg-blue-50/70 dark:bg-[#00D4FF]/10 ring-1 ring-[#0284C7] dark:ring-[#00D4FF]'
+                          : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#070B18] hover:border-blue-300 dark:hover:border-[#00D4FF]/40'
                       }`}
                     >
                       <div className="flex justify-between items-start">
-                        <span className="font-semibold text-sm text-white">{item.name}</span>
-                        <span className="font-mono text-xs font-bold text-[#F3DC87]">
+                        <span className="font-semibold text-sm text-slate-900 dark:text-white">{item.name}</span>
+                        <span className="font-mono text-xs font-bold text-[#0284C7] dark:text-[#00D4FF]">
                           ₹{item.basePrice.toLocaleString('en-IN')}
                         </span>
                       </div>
-                      <p className="text-[11px] text-slate-400 mt-1 line-clamp-2">{item.description}</p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">{item.description}</p>
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* Customer Details */}
-              <div className="pt-4 border-t border-slate-800 space-y-4">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#F3DC87]">
+              <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-4">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#0284C7] dark:text-[#00D4FF]">
                   2. {t.checkout.customerDetails}
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs text-slate-400 mb-1">{t.checkout.fullName} *</label>
+                    <label className="block text-xs text-slate-600 dark:text-slate-400 mb-1">{t.checkout.fullName} *</label>
                     <div className="relative">
-                      <User className="w-4 h-4 absolute left-3 top-3 text-slate-500" />
+                      <User className="w-4 h-4 absolute left-3 top-3 text-slate-400 dark:text-slate-500" />
                       <input
                         type="text"
                         required
                         value={customerName}
                         onChange={(e) => setCustomerName(e.target.value)}
                         placeholder="e.g. Ramesh Kumar"
-                        className="w-full bg-[#070B14] border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                        className="w-full bg-slate-50 dark:bg-[#070B18] border border-slate-200 dark:border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0284C7] dark:focus:ring-[#00D4FF]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs text-slate-400 mb-1">{t.checkout.businessName}</label>
+                    <label className="block text-xs text-slate-600 dark:text-slate-400 mb-1">{t.checkout.businessName}</label>
                     <div className="relative">
-                      <Building2 className="w-4 h-4 absolute left-3 top-3 text-slate-500" />
+                      <Building2 className="w-4 h-4 absolute left-3 top-3 text-slate-400 dark:text-slate-500" />
                       <input
                         type="text"
                         value={customerBusiness}
                         onChange={(e) => setCustomerBusiness(e.target.value)}
                         placeholder="e.g. Sri Krishna Enterprises"
-                        className="w-full bg-[#070B14] border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                        className="w-full bg-slate-50 dark:bg-[#070B18] border border-slate-200 dark:border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0284C7] dark:focus:ring-[#00D4FF]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs text-slate-400 mb-1">{t.checkout.email} *</label>
+                    <label className="block text-xs text-slate-600 dark:text-slate-400 mb-1">{t.checkout.email} *</label>
                     <div className="relative">
-                      <Mail className="w-4 h-4 absolute left-3 top-3 text-slate-500" />
+                      <Mail className="w-4 h-4 absolute left-3 top-3 text-slate-400 dark:text-slate-500" />
                       <input
                         type="email"
                         required
                         value={customerEmail}
                         onChange={(e) => setCustomerEmail(e.target.value)}
                         placeholder="ramesh@company.in"
-                        className="w-full bg-[#070B14] border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                        className="w-full bg-slate-50 dark:bg-[#070B18] border border-slate-200 dark:border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0284C7] dark:focus:ring-[#00D4FF]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs text-slate-400 mb-1">{t.checkout.phone} *</label>
+                    <label className="block text-xs text-slate-600 dark:text-slate-400 mb-1">{t.checkout.phone} *</label>
                     <div className="relative">
-                      <Phone className="w-4 h-4 absolute left-3 top-3 text-slate-500" />
+                      <Phone className="w-4 h-4 absolute left-3 top-3 text-slate-400 dark:text-slate-500" />
                       <input
                         type="tel"
                         required
                         value={customerPhone}
                         onChange={(e) => setCustomerPhone(e.target.value)}
                         placeholder="+91 98765 43210"
-                        className="w-full bg-[#070B14] border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                        className="w-full bg-slate-50 dark:bg-[#070B18] border border-slate-200 dark:border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0284C7] dark:focus:ring-[#00D4FF]"
                       />
                     </div>
                   </div>
@@ -626,8 +626,8 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
               </div>
 
               {/* Payment Method Selector */}
-              <div className="pt-4 border-t border-slate-800">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#F3DC87] mb-2">
+              <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#0284C7] dark:text-[#00D4FF] mb-2">
                   3. {t.checkout.paymentMethod}
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
@@ -636,11 +636,11 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     onClick={() => setActiveMethod('upi_qr')}
                     className={`p-2.5 rounded-lg border text-center transition-all cursor-pointer ${
                       activeMethod === 'upi_qr'
-                        ? 'border-[#D4AF37] bg-[#D4AF37]/15 text-[#F3DC87] font-semibold'
-                        : 'border-slate-800 text-slate-300 hover:border-slate-700'
+                        ? 'border-[#0284C7] dark:border-[#00D4FF] bg-blue-50 dark:bg-[#00D4FF]/15 text-[#0284C7] dark:text-[#00D4FF] font-semibold'
+                        : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#070B18] text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700'
                     }`}
                   >
-                    <QrCode className="w-4 h-4 mx-auto mb-1 text-[#F3DC87]" />
+                    <QrCode className="w-4 h-4 mx-auto mb-1 text-[#0284C7] dark:text-[#00D4FF]" />
                     <span>{t.checkout.payWithUpi}</span>
                   </button>
 
@@ -649,11 +649,11 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     onClick={() => setActiveMethod('card')}
                     className={`p-2.5 rounded-lg border text-center transition-all cursor-pointer ${
                       activeMethod === 'card'
-                        ? 'border-[#D4AF37] bg-[#D4AF37]/15 text-[#F3DC87] font-semibold'
-                        : 'border-slate-800 text-slate-300 hover:border-slate-700'
+                        ? 'border-[#0284C7] dark:border-[#00D4FF] bg-blue-50 dark:bg-[#00D4FF]/15 text-[#0284C7] dark:text-[#00D4FF] font-semibold'
+                        : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#070B18] text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700'
                     }`}
                   >
-                    <CreditCard className="w-4 h-4 mx-auto mb-1 text-[#F3DC87]" />
+                    <CreditCard className="w-4 h-4 mx-auto mb-1 text-[#0284C7] dark:text-[#00D4FF]" />
                     <span>{t.checkout.debitCard} / {t.checkout.creditCard}</span>
                   </button>
 
@@ -662,11 +662,11 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     onClick={() => setActiveMethod('netbanking')}
                     className={`p-2.5 rounded-lg border text-center transition-all cursor-pointer ${
                       activeMethod === 'netbanking'
-                        ? 'border-[#D4AF37] bg-[#D4AF37]/15 text-[#F3DC87] font-semibold'
-                        : 'border-slate-800 text-slate-300 hover:border-slate-700'
+                        ? 'border-[#0284C7] dark:border-[#00D4FF] bg-blue-50 dark:bg-[#00D4FF]/15 text-[#0284C7] dark:text-[#00D4FF] font-semibold'
+                        : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#070B18] text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700'
                     }`}
                   >
-                    <Building2 className="w-4 h-4 mx-auto mb-1 text-[#F3DC87]" />
+                    <Building2 className="w-4 h-4 mx-auto mb-1 text-[#0284C7] dark:text-[#00D4FF]" />
                     <span>{t.checkout.netBanking}</span>
                   </button>
 
@@ -675,11 +675,11 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     onClick={() => setActiveMethod('upi_intent')}
                     className={`p-2.5 rounded-lg border text-center transition-all cursor-pointer ${
                       activeMethod === 'upi_intent'
-                        ? 'border-[#D4AF37] bg-[#D4AF37]/15 text-[#F3DC87] font-semibold'
-                        : 'border-slate-800 text-slate-300 hover:border-slate-700'
+                        ? 'border-[#0284C7] dark:border-[#00D4FF] bg-blue-50 dark:bg-[#00D4FF]/15 text-[#0284C7] dark:text-[#00D4FF] font-semibold'
+                        : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#070B18] text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700'
                     }`}
                   >
-                    <Sparkles className="w-4 h-4 mx-auto mb-1 text-[#F3DC87]" />
+                    <Sparkles className="w-4 h-4 mx-auto mb-1 text-[#0284C7] dark:text-[#00D4FF]" />
                     <span>GPay / PhonePe</span>
                   </button>
                 </div>
@@ -688,7 +688,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#F3DC87] via-[#E5C158] to-[#D4AF37] text-[#070B14] font-bold text-sm shadow-md hover:from-[#FFF0BD] transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-50"
+                className="w-full py-3.5 rounded-xl cyber-button-primary text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-50"
               >
                 <span>{isSubmitting ? '...' : t.checkout.payNow}</span>
                 <ArrowRight className="w-4 h-4" />
@@ -698,11 +698,11 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
             /* STEP 2: Active Order Settlement Screen */
             <div className="space-y-6">
               {/* Active Order Banner */}
-              <div className="gold-card rounded-2xl p-6 border border-[#D4AF37]/40">
+              <div className="saas-card rounded-2xl p-6 border border-[#00D4FF]/40">
                 <div className="flex items-center justify-between pb-4 border-b border-slate-800">
                   <div>
                     <span className="text-xs text-slate-400">{t.checkout.orderReference}</span>
-                    <div className="font-mono text-base font-bold text-[#F3DC87]">
+                    <div className="font-mono text-base font-bold text-[#00D4FF]">
                       {currentOrder.orderRef}
                     </div>
                   </div>
@@ -720,7 +720,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     onClick={() => setActiveMethod('upi_qr')}
                     className={`px-3 py-1.5 rounded-lg border font-semibold ${
                       activeMethod === 'upi_qr' || activeMethod === 'upi_intent'
-                        ? 'border-[#D4AF37] bg-[#D4AF37]/20 text-[#F3DC87]'
+                        ? 'border-[#00D4FF] bg-[#00D4FF]/20 text-[#00D4FF]'
                         : 'border-slate-800 text-slate-400'
                     }`}
                   >
@@ -730,7 +730,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     onClick={() => setActiveMethod('card')}
                     className={`px-3 py-1.5 rounded-lg border font-semibold ${
                       activeMethod === 'card'
-                        ? 'border-[#D4AF37] bg-[#D4AF37]/20 text-[#F3DC87]'
+                        ? 'border-[#00D4FF] bg-[#00D4FF]/20 text-[#00D4FF]'
                         : 'border-slate-800 text-slate-400'
                     }`}
                   >
@@ -740,7 +740,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     onClick={() => setActiveMethod('netbanking')}
                     className={`px-3 py-1.5 rounded-lg border font-semibold ${
                       activeMethod === 'netbanking'
-                        ? 'border-[#D4AF37] bg-[#D4AF37]/20 text-[#F3DC87]'
+                        ? 'border-[#00D4FF] bg-[#00D4FF]/20 text-[#00D4FF]'
                         : 'border-slate-800 text-slate-400'
                     }`}
                   >
@@ -751,9 +751,9 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
               {/* METHOD 1: Direct UPI QR Code & Business UPI ID */}
               {(activeMethod === 'upi_qr' || activeMethod === 'upi_intent') && (
-                <div className="gold-card rounded-2xl p-6 sm:p-8 space-y-6">
+                <div className="saas-card rounded-2xl p-6 sm:p-8 space-y-6 border border-[#00D4FF]/20">
                   <div className="text-center">
-                    <span className="text-xs font-semibold text-[#F3DC87] uppercase tracking-wider block mb-1">
+                    <span className="text-xs font-semibold text-[#00D4FF] uppercase tracking-wider block mb-1">
                       {t.checkout.scanQrCode}
                     </span>
                     <p className="text-xs text-slate-400 max-w-md mx-auto">
@@ -763,7 +763,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
                   {/* QR Code Card */}
                   <div className="flex flex-col items-center justify-center">
-                    <div className="p-3 bg-white rounded-xl shadow-lg border-2 border-[#D4AF37]/50">
+                    <div className="p-3 bg-white rounded-xl shadow-lg border-2 border-[#00D4FF]/50 shadow-[0_0_20px_rgba(0,212,255,0.2)]">
                       {upiQrDataUrl ? (
                         <img
                           src={upiQrDataUrl}
@@ -779,7 +779,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
                     <div className="mt-3 flex items-center gap-2">
                       <span className="text-xs text-slate-400">{t.checkout.businessUpiId}:</span>
-                      <code className="text-xs font-mono font-bold text-[#F3DC87] bg-black/60 px-2.5 py-1 rounded border border-slate-800">
+                      <code className="text-xs font-mono font-bold text-[#00D4FF] bg-black/60 px-2.5 py-1 rounded border border-slate-800">
                         {businessUpiId}
                       </code>
                       <button
@@ -797,7 +797,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   <div className="text-center pt-2">
                     <a
                       href={upiIntentUri}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0B132B] border border-[#D4AF37]/60 text-xs font-bold text-[#F3DC87] hover:bg-[#D4AF37]/15"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0B1530] border border-[#00D4FF]/60 text-xs font-bold text-[#00D4FF] hover:bg-[#00D4FF]/15 transition-all"
                     >
                       <Sparkles className="w-4 h-4" />
                       <span>{t.checkout.openInUpiApp}</span>
@@ -817,7 +817,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                           value={utrInput}
                           onChange={(e) => setUtrInput(e.target.value)}
                           placeholder={t.checkout.utrPlaceholder}
-                          className="w-full bg-[#070B14] border border-slate-800 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                          className="w-full bg-[#070B18] border border-slate-800 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:ring-2 focus:ring-[#00D4FF]"
                         />
                       </div>
 
@@ -835,9 +835,9 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
               {/* METHOD 2: Cards Gateway */}
               {activeMethod === 'card' && (
-                <div className="gold-card rounded-2xl p-6 sm:p-8 space-y-4">
+                <div className="saas-card rounded-2xl p-6 sm:p-8 space-y-4 border border-[#00D4FF]/20">
                   <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                    <CreditCard className="w-4 h-4 text-[#D4AF37]" />
+                    <CreditCard className="w-4 h-4 text-[#00D4FF]" />
                     <span>{t.checkout.debitCard} / {t.checkout.creditCard}</span>
                   </h3>
                   <div className="space-y-3 text-xs">
@@ -848,7 +848,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                         value={cardHolder}
                         onChange={(e) => setCardHolder(e.target.value)}
                         placeholder="Name on card"
-                        className="w-full bg-[#070B14] border border-slate-800 rounded-lg px-3 py-2 text-sm text-white"
+                        className="w-full bg-[#070B18] border border-slate-800 rounded-lg px-3 py-2 text-sm text-white"
                       />
                     </div>
                     <div>
@@ -859,7 +859,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                         value={cardNumber}
                         onChange={(e) => setCardNumber(e.target.value)}
                         placeholder="4111 2222 3333 4444"
-                        className="w-full bg-[#070B14] border border-slate-800 rounded-lg px-3 py-2 text-sm text-white font-mono"
+                        className="w-full bg-[#070B18] border border-slate-800 rounded-lg px-3 py-2 text-sm text-white font-mono"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-3">
@@ -871,7 +871,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                           value={cardExpiry}
                           onChange={(e) => setCardExpiry(e.target.value)}
                           placeholder="MM/YY"
-                          className="w-full bg-[#070B14] border border-slate-800 rounded-lg px-3 py-2 text-sm text-white"
+                          className="w-full bg-[#070B18] border border-slate-800 rounded-lg px-3 py-2 text-sm text-white"
                         />
                       </div>
                       <div>
@@ -882,7 +882,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                           value={cardCvv}
                           onChange={(e) => setCardCvv(e.target.value)}
                           placeholder="•••"
-                          className="w-full bg-[#070B14] border border-slate-800 rounded-lg px-3 py-2 text-sm text-white"
+                          className="w-full bg-[#070B18] border border-slate-800 rounded-lg px-3 py-2 text-sm text-white"
                         />
                       </div>
                     </div>
@@ -893,7 +893,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                       type="button"
                       onClick={() => handleSimulateGatewayPayment('paid')}
                       disabled={isSubmitting}
-                      className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#F3DC87] to-[#D4AF37] text-[#070B14] font-bold text-xs shadow cursor-pointer active:scale-98"
+                      className="flex-1 py-3 rounded-xl cyber-button-primary text-white font-bold text-xs shadow cursor-pointer active:scale-98"
                     >
                       {isSubmitting ? '...' : `Pay ₹${currentOrder.totalAmountINR.toLocaleString('en-IN')}`}
                     </button>
@@ -910,9 +910,9 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
               {/* METHOD 3: Net Banking */}
               {activeMethod === 'netbanking' && (
-                <div className="gold-card rounded-2xl p-6 sm:p-8 space-y-4">
+                <div className="saas-card rounded-2xl p-6 sm:p-8 space-y-4 border border-[#00D4FF]/20">
                   <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                    <Building2 className="w-4 h-4 text-[#D4AF37]" />
+                    <Building2 className="w-4 h-4 text-[#00D4FF]" />
                     <span>{t.checkout.netBanking}</span>
                   </h3>
                   <div>
@@ -920,7 +920,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     <select
                       value={selectedBank}
                       onChange={(e) => setSelectedBank(e.target.value)}
-                      className="w-full bg-[#070B14] border border-slate-800 rounded-lg px-3 py-2 text-sm text-white"
+                      className="w-full bg-[#070B18] border border-slate-800 rounded-lg px-3 py-2 text-sm text-white"
                     >
                       <option value="HDFC Bank">HDFC Bank</option>
                       <option value="State Bank of India">State Bank of India (SBI)</option>
@@ -935,7 +935,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     type="button"
                     onClick={() => handleSimulateGatewayPayment('paid')}
                     disabled={isSubmitting}
-                    className="w-full py-3 rounded-xl bg-gradient-to-r from-[#F3DC87] to-[#D4AF37] text-[#070B14] font-bold text-xs shadow cursor-pointer"
+                    className="w-full py-3 rounded-xl cyber-button-primary text-white font-bold text-xs shadow cursor-pointer"
                   >
                     Proceed to {selectedBank} Portal
                   </button>
@@ -955,38 +955,38 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
         {/* Right 5 Columns: Order Summary Card */}
         <div className="lg:col-span-5 sticky top-24">
-          <div className="gold-card rounded-2xl p-6 space-y-4">
-            <h2 className="text-base font-bold font-display text-white border-b border-slate-800 pb-3">
+          <div className="saas-card rounded-2xl p-6 space-y-4 border border-slate-200 dark:border-[#00D4FF]/20 bg-white dark:bg-[#0B1530]/80 shadow-md dark:shadow-xl">
+            <h2 className="text-base font-bold font-display text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-3">
               {language === 'ta' ? 'ஆர்டர் சுருக்கம்' : 'Order Summary'}
             </h2>
 
             <div className="space-y-3 text-xs">
               <div className="flex justify-between items-start">
                 <div>
-                  <span className="font-semibold text-white text-sm block">
+                  <span className="font-semibold text-slate-900 dark:text-white text-sm block">
                     {selectedPlan.name}
                   </span>
-                  <span className="text-slate-400 text-[11px] block mt-0.5">
+                  <span className="text-slate-500 dark:text-slate-400 text-[11px] block mt-0.5">
                     {selectedPlan.description}
                   </span>
                 </div>
-                <span className="font-mono font-bold text-white text-sm">
+                <span className="font-mono font-bold text-slate-900 dark:text-white text-sm">
                   ₹{basePrice.toLocaleString('en-IN')}
                 </span>
               </div>
 
-              <div className="pt-3 border-t border-slate-800/80 space-y-2">
-                <div className="flex justify-between text-slate-400">
+              <div className="pt-3 border-t border-slate-200 dark:border-slate-800/80 space-y-2">
+                <div className="flex justify-between text-slate-600 dark:text-slate-400">
                   <span>{t.checkout.basePrice}</span>
                   <span>₹{basePrice.toLocaleString('en-IN')}</span>
                 </div>
-                <div className="flex justify-between text-slate-400">
+                <div className="flex justify-between text-slate-600 dark:text-slate-400">
                   <span>{t.checkout.gstTax}</span>
                   <span>₹{gstTax.toLocaleString('en-IN')}</span>
                 </div>
-                <div className="flex justify-between text-sm font-bold text-white pt-2 border-t border-slate-800">
+                <div className="flex justify-between text-sm font-bold text-slate-900 dark:text-white pt-2 border-t border-slate-200 dark:border-slate-800">
                   <span>{t.checkout.amountPayable}</span>
-                  <span className="text-lg font-mono text-[#F3DC87]">
+                  <span className="text-lg font-mono text-[#0284C7] dark:text-[#00D4FF]">
                     ₹{totalAmount.toLocaleString('en-IN')}
                   </span>
                 </div>
@@ -994,8 +994,8 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
             </div>
 
             {/* Security Marker */}
-            <div className="pt-4 border-t border-slate-800 text-[11px] text-slate-400 space-y-2">
-              <div className="flex items-center gap-2 text-emerald-400 font-medium">
+            <div className="pt-4 border-t border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 space-y-2">
+              <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium">
                 <ShieldCheck className="w-4 h-4 shrink-0" />
                 <span>256-Bit SSL Encrypted Checkout</span>
               </div>

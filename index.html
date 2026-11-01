@@ -1,21 +1,30 @@
 <!doctype html>
-<html lang="ta" class="scroll-smooth light">
+<html lang="ta" class="scroll-smooth dark">
   <head>
     <meta charset="UTF-8" />
     <script>
       (function() {
         try {
           var t = localStorage.getItem('rtp_theme');
-          if (t === 'dark') {
-            document.documentElement.classList.remove('light');
-            document.documentElement.classList.add('dark');
-            document.documentElement.setAttribute('data-theme', 'dark');
-            document.documentElement.style.colorScheme = 'dark';
-          } else {
+          var isDark = true;
+          if (t === 'light') {
+            isDark = false;
+          } else if (t === 'dark') {
+            isDark = true;
+          } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            isDark = false;
+          }
+
+          if (!isDark) {
             document.documentElement.classList.remove('dark');
             document.documentElement.classList.add('light');
             document.documentElement.setAttribute('data-theme', 'light');
             document.documentElement.style.colorScheme = 'light';
+          } else {
+            document.documentElement.classList.remove('light');
+            document.documentElement.classList.add('dark');
+            document.documentElement.setAttribute('data-theme', 'dark');
+            document.documentElement.style.colorScheme = 'dark';
           }
         } catch(e) {}
 

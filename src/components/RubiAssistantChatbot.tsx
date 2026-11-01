@@ -222,38 +222,38 @@ export const RubiAssistantChatbot: React.FC = () => {
     <>
       {/* Floating Trigger Button */}
       <div className="fixed bottom-24 right-6 z-50 flex items-center group">
-        <div className="hidden sm:block mr-3 px-3 py-1.5 rounded-lg bg-slate-900/90 text-white text-xs font-medium border border-purple-500/40 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none backdrop-blur-md">
-          Chat with RUBI Assistant (Gemini AI)
+        <div className="hidden sm:block mr-3 px-3 py-1.5 rounded-lg bg-[#070B18]/95 text-white text-xs font-mono font-medium border border-[#00D4FF]/40 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none backdrop-blur-md">
+          Chat with RUBI Assistant (AI Systems)
         </div>
 
         <button
           onClick={() => setIsOpen((prev) => !prev)}
           aria-label="Open RUBI AI Assistant"
-          className="relative w-14 h-14 rounded-full bg-gradient-to-tr from-purple-600 via-indigo-600 to-blue-500 hover:from-purple-500 hover:to-blue-400 text-white flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all duration-200 border-2 border-purple-300/40 focus:outline-none focus:ring-4 focus:ring-purple-500/30 cursor-pointer"
+          className="relative w-14 h-14 rounded-full bg-gradient-to-tr from-[#00D4FF] via-[#356BFF] to-[#8057FF] hover:from-[#2CE0FF] hover:to-[#4B7CFF] text-white flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all duration-200 border-2 border-white/30 focus:outline-none focus:ring-4 focus:ring-[#00D4FF]/30 cursor-pointer shadow-[0_0_20px_rgba(0,212,255,0.4)]"
         >
           <Bot className="w-7 h-7" />
-          <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center animate-pulse" />
+          <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#00E5A3] border-2 border-[#070B18] flex items-center justify-center animate-pulse" />
         </button>
       </div>
 
       {/* Chat Window Modal */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 sm:bottom-24 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[420px] max-h-[85vh] sm:max-h-[640px] flex flex-col rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden animate-in slide-in-from-bottom-5 duration-200">
+        <div className="fixed bottom-6 right-6 sm:bottom-24 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[420px] max-h-[85vh] sm:max-h-[640px] flex flex-col rounded-2xl bg-white dark:bg-[#070B18]/95 border border-slate-200 dark:border-[#00D4FF]/30 shadow-2xl shadow-slate-400/30 dark:shadow-black/90 overflow-hidden animate-in slide-in-from-bottom-5 duration-200 backdrop-blur-2xl transition-colors">
           {/* Header */}
-          <div className="bg-gradient-to-r from-purple-700 via-indigo-700 to-blue-600 px-4 py-3.5 text-white flex items-center justify-between shadow-md">
+          <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 dark:from-[#070B18] dark:via-[#0B1530] dark:to-[#14234C] px-4 py-3.5 text-white flex items-center justify-between border-b border-blue-900/40 dark:border-[#00D4FF]/20">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white/20 border border-white/30 flex items-center justify-center text-white backdrop-blur-sm">
+              <div className="w-10 h-10 rounded-full bg-cyan-500/20 dark:bg-[#00D4FF]/10 border border-cyan-400/40 dark:border-[#00D4FF]/30 flex items-center justify-center text-cyan-300 dark:text-[#00D4FF] backdrop-blur-sm">
                 <Bot className="w-6 h-6" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-semibold text-sm tracking-wide">RUBI Assistant</h3>
-                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/30 border border-emerald-400/50 text-emerald-100 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-ping inline-block" />
+                  <h3 className="font-semibold text-sm tracking-wide text-white">RUBI Assistant</h3>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping inline-block" />
                     Online
                   </span>
                 </div>
-                <p className="text-xs text-purple-200">Software & Statutory Consultant</p>
+                <p className="text-xs text-slate-300 dark:text-[#CBD5E1]">Software Architecture & Compliance AI</p>
               </div>
             </div>
 
@@ -263,13 +263,13 @@ export const RubiAssistantChatbot: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Open WhatsApp Support"
-                className="p-1.5 text-purple-200 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                className="p-1.5 text-slate-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
               >
                 <MessageSquare className="w-4 h-4 text-emerald-300" />
               </a>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 text-purple-200 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                className="p-1.5 text-slate-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
                 aria-label="Close Chat"
               >
                 <X className="w-5 h-5" />
@@ -278,24 +278,24 @@ export const RubiAssistantChatbot: React.FC = () => {
           </div>
 
           {/* Quick Action Navigation Bar */}
-          <div className="bg-purple-50 dark:bg-slate-800/80 px-3 py-2 border-b border-purple-100 dark:border-slate-700/60 flex items-center gap-1.5 overflow-x-auto text-xs no-scrollbar">
+          <div className="bg-slate-100 dark:bg-[#0B1530] px-3 py-2 border-b border-slate-200 dark:border-[#00D4FF]/15 flex items-center gap-1.5 overflow-x-auto text-xs no-scrollbar">
             <button
               onClick={() => startLeadCapture('Software Development & Digital Solutions')}
-              className="px-2.5 py-1 rounded-full bg-purple-600 hover:bg-purple-700 text-white font-medium whitespace-nowrap shadow-xs transition-colors flex items-center gap-1"
+              className="px-2.5 py-1 rounded-full bg-white dark:bg-[#00D4FF]/15 border border-slate-200 dark:border-[#00D4FF]/30 hover:bg-slate-50 dark:hover:bg-[#00D4FF]/25 text-[#0284C7] dark:text-[#00D4FF] font-medium whitespace-nowrap shadow-xs transition-colors flex items-center gap-1 cursor-pointer"
             >
               <Code2 className="w-3 h-3" />
               Software Quote
             </button>
             <button
               onClick={() => startLeadCapture('Statutory & Compliance Services')}
-              className="px-2.5 py-1 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium whitespace-nowrap shadow-xs transition-colors flex items-center gap-1"
+              className="px-2.5 py-1 rounded-full bg-white dark:bg-[#356BFF]/15 border border-slate-200 dark:border-[#356BFF]/30 hover:bg-slate-50 dark:hover:bg-[#356BFF]/25 text-blue-600 dark:text-[#356BFF] font-medium whitespace-nowrap shadow-xs transition-colors flex items-center gap-1 cursor-pointer"
             >
               <Shield className="w-3 h-3" />
               GST / Compliance
             </button>
             <button
               onClick={() => startLeadCapture('E-Services (Citizen Services)')}
-              className="px-2.5 py-1 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium whitespace-nowrap shadow-xs transition-colors flex items-center gap-1"
+              className="px-2.5 py-1 rounded-full bg-white dark:bg-[#00E5A3]/15 border border-slate-200 dark:border-[#00E5A3]/30 hover:bg-slate-50 dark:hover:bg-[#00E5A3]/25 text-emerald-700 dark:text-[#00E5A3] font-medium whitespace-nowrap shadow-xs transition-colors flex items-center gap-1 cursor-pointer"
             >
               <FileText className="w-3 h-3" />
               E-Service (₹236)
@@ -303,7 +303,7 @@ export const RubiAssistantChatbot: React.FC = () => {
           </div>
 
           {/* Messages Body */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-slate-50/50 dark:bg-slate-900/50 text-sm">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-slate-50 dark:bg-[#070B18]/90 text-sm">
             {messages.map((m) => (
               <div
                 key={m.id}
@@ -312,8 +312,8 @@ export const RubiAssistantChatbot: React.FC = () => {
                 <div
                   className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 shadow-xs ${
                     m.sender === 'user'
-                      ? 'bg-purple-600 text-white rounded-br-none'
-                      : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700/70 rounded-bl-none'
+                      ? 'bg-gradient-to-r from-blue-600 to-[#0284C7] dark:from-[#00D4FF] dark:to-[#356BFF] text-white rounded-br-none font-medium'
+                      : 'bg-white dark:bg-[#0B1530] text-slate-800 dark:text-[#CBD5E1] border border-slate-200 dark:border-[#00D4FF]/20 rounded-bl-none shadow-xs'
                   }`}
                 >
                   <p className="whitespace-pre-line leading-relaxed text-xs sm:text-sm">{m.text}</p>
@@ -474,19 +474,19 @@ export const RubiAssistantChatbot: React.FC = () => {
           {/* Input Footer */}
           <form
             onSubmit={handleSubmit}
-            className="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2"
+            className="p-3 bg-white dark:bg-[#0B1530] border-t border-slate-200 dark:border-[#00D4FF]/20 flex items-center gap-2"
           >
             <input
               type="text"
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              placeholder="Ask about software, GST, or e-services..."
-              className="flex-1 px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+              placeholder="Ask about software architecture, CRM, or compliance..."
+              className="flex-1 px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-[#00D4FF]/25 bg-slate-50 dark:bg-[#070B18] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#8292AA] focus:outline-none focus:ring-2 focus:ring-[#0284C7]/40 dark:focus:ring-[#00D4FF]/50"
             />
             <button
               type="submit"
               disabled={!inputMessage.trim() || isLoading}
-              className="p-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 disabled:opacity-40 text-white shadow-md transition-colors cursor-pointer"
+              className="p-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-[#0284C7] dark:from-[#00D4FF] dark:to-[#356BFF] hover:opacity-90 disabled:opacity-40 text-white shadow-md transition-colors cursor-pointer"
               aria-label="Send message"
             >
               <Send className="w-4 h-4" />
