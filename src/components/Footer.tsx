@@ -1,7 +1,7 @@
 import React from 'react';
 import { PageRoute } from '../types';
 import { useLanguage } from '../context/LanguageContext';
-import { Mail, MapPin, Phone, ShieldCheck, ArrowRight, MessageSquare, CreditCard } from 'lucide-react';
+import { Mail, MapPin, Phone, ShieldCheck, ArrowRight, MessageSquare, CreditCard, Lock } from 'lucide-react';
 
 interface FooterProps {
   onNavigate: (route: PageRoute) => void;
@@ -166,6 +166,15 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   <span>{t.checkout.checkoutHeading} (UPI / Cards)</span>
                 </button>
               </li>
+              <li>
+                <button
+                  onClick={() => onNavigate('admin-login')}
+                  className="hover:text-[#6654E8] dark:hover:text-white transition-colors text-left cursor-pointer flex items-center gap-1.5 text-xs text-[#647087] dark:text-slate-400 pt-1"
+                >
+                  <Lock className="w-3.5 h-3.5 text-[#6654E8]" />
+                  <span>{language === 'ta' ? 'நிர்வாகி உள்நுழைவு' : 'Admin Login'}</span>
+                </button>
+              </li>
             </ul>
           </div>
 
@@ -203,9 +212,10 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <li>
                 <button
                   onClick={() => onNavigate('admin-login')}
-                  className="hover:text-[#6654E8] transition-colors text-left flex items-center gap-1 text-[11px] text-[#647087] dark:text-slate-400 pt-1 cursor-pointer"
+                  className="hover:text-[#6654E8] transition-colors text-left flex items-center gap-1.5 text-xs text-[#647087] dark:text-slate-400 pt-1 cursor-pointer font-medium"
                 >
-                  <span>{t.footer.adminCrm}</span>
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                  <span>{language === 'ta' ? 'நிர்வாகி உள்நுழைவு (CRM)' : 'Admin Login (Firebase CRM)'}</span>
                 </button>
               </li>
             </ul>
@@ -221,9 +231,19 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
 
         {/* Pricing disclaimer & copyright strip */}
         <div className="mt-12 pt-8 border-t border-[#E5E9F2] dark:border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#647087] dark:text-slate-400">
-          <p>
-            © {new Date().getFullYear()} RUBI TECH PARK. {t.footer.copyright}
-          </p>
+          <div className="flex items-center gap-4">
+            <p>
+              © {new Date().getFullYear()} RUBI TECH PARK. {t.footer.copyright}
+            </p>
+            <span className="text-slate-300 dark:text-slate-700">·</span>
+            <button
+              onClick={() => onNavigate('admin-login')}
+              className="text-[#647087] hover:text-[#6654E8] dark:hover:text-white transition-colors text-[11px] flex items-center gap-1 cursor-pointer"
+            >
+              <Lock className="w-3 h-3 text-slate-400" />
+              <span>{language === 'ta' ? 'நிர்வாக போர்டல்' : 'Admin Portal'}</span>
+            </button>
+          </div>
           <p className="text-[#647087] dark:text-slate-400 max-w-xl text-center md:text-right">
             {t.footer.pricingNote}
           </p>

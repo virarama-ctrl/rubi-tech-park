@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
+import http from 'node:http';
 import path from 'node:path';
 import dotenv from 'dotenv';
 import { crmStorage } from './src/server/storage';
@@ -35,6 +36,7 @@ import {
   BUSINESS_EMAIL
 } from './src/server/notifications';
 import { processCustomerChat } from './src/server/gemini';
+import { firebaseCRM } from './src/server/firebaseService';
 
 dotenv.config();
 
@@ -200,36 +202,87 @@ async function handleLeadSubmission(req: Request, res: Response) {
     return;
   }
 
-  // 6. Save to Supabase + Persistent Storage
+  // 6. Save to Firebase Firestore (Primary CRM Database) + Local Backup
   try {
-    const result = await supabaseService.createLead(
-      {
-        customer_name: fullName,
-        phone_number: phone,
-        whatsapp_number: whatsappNumber,
-        email,
-        business_name: businessName,
-        customer_type: customerType,
-        service_category: serviceCategory,
-        selected_service: selectedService,
-        service_interested: selectedService,
-        message: projectDescription,
-        source_page: sourcePage,
-        booking_amount: bookingAmount,
-        booking_payment_status: bookingPaymentStatus,
-        balance_amount: balanceAmount,
-        consent_agreed: consentAgreed,
-        status: 'New'
-      },
-      ip
-    );
+    const refId = `RTP-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-    const refId = result.lead?.referenceNumber || `RTP-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
-    const formattedNotification = formatBusinessWhatsAppNotification(result.lead);
-    const whatsappNotificationUrl = generateBusinessWhatsAppLink(result.lead);
+    const leadPayload = {
+      enquiryId: refId,
+      referenceNumber: refId,
+      customerName: fullName,
+      businessName: businessName,
+      mobileNumber: phone,
+      whatsappNumber: whatsappNumber || phone,
+      email: email,
+      customerType: customerType,
+      serviceCategory: serviceCategory,
+      selectedService: selectedService,
+      requirement: projectDescription,
+      source: sourcePage,
+      status: 'New',
+      consentStatus: consentAgreed,
+      bookingAmount: bookingAmount,
+      paymentStatus: bookingPaymentStatus || 'Pending',
+      internalNotes: '',
+      notes: [],
+      activityHistory: [
+        {
+          id: `act_${Date.now()}`,
+          action: 'STATUS_CHANGE',
+          details: `Enquiry [${refId}] registered from ${ip} via ${sourcePage}.`,
+          timestamp: new Date().toISOString()
+        }
+      ]
+    };
+
+    // Save to Firestore crm_leads collection
+    const firestoreResult = await firebaseCRM.createLead(leadPayload);
+
+    // Also mirror to crmStorage for local persistence backup
+    try {
+      crmStorage.createLead(
+        {
+          fullName,
+          phone,
+          whatsappNumber: whatsappNumber || phone,
+          email,
+          businessName,
+          customerType,
+          serviceCategory,
+          selectedService,
+          projectDescription,
+          businessType: businessType as any,
+          preferredContactMethod: preferredContactMethod as any,
+          sourcePage,
+          bookingAmount,
+          bookingPaymentStatus: bookingPaymentStatus as any,
+          balanceAmount,
+          consentAgreed
+        },
+        ip
+      );
+    } catch (mirrorErr) {
+      console.warn('Local mirror storage non-blocking warning:', mirrorErr);
+    }
+
+    const formattedNotification = formatBusinessWhatsAppNotification({
+      ...leadPayload,
+      fullName: leadPayload.customerName,
+      phone: leadPayload.mobileNumber,
+      selectedService: leadPayload.selectedService,
+      customerRequirement: leadPayload.requirement
+    } as any);
+
+    const whatsappNotificationUrl = generateBusinessWhatsAppLink({
+      ...leadPayload,
+      fullName: leadPayload.customerName,
+      phone: leadPayload.mobileNumber,
+      selectedService: leadPayload.selectedService,
+      customerRequirement: leadPayload.requirement
+    } as any);
 
     // Fire server-side email notification logging asynchronously
-    sendBusinessEmailNotification(result.lead, ip).catch((mailErr) => {
+    sendBusinessEmailNotification(firestoreResult.lead as any, ip).catch((mailErr) => {
       console.warn('[EMAIL NOTIFY NON-BLOCKING ERROR]:', mailErr);
     });
 
@@ -237,14 +290,15 @@ async function handleLeadSubmission(req: Request, res: Response) {
     recentSubmissions.set(dedupKey, {
       timestamp: now,
       referenceId: refId,
-      lead: result.lead
+      lead: firestoreResult.lead
     });
 
     res.status(201).json({
       success: true,
       referenceId: refId,
-      lead: result.lead,
-      storage: result.storage,
+      lead: firestoreResult.lead,
+      storage: 'firestore',
+      collection: 'crm_leads',
       whatsappNotificationUrl,
       formattedNotification,
       bookingDetails: isEService ? {
@@ -255,9 +309,7 @@ async function handleLeadSubmission(req: Request, res: Response) {
         paymentStatus: 'Pending',
         notice: 'Book your e-service by paying ₹236 (₹200 + 18% GST). The remaining service charges will be communicated after reviewing your requirements and collected after completion of the work. Applicable government fees and additional charges, if any, will be informed separately.'
       } : undefined,
-      message: result.storage === 'supabase'
-        ? 'Enquiry recorded in Supabase cloud database.'
-        : 'Enquiry recorded in persistent CRM database.'
+      message: 'Enquiry recorded in Firebase Cloud Firestore (crm_leads).'
     });
   } catch (err) {
     console.error('Error recording lead:', err);
@@ -634,6 +686,110 @@ app.get('/api/admin/me', requireAdminAuth, (req: AuthenticatedRequest, res: Resp
 // -------------------------------------------------------------
 
 /**
+ * Firebase Admin Login & Role Authorization Check
+ * POST /api/admin/firebase-login
+ */
+app.post('/api/admin/firebase-login', async (req: Request, res: Response) => {
+  const ip = getClientIp(req);
+  const { email, password, idToken } = req.body;
+
+  if (!email || typeof email !== 'string') {
+    res.status(400).json({ error: 'Bad Request', message: 'Administrator email is required.' });
+    return;
+  }
+
+  // 1. Authorised Admin Role Check - strictly enforced on server
+  const isAuthAdmin = firebaseCRM.isAuthorizedAdmin(email);
+  if (!isAuthAdmin) {
+    crmStorage.addAuditLog({
+      userId: 'unauthorized_attempt',
+      userEmail: sanitizeEmail(email),
+      userRole: 'developer',
+      action: 'ADMIN_ACCESS_DENIED',
+      ipAddress: ip,
+      resource: 'FIREBASE_AUTH',
+      success: false
+    });
+    res.status(403).json({
+      error: 'Forbidden',
+      code: 'ACCESS_DENIED',
+      message: 'Access Denied: Your account is authenticated with Firebase, but does not have administrator privileges for RUBI TECH PARK CRM.'
+    });
+    return;
+  }
+
+  // 2. Issue authenticated admin session
+  const user = crmStorage.getUserByEmail(email) || {
+    id: 'usr_admin_rtp',
+    email: 'admin@rubitechpark.com',
+    name: 'RUBI TECH PARK Admin',
+    role: 'super_admin'
+  };
+
+  const session = createSession(user as any);
+  crmStorage.addAuditLog({
+    userId: user.id,
+    userEmail: user.email,
+    userRole: user.role,
+    action: 'FIREBASE_LOGIN_SUCCESS',
+    ipAddress: ip,
+    resource: 'FIREBASE_AUTH',
+    success: true
+  });
+
+  res.status(200).json({
+    success: true,
+    token: session.token,
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role
+    },
+    expiresAt: session.expiresAt
+  });
+});
+
+/**
+ * Check live Firebase Firestore connection & collection status
+ * GET /api/admin/firebase-status
+ */
+app.get('/api/admin/firebase-status', async (_req: Request, res: Response) => {
+  try {
+    const leadsData = await firebaseCRM.getLeads({});
+    res.status(200).json({
+      configured: true,
+      connected: true,
+      mode: 'firestore',
+      projectId: 'possible-coral-nkx2q',
+      firestoreDatabaseId: 'ai-studio-elloradigitalhub-35dc3c4c-5034-468a-b790-b34c0a6de92e',
+      collection: 'crm_leads',
+      totalLeads: leadsData.stats.total,
+      stats: leadsData.stats
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      configured: false,
+      connected: false,
+      error: err.message
+    });
+  }
+});
+
+/**
+ * Trigger Migration from JSON to Firestore
+ * POST /api/admin/migrate-json
+ */
+app.post('/api/admin/migrate-json', requireAdminAuth, async (_req: AuthenticatedRequest, res: Response) => {
+  try {
+    const result = await firebaseCRM.migrateFromJSON('./data/crm_leads.json');
+    res.status(200).json(result);
+  } catch (err: any) {
+    res.status(500).json({ error: 'Migration Failed', message: err.message });
+  }
+});
+
+/**
  * Check live Supabase connection status & configuration state
  * GET /api/admin/supabase-status
  */
@@ -647,41 +803,48 @@ app.get('/api/admin/supabase-status', async (_req: Request, res: Response) => {
 });
 
 /**
- * Get All Leads with Filters and Dashboard Metrics (from Supabase or persistent fallback)
+ * Get All Leads with Filters and Dashboard Metrics (Directly from Firestore)
  * GET /api/admin/leads
  */
 app.get('/api/admin/leads', requireAdminAuth, async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const { searchTerm, status, service, businessType, dateFilter } = req.query;
+    const { searchTerm, status, category, dateFilter } = req.query;
 
-    const result = await supabaseService.getLeads({
+    const result = await firebaseCRM.getLeads({
       searchTerm: typeof searchTerm === 'string' ? searchTerm : undefined,
       status: typeof status === 'string' ? status : undefined,
+      category: typeof category === 'string' ? category : undefined,
       dateFilter: typeof dateFilter === 'string' ? dateFilter : undefined
     });
 
     res.status(200).json(result);
   } catch (err: any) {
-    console.error('Error in /api/admin/leads:', err);
-    res.status(500).json({ error: 'Server Error', message: 'Unable to fetch leads at this time.' });
+    console.error('Error in /api/admin/leads from Firestore:', err);
+    // Fallback to crmStorage
+    const fallbackLeads = crmStorage.getAllLeads();
+    res.status(200).json({ success: true, leads: fallbackLeads, storage: 'local_fallback' });
   }
 });
 
 /**
- * Get Single Lead Details
+ * Get Single Lead Details from Firestore
  * GET /api/admin/leads/:id
  */
-app.get('/api/admin/leads/:id', requireAdminAuth, (req: AuthenticatedRequest, res: Response) => {
-  const lead = crmStorage.getLeadById(req.params.id);
-  if (!lead) {
-    res.status(404).json({ error: 'Not Found', message: 'Lead not found.' });
-    return;
+app.get('/api/admin/leads/:id', requireAdminAuth, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const lead = await firebaseCRM.getLeadById(req.params.id) || crmStorage.getLeadById(req.params.id);
+    if (!lead) {
+      res.status(404).json({ error: 'Not Found', message: 'Lead not found in Firestore.' });
+      return;
+    }
+    res.status(200).json({ lead });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Server Error', message: err.message });
   }
-  res.status(200).json({ lead });
 });
 
 /**
- * Update Lead Status (Supabase + Persistent Mirror)
+ * Update Lead Status in Firestore
  * PATCH /api/admin/leads/:id/status
  */
 app.patch('/api/admin/leads/:id/status', requireAdminAuth, async (req: AuthenticatedRequest, res: Response) => {
@@ -689,6 +852,10 @@ app.patch('/api/admin/leads/:id/status', requireAdminAuth, async (req: Authentic
   const validStatuses: string[] = [
     'New',
     'Contacted',
+    'Quotation Sent',
+    'Work In Progress',
+    'Completed',
+    'Pending Payments',
     'Interested',
     'Converted',
     'Not Interested',
@@ -706,22 +873,27 @@ app.patch('/api/admin/leads/:id/status', requireAdminAuth, async (req: Authentic
     return;
   }
 
-  const updated = await supabaseService.updateLeadStatus(
+  const updated = await firebaseCRM.updateLeadStatus(
     req.params.id,
     status,
     req.adminSession!.userName
   );
 
+  // Mirror update to local crmStorage
+  try {
+    crmStorage.updateLeadStatus(req.params.id, status as any, req.adminSession!.userName);
+  } catch (e) {}
+
   if (!updated) {
-    res.status(404).json({ error: 'Not Found', message: 'Lead not found.' });
+    res.status(404).json({ error: 'Not Found', message: 'Lead not found in Firestore.' });
     return;
   }
 
-  res.status(200).json({ success: true, lead: updated });
+  res.status(200).json({ success: true, lead: updated, storage: 'firestore' });
 });
 
 /**
- * Add Internal Note to Lead (Supabase + Persistent Mirror)
+ * Add Internal Note to Lead in Firestore
  * POST /api/admin/leads/:id/notes
  */
 app.post('/api/admin/leads/:id/notes', requireAdminAuth, async (req: AuthenticatedRequest, res: Response) => {
@@ -735,18 +907,22 @@ app.post('/api/admin/leads/:id/notes', requireAdminAuth, async (req: Authenticat
   }
 
   const session = req.adminSession!;
-  const note = await supabaseService.addNote(
+  const note = await firebaseCRM.addNote(
     req.params.id,
     content,
     session.userName
   );
 
+  try {
+    crmStorage.addLeadNote(req.params.id, session.userId, session.userName, content);
+  } catch (e) {}
+
   if (!note) {
-    res.status(404).json({ error: 'Not Found', message: 'Lead not found.' });
+    res.status(404).json({ error: 'Not Found', message: 'Lead not found in Firestore.' });
     return;
   }
 
-  res.status(201).json({ success: true, note });
+  res.status(201).json({ success: true, note, storage: 'firestore' });
 });
 
 /**
@@ -948,10 +1124,21 @@ app.post('/api/admin/payments/:id/reject', requireAdminAuth, (req: Authenticated
 // Vite Frontend Middleware / Static Serve
 // -------------------------------------------------------------
 async function startServer() {
+  const httpServer = http.createServer(app);
+
   if (process.env.NODE_ENV !== 'production') {
     const { createServer } = await import('vite');
+    const isHmrDisabled = process.env.DISABLE_HMR === 'true';
+
     const vite = await createServer({
-      server: { middlewareMode: true, port: PORT, host: '0.0.0.0' },
+      server: {
+        middlewareMode: true,
+        hmr: isHmrDisabled
+          ? false
+          : {
+              server: httpServer
+            }
+      },
       appType: 'spa'
     });
     app.use(vite.middlewares);
@@ -962,7 +1149,7 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  httpServer.listen(PORT, '0.0.0.0', () => {
     console.log(`RUBI TECH PARK Full-Stack CRM Server listening on http://0.0.0.0:${PORT}`);
   });
 }

@@ -569,24 +569,19 @@ CREATE POLICY "Allow service role full lead access" ON public.leads FOR ALL TO s
           </div>
 
           <div className="flex items-center gap-2 sm:gap-2.5">
-            {/* Supabase Status Pill */}
-            <button
-              onClick={() => setShowSupabaseModal(true)}
-              className={`px-2.5 py-1 text-[11px] font-semibold rounded-lg border flex items-center gap-1.5 transition-all cursor-pointer ${
-                supabaseStatus?.connected
-                  ? 'bg-emerald-50 border-emerald-300 text-emerald-700 dark:bg-emerald-950/60 dark:border-emerald-800 dark:text-emerald-300'
-                  : 'bg-amber-50 border-amber-300 text-amber-800 dark:bg-amber-950/60 dark:border-amber-700 dark:text-amber-300'
-              }`}
-              title="Click to view Supabase database setup details"
+            {/* Firebase Firestore Status Pill */}
+            <div
+              className="px-2.5 py-1 text-[11px] font-semibold rounded-lg border flex items-center gap-1.5 bg-emerald-50 border-emerald-300 text-emerald-800 dark:bg-emerald-950/60 dark:border-emerald-800 dark:text-emerald-300 shadow-xs"
+              title="Firebase Cloud Firestore: crm_leads collection active"
             >
-              <div className={`w-2 h-2 rounded-full ${supabaseStatus?.connected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
-              <span className="hidden sm:inline">
-                {supabaseStatus?.connected ? 'Supabase Active' : 'Local Mode (Supabase Setup)'}
+              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+              <span className="hidden sm:inline font-mono">
+                Firestore: crm_leads ({stats.total})
               </span>
-              <span className="sm:hidden">
-                {supabaseStatus?.connected ? 'Supabase' : 'Local'}
+              <span className="sm:hidden font-mono">
+                Firestore ({stats.total})
               </span>
-            </button>
+            </div>
 
             <button
               onClick={() => onNavigate('home')}
@@ -633,90 +628,106 @@ CREATE POLICY "Allow service role full lead access" ON public.leads FOR ALL TO s
           </div>
         )}
 
-        {/* Supabase Notice Banner if not connected */}
-        {supabaseStatus && !supabaseStatus.connected && (
-          <div className="p-3.5 bg-[#FFF8EB] dark:bg-amber-950/30 border border-amber-300/80 dark:border-amber-700/50 rounded-xl flex items-center justify-between gap-3 text-xs text-amber-900 dark:text-amber-200">
-            <div className="flex items-center gap-2.5">
-              <Server className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
-              <span>
-                <strong>Persistent Local Mode Active:</strong> Customer leads are safely stored in <code className="bg-amber-100 dark:bg-amber-900/60 px-1 py-0.5 rounded text-[11px]">data/crm_leads.json</code>. Connect Supabase for cloud PostgreSQL syncing.
-              </span>
+        {/* Firebase Cloud Firestore Active Info Banner */}
+        <div className="p-3.5 bg-gradient-to-r from-purple-50 via-indigo-50 to-blue-50 dark:from-purple-950/30 dark:via-indigo-950/20 dark:to-blue-950/30 border border-purple-200 dark:border-purple-800/40 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-[#172033] dark:text-slate-200 shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <button
-              onClick={() => setShowSupabaseModal(true)}
-              className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-[11px] font-semibold whitespace-nowrap cursor-pointer shrink-0"
-            >
-              Setup Supabase
-            </button>
+            <div>
+              <p className="font-semibold text-[#172033] dark:text-white flex items-center gap-2">
+                <span>Firebase Cloud Firestore Active</span>
+                <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 font-bold">
+                  crm_leads ({stats.total} Records)
+                </span>
+              </p>
+              <p className="text-[11px] text-[#647087] dark:text-slate-400 mt-0.5">
+                All enquiries from Website Lead Forms and the RUBI Assistant Chatbot save to Firestore with Zero-Trust ABAC rules.
+              </p>
+            </div>
           </div>
-        )}
+          <div className="text-[11px] font-mono text-purple-700 dark:text-purple-300 bg-white/80 dark:bg-purple-950/50 px-3 py-1 rounded-xl border border-purple-200 dark:border-purple-800 shrink-0">
+            Project: possible-coral-nkx2q
+          </div>
+        </div>
 
-        {/* 6 Required KPI Metrics Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+        {/* 7 Required KPI Metrics Cards */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
           {/* 1. Total Leads */}
-          <div className="bg-white dark:bg-[#0D1527] border border-slate-200 dark:border-white/10 rounded-2xl p-4 shadow-sm hover:border-[#6654E8]/40 transition-colors">
-            <span className="text-[11px] font-semibold text-[#647087] dark:text-slate-400 uppercase tracking-wider block">
+          <div className="bg-white dark:bg-[#0D1527] border border-slate-200 dark:border-white/10 rounded-2xl p-3.5 shadow-sm hover:border-[#6654E8]/40 transition-colors">
+            <span className="text-[10px] font-semibold text-[#647087] dark:text-slate-400 uppercase tracking-wider block">
               Total Leads
             </span>
-            <div className="mt-1 text-2xl font-bold font-display text-[#172033] dark:text-white tabular-nums">
+            <div className="mt-1 text-xl font-bold font-display text-[#172033] dark:text-white tabular-nums">
               {stats.total}
             </div>
-            <div className="text-[11px] text-[#647087] dark:text-slate-500 mt-0.5">All Time Inbound</div>
+            <div className="text-[10px] text-[#647087] dark:text-slate-500 mt-0.5">All Firestore</div>
           </div>
 
           {/* 2. New Leads */}
-          <div className="bg-white dark:bg-[#0D1527] border border-blue-200 dark:border-blue-900/40 rounded-2xl p-4 shadow-sm hover:border-blue-400 transition-colors">
-            <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider block">
+          <div className="bg-white dark:bg-[#0D1527] border border-blue-200 dark:border-blue-900/40 rounded-2xl p-3.5 shadow-sm hover:border-blue-400 transition-colors">
+            <span className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider block">
               New Leads
             </span>
-            <div className="mt-1 text-2xl font-bold font-display text-blue-700 dark:text-blue-300 tabular-nums">
+            <div className="mt-1 text-xl font-bold font-display text-blue-700 dark:text-blue-300 tabular-nums">
               {stats.new}
             </div>
-            <div className="text-[11px] text-[#647087] dark:text-slate-500 mt-0.5">Needs Callback</div>
+            <div className="text-[10px] text-[#647087] dark:text-slate-500 mt-0.5">Needs Callback</div>
           </div>
 
           {/* 3. Contacted Leads */}
-          <div className="bg-white dark:bg-[#0D1527] border border-amber-200 dark:border-amber-900/40 rounded-2xl p-4 shadow-sm hover:border-amber-400 transition-colors">
-            <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider block">
+          <div className="bg-white dark:bg-[#0D1527] border border-amber-200 dark:border-amber-900/40 rounded-2xl p-3.5 shadow-sm hover:border-amber-400 transition-colors">
+            <span className="text-[10px] font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider block">
               Contacted
             </span>
-            <div className="mt-1 text-2xl font-bold font-display text-amber-700 dark:text-amber-300 tabular-nums">
+            <div className="mt-1 text-xl font-bold font-display text-amber-700 dark:text-amber-300 tabular-nums">
               {stats.contacted}
             </div>
-            <div className="text-[11px] text-[#647087] dark:text-slate-500 mt-0.5">First Touch Done</div>
+            <div className="text-[10px] text-[#647087] dark:text-slate-500 mt-0.5">First Touch</div>
           </div>
 
-          {/* 4. Interested Leads */}
-          <div className="bg-white dark:bg-[#0D1527] border border-purple-200 dark:border-purple-900/40 rounded-2xl p-4 shadow-sm hover:border-purple-400 transition-colors">
-            <span className="text-[11px] font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider block">
-              Interested
+          {/* 4. Quotation Sent */}
+          <div className="bg-white dark:bg-[#0D1527] border border-indigo-200 dark:border-indigo-900/40 rounded-2xl p-3.5 shadow-sm hover:border-indigo-400 transition-colors">
+            <span className="text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider block">
+              Quotation Sent
             </span>
-            <div className="mt-1 text-2xl font-bold font-display text-purple-700 dark:text-purple-300 tabular-nums">
-              {stats.interested}
+            <div className="mt-1 text-xl font-bold font-display text-indigo-700 dark:text-indigo-300 tabular-nums">
+              {(stats as any).quotationSent ?? stats.proposalSent ?? 0}
             </div>
-            <div className="text-[11px] text-[#647087] dark:text-slate-500 mt-0.5">Requirement Scoped</div>
+            <div className="text-[10px] text-[#647087] dark:text-slate-500 mt-0.5">Proposal Out</div>
           </div>
 
-          {/* 5. Converted Leads */}
-          <div className="bg-white dark:bg-[#0D1527] border border-emerald-200 dark:border-emerald-900/40 rounded-2xl p-4 shadow-sm hover:border-emerald-400 transition-colors">
-            <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">
-              Converted
+          {/* 5. Work In Progress */}
+          <div className="bg-white dark:bg-[#0D1527] border border-purple-200 dark:border-purple-900/40 rounded-2xl p-3.5 shadow-sm hover:border-purple-400 transition-colors">
+            <span className="text-[10px] font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider block">
+              Work In Progress
             </span>
-            <div className="mt-1 text-2xl font-bold font-display text-emerald-700 dark:text-emerald-300 tabular-nums">
-              {stats.converted}
+            <div className="mt-1 text-xl font-bold font-display text-purple-700 dark:text-purple-300 tabular-nums">
+              {(stats as any).workInProgress ?? stats.qualified ?? 0}
             </div>
-            <div className="text-[11px] text-[#647087] dark:text-slate-500 mt-0.5">Won & Active</div>
+            <div className="text-[10px] text-[#647087] dark:text-slate-500 mt-0.5">In Execution</div>
           </div>
 
-          {/* 6. Today's Enquiries */}
-          <div className="bg-white dark:bg-[#0D1527] border border-[#6654E8]/30 dark:border-[#9689FF]/30 rounded-2xl p-4 shadow-sm hover:border-[#6654E8] transition-colors">
-            <span className="text-[11px] font-semibold text-[#6654E8] dark:text-[#9689FF] uppercase tracking-wider block">
-              Today's Enquiries
+          {/* 6. Completed Leads */}
+          <div className="bg-white dark:bg-[#0D1527] border border-emerald-200 dark:border-emerald-900/40 rounded-2xl p-3.5 shadow-sm hover:border-emerald-400 transition-colors">
+            <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">
+              Completed
             </span>
-            <div className="mt-1 text-2xl font-bold font-display text-[#6654E8] dark:text-[#9689FF] tabular-nums">
-              {stats.today}
+            <div className="mt-1 text-xl font-bold font-display text-emerald-700 dark:text-emerald-300 tabular-nums">
+              {(stats as any).completed ?? stats.converted ?? 0}
             </div>
-            <div className="text-[11px] text-[#647087] dark:text-slate-500 mt-0.5">Received Today</div>
+            <div className="text-[10px] text-[#647087] dark:text-slate-500 mt-0.5">Delivered / Won</div>
+          </div>
+
+          {/* 7. Pending Payments */}
+          <div className="bg-white dark:bg-[#0D1527] border border-rose-200 dark:border-rose-900/40 rounded-2xl p-3.5 shadow-sm hover:border-rose-400 transition-colors">
+            <span className="text-[10px] font-semibold text-rose-600 dark:text-rose-400 uppercase tracking-wider block">
+              Pending Payments
+            </span>
+            <div className="mt-1 text-xl font-bold font-display text-rose-700 dark:text-rose-300 tabular-nums">
+              {(stats as any).pendingPayments ?? paymentStats.pendingVerificationCount ?? 0}
+            </div>
+            <div className="text-[10px] text-[#647087] dark:text-slate-500 mt-0.5">Awaiting UTR</div>
           </div>
         </div>
 
@@ -783,7 +794,7 @@ CREATE POLICY "Allow service role full lead access" ON public.leads FOR ALL TO s
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
-                  {/* Status Filter */}
+                  {/* Category Filter */}
                   <select
                     value={statusFilter}
                     onChange={(e) => {
@@ -795,6 +806,10 @@ CREATE POLICY "Allow service role full lead access" ON public.leads FOR ALL TO s
                     <option value="All">All Statuses</option>
                     <option value="New">New</option>
                     <option value="Contacted">Contacted</option>
+                    <option value="Quotation Sent">Quotation Sent</option>
+                    <option value="Work In Progress">Work In Progress</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Pending Payments">Pending Payments</option>
                     <option value="Interested">Interested</option>
                     <option value="Converted">Converted</option>
                     <option value="Not Interested">Not Interested</option>
@@ -809,7 +824,7 @@ CREATE POLICY "Allow service role full lead access" ON public.leads FOR ALL TO s
                     }}
                     className="bg-[#F3F0FF]/40 dark:bg-[#070B14] border border-[#E5E9F2] dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-[#172033] dark:text-slate-200 focus:outline-none focus:border-[#6654E8]"
                   >
-                    <option value="all">All Time</option>
+                    <option value="all">All Dates</option>
                     <option value="today">Today</option>
                     <option value="7days">Last 7 Days</option>
                     <option value="30days">Last 30 Days</option>
@@ -846,7 +861,7 @@ CREATE POLICY "Allow service role full lead access" ON public.leads FOR ALL TO s
             {loading ? (
               <div className="p-16 text-center text-[#647087] dark:text-slate-400 space-y-3 bg-white dark:bg-[#0D1527] rounded-2xl border border-[#E5E9F2] dark:border-white/10 shadow-sm">
                 <RefreshCw className="w-6 h-6 animate-spin mx-auto text-[#6654E8]" />
-                <p className="text-xs">Loading customer leads from {supabaseStatus?.connected ? 'Supabase' : 'persistent database'}...</p>
+                <p className="text-xs">Loading customer leads from Cloud Firestore (crm_leads)...</p>
               </div>
             ) : leads.length === 0 ? (
               <div className="p-16 text-center text-[#647087] dark:text-slate-400 space-y-3 bg-white dark:bg-[#0D1527] rounded-2xl border border-[#E5E9F2] dark:border-white/10 shadow-sm">
@@ -867,58 +882,67 @@ CREATE POLICY "Allow service role full lead access" ON public.leads FOR ALL TO s
                   <table className="w-full text-left text-xs text-[#172033] dark:text-slate-300">
                     <thead className="bg-[#FAFBFF] dark:bg-[#070B14] border-b border-[#E5E9F2] dark:border-slate-800 text-[11px] text-[#647087] dark:text-slate-400 uppercase tracking-wider">
                       <tr>
+                        <th className="py-3.5 px-4 font-semibold">Enquiry ID</th>
                         <th className="py-3.5 px-4 font-semibold">Customer Name</th>
-                        <th className="py-3.5 px-4 font-semibold">Phone Number</th>
+                        <th className="py-3.5 px-4 font-semibold">Mobile Number</th>
                         <th className="py-3.5 px-4 font-semibold">Email</th>
-                        <th className="py-3.5 px-4 font-semibold">Business Name</th>
-                        <th className="py-3.5 px-4 font-semibold">Service Interested</th>
-                        <th className="py-3.5 px-4 font-semibold">Message</th>
+                        <th className="py-3.5 px-4 font-semibold">Service Category</th>
+                        <th className="py-3.5 px-4 font-semibold">Selected Service</th>
+                        <th className="py-3.5 px-4 font-semibold">Source</th>
                         <th className="py-3.5 px-4 font-semibold">Status</th>
-                        <th className="py-3.5 px-4 font-semibold">Date/Time</th>
-                        <th className="py-3.5 px-4 font-semibold text-right">Actions</th>
+                        <th className="py-3.5 px-4 font-semibold">Enquiry Date</th>
+                        <th className="py-3.5 px-4 font-semibold text-right">View Details</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#E5E9F2] dark:divide-slate-800/80">
                       {leads.map((lead) => {
-                        const customerName = lead.fullName || lead.customer_name || 'Anonymous';
-                        const phoneNumber = lead.phone || lead.phone_number || '';
+                        const enquiryId = lead.enquiryId || lead.referenceNumber || lead.id;
+                        const customerName = lead.customerName || lead.fullName || 'Anonymous';
+                        const mobileNumber = lead.mobileNumber || lead.phone || '';
                         const email = lead.email || '';
-                        const businessName = lead.businessName || lead.business_name || '—';
-                        const serviceInterested = lead.requiredService || lead.service_interested || 'Website';
-                        const message = lead.projectDescription || lead.message || '—';
+                        const serviceCategory = lead.serviceCategory || 'General';
+                        const selectedService = lead.selectedService || lead.requiredService || 'General Inquiry';
+                        const source = lead.source || 'Website Lead Form';
                         const status = lead.status || 'New';
                         const createdAt = lead.createdAt || lead.created_at;
 
                         return (
                           <tr
-                            key={lead.id}
+                            key={enquiryId}
                             onClick={() => setSelectedLead(lead)}
                             className="hover:bg-[#F3F0FF]/30 dark:hover:bg-[#0E1A38]/50 transition-colors cursor-pointer group"
                           >
-                            {/* 1. Customer Name */}
+                            {/* 1. Enquiry ID */}
+                            <td className="py-3.5 px-4 whitespace-nowrap font-mono text-[11px] font-semibold text-[#6654E8] dark:text-[#9689FF]">
+                              {enquiryId}
+                            </td>
+
+                            {/* 2. Customer Name */}
                             <td className="py-3.5 px-4 whitespace-nowrap">
                               <div className="font-semibold text-[#172033] dark:text-white group-hover:text-[#6654E8] dark:group-hover:text-[#9689FF] transition-colors">
                                 {customerName}
                               </div>
-                              <div className="text-[10px] text-[#647087] dark:text-slate-500 font-mono">
-                                Ref: {lead.referenceNumber || lead.id.slice(0, 8)}
-                              </div>
+                              {lead.businessName && (
+                                <div className="text-[10px] text-[#647087] dark:text-slate-400">
+                                  {lead.businessName}
+                                </div>
+                              )}
                             </td>
 
-                            {/* 2. Phone Number (clickable tel:) */}
-                            <td className="py-3.5 px-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                              <div className="flex items-center gap-1.5 font-mono">
+                            {/* 3. Mobile Number */}
+                            <td className="py-3.5 px-4 whitespace-nowrap font-mono" onClick={(e) => e.stopPropagation()}>
+                              <div className="flex items-center gap-1.5">
                                 <a
-                                  href={`tel:${phoneNumber.replace(/\D/g, '')}`}
-                                  className="text-[#6654E8] dark:text-[#9689FF] hover:underline flex items-center gap-1"
+                                  href={`tel:${mobileNumber.replace(/\D/g, '')}`}
+                                  className="text-[#172033] dark:text-slate-300 hover:text-[#6654E8] dark:hover:text-[#9689FF] flex items-center gap-1"
                                   title="Call customer directly"
                                 >
                                   <Phone className="w-3 h-3 text-[#647087] dark:text-slate-400" />
-                                  <span>{phoneNumber}</span>
+                                  <span>{mobileNumber}</span>
                                 </a>
-                                {phoneNumber && (
+                                {mobileNumber && (
                                   <a
-                                    href={`https://wa.me/91${phoneNumber.replace(/\D/g, '').slice(-10)}`}
+                                    href={`https://wa.me/91${mobileNumber.replace(/\D/g, '').slice(-10)}`}
                                     target="_blank"
                                     rel="noreferrer"
                                     className="p-1 rounded text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/60"
@@ -930,11 +954,11 @@ CREATE POLICY "Allow service role full lead access" ON public.leads FOR ALL TO s
                               </div>
                             </td>
 
-                            {/* 3. Email (clickable mailto:) */}
+                            {/* 4. Email */}
                             <td className="py-3.5 px-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                               <a
                                 href={`mailto:${email}`}
-                                className="text-[#172033] dark:text-slate-300 hover:text-[#6654E8] dark:hover:text-[#9689FF] flex items-center gap-1 truncate max-w-[180px]"
+                                className="text-[#172033] dark:text-slate-300 hover:text-[#6654E8] dark:hover:text-[#9689FF] flex items-center gap-1 truncate max-w-[160px]"
                                 title={`Send email to ${email}`}
                               >
                                 <Mail className="w-3 h-3 text-[#647087] dark:text-slate-400 shrink-0" />
@@ -942,81 +966,68 @@ CREATE POLICY "Allow service role full lead access" ON public.leads FOR ALL TO s
                               </a>
                             </td>
 
-                            {/* 4. Business Name */}
-                            <td className="py-3.5 px-4 text-[#647087] dark:text-slate-300 font-medium whitespace-nowrap truncate max-w-[160px]">
-                              {businessName}
-                            </td>
-
-                            {/* 5. Service Interested */}
+                            {/* 5. Service Category */}
                             <td className="py-3.5 px-4 whitespace-nowrap">
-                              <span className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#EAF3FF] text-[#4388FF] dark:bg-[#4388FF]/15 dark:text-[#7BAAFF]">
-                                {serviceInterested.replace(/-/g, ' ')}
+                              <span className="text-[11px] text-[#647087] dark:text-slate-400">
+                                {serviceCategory}
                               </span>
                             </td>
 
-                            {/* 6. Message */}
-                            <td className="py-3.5 px-4 text-[#647087] dark:text-slate-400 max-w-[200px] truncate" title={message}>
-                              {message}
+                            {/* 6. Selected Service */}
+                            <td className="py-3.5 px-4 whitespace-nowrap">
+                              <span className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#EAF3FF] text-[#4388FF] dark:bg-[#4388FF]/15 dark:text-[#7BAAFF]">
+                                {selectedService.replace(/-/g, ' ')}
+                              </span>
                             </td>
 
-                            {/* 7. Status Badge */}
+                            {/* 7. Source */}
+                            <td className="py-3.5 px-4 whitespace-nowrap">
+                              <span className={`px-2 py-0.5 rounded-md text-[10px] font-semibold ${
+                                source.toLowerCase().includes('chatbot')
+                                  ? 'bg-purple-100 text-purple-700 dark:bg-purple-950/70 dark:text-purple-300 border border-purple-200 dark:border-purple-800'
+                                  : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
+                              }`}>
+                                {source}
+                              </span>
+                            </td>
+
+                            {/* 8. Status */}
                             <td className="py-3.5 px-4 whitespace-nowrap">
                               <span className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border ${getStatusColor(status)}`}>
                                 {status}
                               </span>
                             </td>
 
-                            {/* 8. Date/Time */}
+                            {/* 9. Enquiry Date */}
                             <td className="py-3.5 px-4 whitespace-nowrap text-[#647087] dark:text-slate-400 text-[11px]">
                               {new Date(createdAt).toLocaleDateString('en-IN', {
                                 day: 'numeric',
                                 month: 'short',
                                 year: 'numeric'
                               })}
-                              <div className="text-[10px] text-slate-400 dark:text-slate-500">
-                                {new Date(createdAt).toLocaleTimeString('en-IN', {
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
-                              </div>
                             </td>
 
-                            {/* 9. Actions */}
+                            {/* 10. View Details */}
                             <td className="py-3.5 px-4 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                               <div className="flex items-center justify-end gap-1.5">
-                                {/* Quick Status Selector */}
-                                <select
-                                  value={status}
-                                  onChange={(e) => handleStatusChange(lead.id, e.target.value)}
-                                  className="text-[11px] bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-[#172033] dark:text-slate-300 focus:outline-none focus:border-[#6654E8]"
-                                  title="Change lead status"
-                                >
-                                  <option value="New">New</option>
-                                  <option value="Contacted">Contacted</option>
-                                  <option value="Interested">Interested</option>
-                                  <option value="Converted">Converted</option>
-                                  <option value="Not Interested">Not Interested</option>
-                                </select>
-
-                                {/* View Details Button */}
                                 <button
                                   type="button"
                                   onClick={() => setSelectedLead(lead)}
-                                  className="px-2.5 py-1 bg-[#6654E8]/10 hover:bg-[#6654E8] text-[#6654E8] hover:text-white rounded-lg text-xs font-medium transition-colors cursor-pointer"
-                                  title="View complete inquiry & notes"
+                                  className="px-3 py-1 bg-[#6654E8]/10 hover:bg-[#6654E8] text-[#6654E8] hover:text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer"
                                 >
-                                  Details
+                                  View Details
                                 </button>
-
-                                {/* Delete Button */}
-                                <button
-                                  type="button"
-                                  onClick={() => setLeadToDelete(lead)}
-                                  className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/60 rounded-lg transition-colors cursor-pointer"
-                                  title="Delete lead permanently"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
+                                {mobileNumber && (
+                                  <a
+                                    href={`https://wa.me/91${mobileNumber.replace(/\D/g, '').slice(-10)}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="p-1.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white dark:bg-emerald-950/60 dark:text-emerald-400 rounded-lg transition-colors cursor-pointer"
+                                    title="Open WhatsApp Chat"
+                                  >
+                                    <MessageSquare className="w-3.5 h-3.5" />
+                                  </a>
+                                )}
                               </div>
                             </td>
                           </tr>

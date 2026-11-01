@@ -18,6 +18,16 @@
             document.documentElement.style.colorScheme = 'light';
           }
         } catch(e) {}
+
+        // Gracefully catch unhandled rejections from development WebSockets/HMR in preview iframes
+        window.addEventListener('unhandledrejection', function(event) {
+          if (event && event.reason) {
+            var msg = event.reason.message || String(event.reason);
+            if (msg.indexOf('WebSocket') !== -1 || event.reason.name === 'WebSocketError') {
+              event.preventDefault();
+            }
+          }
+        });
       })();
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

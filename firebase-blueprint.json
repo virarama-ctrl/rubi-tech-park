@@ -1,0 +1,116 @@
+{
+  "entities": {
+    "CRMLead": {
+      "title": "CRMLead",
+      "description": "Customer inquiry or lead record captured from website forms or RUBI Assistant chatbot",
+      "type": "object",
+      "properties": {
+        "enquiryId": {
+          "type": "string",
+          "description": "Unique reference enquiry ID (e.g. RTP-2026-9985)"
+        },
+        "customerName": {
+          "type": "string",
+          "description": "Full name of the prospective customer"
+        },
+        "mobileNumber": {
+          "type": "string",
+          "description": "Contact mobile number"
+        },
+        "whatsappNumber": {
+          "type": "string",
+          "description": "WhatsApp number for instant messaging"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Customer email address"
+        },
+        "customerType": {
+          "type": "string",
+          "description": "Customer segment (Business, Enterprise, Individual, etc.)"
+        },
+        "serviceCategory": {
+          "type": "string",
+          "description": "Service category (Software Development, Statutory & Compliance, Citizen E-Services)"
+        },
+        "selectedService": {
+          "type": "string",
+          "description": "Specific selected service title"
+        },
+        "requirement": {
+          "type": "string",
+          "description": "Customer project brief or requirement message"
+        },
+        "source": {
+          "type": "string",
+          "description": "Lead acquisition channel (Website Lead Form, Chatbot, etc.)"
+        },
+        "status": {
+          "type": "string",
+          "description": "Pipeline status (New, Contacted, Quotation Sent, Work In Progress, Completed, Pending Payments, Converted, etc.)"
+        },
+        "consentStatus": {
+          "type": "boolean",
+          "description": "Whether customer agreed to privacy terms and contact consent"
+        },
+        "bookingAmount": {
+          "type": "number",
+          "description": "Booking amount in INR (e.g. 236 for E-Services)"
+        },
+        "paymentStatus": {
+          "type": "string",
+          "description": "Payment status for booking or advance"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of lead creation"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last update"
+        },
+        "internalNotes": {
+          "type": "string",
+          "description": "Internal team notes on the inquiry"
+        }
+      },
+      "required": ["enquiryId", "customerName", "mobileNumber", "email", "selectedService", "status"]
+    },
+    "AdminRole": {
+      "title": "AdminRole",
+      "description": "Authorized administrative user profile and role definition",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Administrator email address"
+        },
+        "role": {
+          "type": "string",
+          "description": "Role authority level (super_admin, admin)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Administrator display name"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Creation timestamp"
+        }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "/crm_leads/{leadId}": {
+      "schema": "CRMLead",
+      "description": "Customer enquiry records managed by authorized RUBI TECH PARK administrators"
+    },
+    "/admin_roles/{email}": {
+      "schema": "AdminRole",
+      "description": "Authorized administrative accounts permitted to access CRM data"
+    }
+  }
+}
