@@ -26,7 +26,8 @@ import {
   Activity,
   Workflow,
   ExternalLink,
-  Calculator
+  Calculator,
+  Phone
 } from 'lucide-react';
 
 interface HomePageProps {
@@ -160,8 +161,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               {/* Quantitative Trust Markers (Fixed for Tamil Natural Wrap & Mobile Responsiveness) */}
               <div className="pt-8 border-t border-[#D5DEE8] dark:border-[#30445B] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
                 {/* Stat 1 */}
-                <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs flex flex-col justify-between min-h-[96px] h-auto">
-                  <div className="text-xl sm:text-2xl font-bold font-mono text-[#315D82] dark:text-[#6F9FC5] tabular-nums leading-tight">
+                <div className="interactive-card group p-4 sm:p-5 rounded-xl bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs flex flex-col justify-between min-h-[96px] h-auto hover:border-[#315D82] dark:hover:border-[#6F9FC5]">
+                  <div className="text-xl sm:text-2xl font-bold font-mono text-[#315D82] dark:text-[#6F9FC5] tabular-nums leading-tight group-hover:scale-105 transition-transform origin-left">
                     {t.home.quickStats.pricingStart}
                   </div>
                   <div className="text-xs text-[#526477] dark:text-[#B8C5D4] mt-2 font-normal leading-relaxed break-words">
@@ -170,8 +171,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 </div>
 
                 {/* Stat 2 */}
-                <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs flex flex-col justify-between min-h-[96px] h-auto">
-                  <div className="text-xl sm:text-2xl font-bold font-mono text-[#182638] dark:text-[#F1F5F9] tabular-nums leading-tight">
+                <div className="interactive-card group p-4 sm:p-5 rounded-xl bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs flex flex-col justify-between min-h-[96px] h-auto hover:border-[#315D82] dark:hover:border-[#6F9FC5]">
+                  <div className="text-xl sm:text-2xl font-bold font-mono text-[#182638] dark:text-[#F1F5F9] tabular-nums leading-tight group-hover:scale-105 transition-transform origin-left">
                     {t.home.quickStats.ownership}
                   </div>
                   <div className="text-xs text-[#526477] dark:text-[#B8C5D4] mt-2 font-normal leading-relaxed break-words">
@@ -180,8 +181,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 </div>
 
                 {/* Stat 3 (Tamil City Value) */}
-                <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs flex flex-col justify-between min-h-[96px] h-auto">
-                  <div className="text-xl sm:text-2xl font-bold font-sans text-[#315D82] dark:text-[#6F9FC5] leading-tight break-words">
+                <div className="interactive-card group p-4 sm:p-5 rounded-xl bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs flex flex-col justify-between min-h-[96px] h-auto hover:border-[#315D82] dark:hover:border-[#6F9FC5]">
+                  <div className="text-xl sm:text-2xl font-bold font-sans text-[#315D82] dark:text-[#6F9FC5] leading-tight break-words group-hover:scale-105 transition-transform origin-left">
                     {t.home.quickStats.deployment}
                   </div>
                   <div className="text-xs text-[#526477] dark:text-[#B8C5D4] mt-2 font-normal leading-relaxed break-words">
@@ -190,8 +191,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 </div>
 
                 {/* Stat 4 */}
-                <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs flex flex-col justify-between min-h-[96px] h-auto">
-                  <div className="text-xl sm:text-2xl font-bold font-sans text-[#182638] dark:text-[#F1F5F9] leading-tight break-words">
+                <div className="interactive-card group p-4 sm:p-5 rounded-xl bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs flex flex-col justify-between min-h-[96px] h-auto hover:border-[#315D82] dark:hover:border-[#6F9FC5]">
+                  <div className="text-xl sm:text-2xl font-bold font-sans text-[#182638] dark:text-[#F1F5F9] leading-tight break-words group-hover:scale-105 transition-transform origin-left">
                     {t.home.quickStats.support}
                   </div>
                   <div className="text-xs text-[#526477] dark:text-[#B8C5D4] mt-2 font-normal leading-relaxed break-words">
@@ -228,83 +229,107 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Pillar 1: Software */}
-          <div className="rounded-2xl p-6 sm:p-7 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] hover:border-[#315D82] dark:hover:border-[#6F9FC5] transition-all group shadow-xs">
+          <div className="interactive-card group rounded-2xl p-6 sm:p-7 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] hover:border-[#315D82] dark:hover:border-[#6F9FC5] shadow-xs">
             <div className="space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] group-hover:scale-110 group-hover:-translate-y-0.5 transition-transform duration-200">
                 <Code2 className="w-6 h-6" />
               </div>
               <span className="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-[#F2F5F8] dark:bg-[#17263A] text-[#315D82] dark:text-[#6F9FC5] border border-[#D5DEE8] dark:border-[#30445B] inline-block">
                 12 Software Services
               </span>
-              <h3 className="text-xl font-bold font-display text-[#182638] dark:text-[#F1F5F9]">
+              <h3 className="text-xl font-bold font-display text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
                 Software & Digital Engineering
               </h3>
               <p className="text-xs text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
                 Modern responsive websites, custom CRM platforms, billing software, mobile apps, and workflow automation. Transparent work-based quotations with zero vendor lock-in.
               </p>
             </div>
-            <div className="mt-6 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B]">
+            <div className="mt-6 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-between gap-2">
               <button
                 onClick={() => onNavigate('services')}
-                className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1.5 cursor-pointer"
+                className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1.5 cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
               >
                 <span>View Software Services</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
+              <a
+                href="tel:+918220550829"
+                className="call-now-button inline-flex items-center gap-1 text-[11px] font-semibold text-[#182638] dark:text-[#F1F5F9] hover:text-[#315D82] dark:hover:text-[#6F9FC5] transition-colors px-2.5 py-1 rounded-lg border border-transparent hover:border-[#D5DEE8] dark:hover:border-[#30445B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
+                title="Call Now: +91 82205 50829"
+              >
+                <Phone className="w-3 h-3 text-[#315D82] dark:text-[#6F9FC5]" />
+                <span>Call Now</span>
+              </a>
             </div>
           </div>
 
           {/* Pillar 2: Compliance */}
-          <div className="rounded-2xl p-6 sm:p-7 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] hover:border-[#315D82] dark:hover:border-[#6F9FC5] transition-all group shadow-xs">
+          <div className="interactive-card group rounded-2xl p-6 sm:p-7 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] hover:border-[#315D82] dark:hover:border-[#6F9FC5] shadow-xs">
             <div className="space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] group-hover:scale-110 group-hover:-translate-y-0.5 transition-transform duration-200">
                 <ShieldCheck className="w-6 h-6" />
               </div>
               <span className="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-[#F2F5F8] dark:bg-[#17263A] text-[#315D82] dark:text-[#6F9FC5] border border-[#D5DEE8] dark:border-[#30445B] inline-block">
                 15 Statutory Services
               </span>
-              <h3 className="text-xl font-bold font-display text-[#182638] dark:text-[#F1F5F9]">
+              <h3 className="text-xl font-bold font-display text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
                 Statutory & Compliance Services
               </h3>
               <p className="text-xs text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
                 GST registration, ITR filing, MSME/Udyam, FSSAI food licensing, trademark protection, and trade licences. Verified documentation support with full regulatory disclosures.
               </p>
             </div>
-            <div className="mt-6 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B]">
+            <div className="mt-6 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-between gap-2">
               <button
                 onClick={() => onNavigate('services')}
-                className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1.5 cursor-pointer"
+                className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1.5 cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
               >
                 <span>View Compliance Services</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
+              <a
+                href="tel:+918220550829"
+                className="call-now-button inline-flex items-center gap-1 text-[11px] font-semibold text-[#182638] dark:text-[#F1F5F9] hover:text-[#315D82] dark:hover:text-[#6F9FC5] transition-colors px-2.5 py-1 rounded-lg border border-transparent hover:border-[#D5DEE8] dark:hover:border-[#30445B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
+                title="Call Now: +91 82205 50829"
+              >
+                <Phone className="w-3 h-3 text-[#315D82] dark:text-[#6F9FC5]" />
+                <span>Call Now</span>
+              </a>
             </div>
           </div>
 
           {/* Pillar 3: E-Services */}
-          <div className="rounded-2xl p-6 sm:p-7 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] hover:border-[#315D82] dark:hover:border-[#6F9FC5] transition-all group shadow-xs">
+          <div className="interactive-card group rounded-2xl p-6 sm:p-7 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] hover:border-[#315D82] dark:hover:border-[#6F9FC5] shadow-xs">
             <div className="space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] group-hover:scale-110 group-hover:-translate-y-0.5 transition-transform duration-200">
                 <Globe className="w-6 h-6" />
               </div>
               <span className="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-[#F2F5F8] dark:bg-[#17263A] text-[#315D82] dark:text-[#6F9FC5] border border-[#D5DEE8] dark:border-[#30445B] inline-block">
                 ₹236 Initial Booking Deposit
               </span>
-              <h3 className="text-xl font-bold font-display text-[#182638] dark:text-[#F1F5F9]">
+              <h3 className="text-xl font-bold font-display text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
                 Citizen Digital E-Services
               </h3>
               <p className="text-xs text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
                 Online guidance for PAN cards, Voter ID, Passport, Ration Cards, and EB service connections. Clear ₹200 + 18% GST ₹36 booking fee with full transparency.
               </p>
             </div>
-            <div className="mt-6 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B]">
+            <div className="mt-6 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-between gap-2">
               <button
                 onClick={() => onNavigate('services')}
-                className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1.5 cursor-pointer"
+                className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1.5 cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
               >
                 <span>Book E-Service (₹236)</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
+              <a
+                href="tel:+918220550829"
+                className="call-now-button inline-flex items-center gap-1 text-[11px] font-semibold text-[#182638] dark:text-[#F1F5F9] hover:text-[#315D82] dark:hover:text-[#6F9FC5] transition-colors px-2.5 py-1 rounded-lg border border-transparent hover:border-[#D5DEE8] dark:hover:border-[#30445B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
+                title="Call Now: +91 82205 50829"
+              >
+                <Phone className="w-3 h-3 text-[#315D82] dark:text-[#6F9FC5]" />
+                <span>Call Now</span>
+              </a>
             </div>
           </div>
         </div>
@@ -337,10 +362,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-12 gap-6">
           
           {/* Bento Card 1: Wide Featured Web Architecture (Spans 8 columns) */}
-          <div className="lg:col-span-8 rounded-2xl p-6 sm:p-8 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs relative overflow-hidden">
+          <div className="interactive-card group lg:col-span-8 rounded-2xl p-6 sm:p-8 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs relative overflow-hidden hover:border-[#315D82] dark:hover:border-[#6F9FC5]">
             <div>
               <div className="flex items-center justify-between pb-4 border-b border-[#D5DEE8] dark:border-[#30445B]">
-                <div className="w-10 h-10 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] border border-[#D5DEE8] dark:border-[#30445B]">
+                <div className="w-10 h-10 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] border border-[#D5DEE8] dark:border-[#30445B] group-hover:scale-110 group-hover:-translate-y-0.5 transition-transform duration-200">
                   <Globe className="w-5 h-5" />
                 </div>
                 <span className="text-xs font-mono font-semibold text-[#315D82] dark:text-[#6F9FC5] bg-[#F2F5F8] dark:bg-[#17263A] px-3 py-1 rounded-full border border-[#D5DEE8] dark:border-[#30445B]">
@@ -348,7 +373,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 </span>
               </div>
 
-              <h3 className="mt-5 text-xl sm:text-2xl font-bold font-display text-[#182638] dark:text-[#F1F5F9]">
+              <h3 className="mt-5 text-xl sm:text-2xl font-bold font-display text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
                 {t.services.items.businessWebsites.title}
               </h3>
               <p className="mt-2 text-sm text-[#526477] dark:text-[#B8C5D4] leading-relaxed max-w-xl">
@@ -371,10 +396,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             <div className="mt-8 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-between">
               <button
                 onClick={() => onNavigate('service-business-websites')}
-                className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1.5 cursor-pointer"
+                className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1.5 cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
               >
                 <span>{language === 'ta' ? 'அம்சங்களை விரிவாகப் பார்க்க' : 'Explore Architecture & Scope'}</span>
-                <ArrowUpRight className="w-4 h-4" />
+                <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </button>
               <span className="text-[11px] font-mono text-[#526477] dark:text-[#B8C5D4]">
                 Turnaround: 7 - 14 Days
@@ -383,10 +408,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           </div>
 
           {/* Bento Card 2: Custom CRM Software (Spans 4 columns) */}
-          <div className="lg:col-span-4 rounded-2xl p-6 sm:p-8 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs relative overflow-hidden">
+          <div className="interactive-card group lg:col-span-4 rounded-2xl p-6 sm:p-8 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs relative overflow-hidden hover:border-[#315D82] dark:hover:border-[#6F9FC5]">
             <div>
               <div className="flex items-center justify-between pb-4 border-b border-[#D5DEE8] dark:border-[#30445B]">
-                <div className="w-10 h-10 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] border border-[#D5DEE8] dark:border-[#30445B]">
+                <div className="w-10 h-10 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] border border-[#D5DEE8] dark:border-[#30445B] group-hover:scale-110 group-hover:-translate-y-0.5 transition-transform duration-200">
                   <Database className="w-5 h-5" />
                 </div>
                 <span className="text-xs font-mono font-semibold text-[#315D82] dark:text-[#6F9FC5] bg-[#F2F5F8] dark:bg-[#17263A] px-3 py-1 rounded-full border border-[#D5DEE8] dark:border-[#30445B]">
@@ -394,7 +419,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 </span>
               </div>
 
-              <h3 className="mt-5 text-xl font-bold font-display text-[#182638] dark:text-[#F1F5F9]">
+              <h3 className="mt-5 text-xl font-bold font-display text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
                 {t.services.items.customCrm.title}
               </h3>
               <p className="mt-2 text-xs sm:text-sm text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
@@ -421,19 +446,19 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             <div className="mt-8 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-between">
               <button
                 onClick={() => onNavigate('service-custom-crm')}
-                className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1.5 cursor-pointer"
+                className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1.5 cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
               >
                 <span>{language === 'ta' ? 'CRM விபரங்கள்' : 'View CRM Architecture'}</span>
-                <ArrowUpRight className="w-4 h-4" />
+                <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </button>
             </div>
           </div>
 
           {/* Bento Card 3: E-Commerce Store with WhatsApp & UPI (Spans 4 columns) */}
-          <div className="lg:col-span-4 rounded-2xl p-6 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs">
+          <div className="interactive-card group lg:col-span-4 rounded-2xl p-6 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs hover:border-[#315D82] dark:hover:border-[#6F9FC5]">
             <div>
               <div className="flex items-center justify-between pb-4 border-b border-[#D5DEE8] dark:border-[#30445B]">
-                <div className="w-10 h-10 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] border border-[#D5DEE8] dark:border-[#30445B]">
+                <div className="w-10 h-10 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] border border-[#D5DEE8] dark:border-[#30445B] group-hover:scale-110 group-hover:-translate-y-0.5 transition-transform duration-200">
                   <ShoppingBag className="w-5 h-5" />
                 </div>
                 <span className="text-xs font-mono font-semibold text-[#315D82] dark:text-[#6F9FC5] bg-[#F2F5F8] dark:bg-[#17263A] px-3 py-1 rounded-full border border-[#D5DEE8] dark:border-[#30445B]">
@@ -441,7 +466,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 </span>
               </div>
 
-              <h3 className="mt-4 text-lg font-bold font-display text-[#182638] dark:text-[#F1F5F9]">
+              <h3 className="mt-4 text-lg font-bold font-display text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
                 {t.services.items.ecommerce.title}
               </h3>
               <p className="mt-2 text-xs sm:text-sm text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
@@ -452,19 +477,19 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             <div className="mt-6 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-between">
               <button
                 onClick={() => onNavigate('service-ecommerce')}
-                className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1 cursor-pointer"
+                className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1 cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
               >
                 <span>{language === 'ta' ? 'ஸ்டோர் விபரங்கள்' : 'Explore Store Features'}</span>
-                <ArrowUpRight className="w-3.5 h-3.5" />
+                <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </button>
             </div>
           </div>
 
           {/* Bento Card 4: AI & Automated Workflows (Spans 4 columns) */}
-          <div className="lg:col-span-4 rounded-2xl p-6 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs">
+          <div className="interactive-card group lg:col-span-4 rounded-2xl p-6 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs hover:border-[#315D82] dark:hover:border-[#6F9FC5]">
             <div>
               <div className="flex items-center justify-between pb-4 border-b border-[#D5DEE8] dark:border-[#30445B]">
-                <div className="w-10 h-10 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] border border-[#D5DEE8] dark:border-[#30445B]">
+                <div className="w-10 h-10 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] border border-[#D5DEE8] dark:border-[#30445B] group-hover:scale-110 group-hover:-translate-y-0.5 transition-transform duration-200">
                   <Cpu className="w-5 h-5" />
                 </div>
                 <span className="text-xs font-mono font-semibold text-[#315D82] dark:text-[#6F9FC5] bg-[#F2F5F8] dark:bg-[#17263A] px-3 py-1 rounded-full border border-[#D5DEE8] dark:border-[#30445B]">
@@ -472,7 +497,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 </span>
               </div>
 
-              <h3 className="mt-4 text-lg font-bold font-display text-[#182638] dark:text-[#F1F5F9]">
+              <h3 className="mt-4 text-lg font-bold font-display text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
                 {t.services.items.aiAutomation.title}
               </h3>
               <p className="mt-2 text-xs sm:text-sm text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
@@ -483,19 +508,19 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             <div className="mt-6 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-between">
               <button
                 onClick={() => onNavigate('service-ai-automation')}
-                className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1 cursor-pointer"
+                className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1 cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
               >
                 <span>{language === 'ta' ? 'ஆட்டோமேஷன் விபரங்கள்' : 'Explore AI Pipelines'}</span>
-                <ArrowUpRight className="w-3.5 h-3.5" />
+                <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </button>
             </div>
           </div>
 
           {/* Bento Card 5: CRM Integration & Payments (Spans 4 columns) */}
-          <div className="lg:col-span-4 rounded-2xl p-6 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs">
+          <div className="interactive-card group lg:col-span-4 rounded-2xl p-6 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs hover:border-[#315D82] dark:hover:border-[#6F9FC5]">
             <div>
               <div className="flex items-center justify-between pb-4 border-b border-[#D5DEE8] dark:border-[#30445B]">
-                <div className="w-10 h-10 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] border border-[#D5DEE8] dark:border-[#30445B]">
+                <div className="w-10 h-10 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] border border-[#D5DEE8] dark:border-[#30445B] group-hover:scale-110 group-hover:-translate-y-0.5 transition-transform duration-200">
                   <CreditCard className="w-5 h-5" />
                 </div>
                 <span className="text-xs font-mono font-semibold text-[#315D82] dark:text-[#6F9FC5] bg-[#F2F5F8] dark:bg-[#17263A] px-3 py-1 rounded-full border border-[#D5DEE8] dark:border-[#30445B]">
@@ -503,7 +528,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 </span>
               </div>
 
-              <h3 className="mt-4 text-lg font-bold font-display text-[#182638] dark:text-[#F1F5F9]">
+              <h3 className="mt-4 text-lg font-bold font-display text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
                 {t.services.items.crmIntegration.title}
               </h3>
               <p className="mt-2 text-xs sm:text-sm text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
@@ -514,10 +539,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             <div className="mt-6 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-between">
               <button
                 onClick={() => onNavigate('service-crm-integration')}
-                className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1 cursor-pointer"
+                className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1 cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
               >
                 <span>{language === 'ta' ? 'இணைப்பு முறைகள்' : 'View Integrations'}</span>
-                <ArrowUpRight className="w-3.5 h-3.5" />
+                <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </button>
             </div>
           </div>
@@ -542,7 +567,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           </div>
           <button
             onClick={() => onNavigate('portfolio')}
-            className="text-xs sm:text-sm font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline transition-colors flex items-center gap-1.5 cursor-pointer"
+            className="text-xs sm:text-sm font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline transition-colors flex items-center gap-1.5 self-start md:self-auto cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
           >
             <span>{t.home.viewAllProjects}</span>
             <ArrowRight className="w-4 h-4" />
@@ -552,15 +577,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
           
           {/* Showcase 1: Tamil Gold Buyer (Primary Featured) */}
-          <div className="rounded-2xl p-6 sm:p-7 bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] flex flex-col justify-between shadow-xs">
+          <div className="interactive-card group rounded-2xl p-6 sm:p-7 bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] flex flex-col justify-between shadow-xs hover:border-[#315D82] dark:hover:border-[#6F9FC5]">
             <div>
               <div className="flex items-center justify-between pb-4 border-b border-[#D5DEE8] dark:border-[#30445B]">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] font-bold text-sm tracking-wider">
+                  <div className="w-10 h-10 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] font-bold text-sm tracking-wider group-hover:scale-110 group-hover:-translate-y-0.5 transition-transform duration-200">
                     <Calculator className="w-5 h-5 text-[#315D82] dark:text-[#6F9FC5]" />
                   </div>
                   <div>
-                    <div className="text-sm font-semibold tracking-wide text-[#182638] dark:text-[#F1F5F9]">
+                    <div className="text-sm font-semibold tracking-wide text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
                       Tamil Gold Buyer
                     </div>
                     <div className="text-xs text-[#526477] dark:text-[#B8C5D4]">
@@ -574,7 +599,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               </div>
 
               {/* Live Valuation Mockup Preview */}
-              <div className="mt-4 p-4 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] space-y-3">
+              <div className="mt-4 p-4 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] space-y-3 transition-transform duration-300 group-hover:scale-[1.015] overflow-hidden">
                 <div className="grid grid-cols-3 gap-2 text-center text-xs">
                   <div className="bg-white dark:bg-[#1C2B40] p-2 rounded-lg border border-[#D5DEE8] dark:border-[#30445B]">
                     <span className="text-[10px] text-[#526477] dark:text-[#B8C5D4] block">24K Pure Gold</span>
@@ -609,7 +634,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 href="https://goldandsilverbuyer.live/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2 rounded-xl cyber-button-primary text-xs font-semibold flex items-center gap-1.5 shadow-xs cursor-pointer"
+                className="px-4 py-2 rounded-xl cyber-button-primary text-xs font-semibold flex items-center gap-1.5 shadow-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5] focus-visible:ring-offset-2"
               >
                 <span>View Live Platform</span>
                 <ExternalLink className="w-3.5 h-3.5" />
@@ -618,15 +643,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           </div>
 
           {/* Showcase 2: Commercial Operations CRM */}
-          <div className="rounded-2xl p-6 sm:p-7 bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] flex flex-col justify-between shadow-xs">
+          <div className="interactive-card group rounded-2xl p-6 sm:p-7 bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] flex flex-col justify-between shadow-xs hover:border-[#315D82] dark:hover:border-[#6F9FC5]">
             <div>
               <div className="flex items-center justify-between pb-4 border-b border-[#D5DEE8] dark:border-[#30445B]">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] font-bold text-sm tracking-wider">
+                  <div className="w-10 h-10 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] font-bold text-sm tracking-wider group-hover:scale-110 group-hover:-translate-y-0.5 transition-transform duration-200">
                     <Database className="w-5 h-5 text-[#315D82] dark:text-[#6F9FC5]" />
                   </div>
                   <div>
-                    <div className="text-sm font-semibold tracking-wide text-[#182638] dark:text-[#F1F5F9]">
+                    <div className="text-sm font-semibold tracking-wide text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
                       Commercial Operations CRM
                     </div>
                     <div className="text-xs text-[#526477] dark:text-[#B8C5D4]">
@@ -641,7 +666,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               </div>
 
               {/* Pipeline Columns Preview */}
-              <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
+              <div className="mt-4 grid grid-cols-3 gap-2 text-xs transition-transform duration-300 group-hover:scale-[1.015] overflow-hidden">
                 <div className="bg-[#F2F5F8] dark:bg-[#17263A] p-2.5 rounded-xl border border-[#D5DEE8] dark:border-[#30445B]">
                   <div className="flex items-center justify-between text-[#526477] dark:text-[#B8C5D4] mb-1.5">
                     <span className="text-[11px] font-semibold text-[#182638] dark:text-[#F1F5F9]">New Leads</span>
@@ -684,10 +709,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               </span>
               <button
                 onClick={() => onNavigate('portfolio')}
-                className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1 cursor-pointer"
+                className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1 cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
               >
                 <span>View Case Study</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
           </div>
@@ -716,15 +741,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               return (
                 <div
                   key={step.number}
-                  className="bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] rounded-2xl p-5 relative shadow-xs hover:border-[#315D82] dark:hover:border-[#6F9FC5] transition-all"
+                  className="interactive-card group bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] rounded-2xl p-5 relative shadow-xs hover:border-[#315D82] dark:hover:border-[#6F9FC5]"
                 >
-                  <div className="text-2xl font-bold font-mono text-[#315D82]/70 dark:text-[#6F9FC5]/70 mb-3">
+                  <div className="text-2xl font-bold font-mono text-[#315D82]/70 dark:text-[#6F9FC5]/70 mb-3 group-hover:scale-105 transition-transform origin-left">
                     {step.number}
                   </div>
                   <div className="text-xs font-mono font-semibold uppercase tracking-wider text-[#315D82] dark:text-[#6F9FC5] mb-1">
                     {language === 'ta' ? stepNameTa : step.name}
                   </div>
-                  <h3 className="text-sm font-bold text-[#182638] dark:text-[#F1F5F9] mb-2 leading-snug">
+                  <h3 className="text-sm font-bold text-[#182638] dark:text-[#F1F5F9] mb-2 leading-snug group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
                     {step.heading}
                   </h3>
                   <p className="text-xs text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
@@ -756,11 +781,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             {PRICING_PACKAGES.map((pkg) => (
               <div
                 key={pkg.id}
-                className="bg-[#F2F5F8] dark:bg-[#17263A] rounded-2xl p-5 border border-[#D5DEE8] dark:border-[#30445B] flex flex-col justify-between hover:border-[#315D82] dark:hover:border-[#6F9FC5] transition-all shadow-xs"
+                className="interactive-card group bg-[#F2F5F8] dark:bg-[#17263A] rounded-2xl p-5 border border-[#D5DEE8] dark:border-[#30445B] flex flex-col justify-between hover:border-[#315D82] dark:hover:border-[#6F9FC5] shadow-xs"
               >
                 <div>
                   <div className="text-xs font-semibold text-[#526477] dark:text-[#B8C5D4] mb-1">{pkg.name}</div>
-                  <div className="text-2xl font-bold font-mono text-[#315D82] dark:text-[#6F9FC5] tabular-nums">
+                  <div className="text-2xl font-bold font-mono text-[#315D82] dark:text-[#6F9FC5] tabular-nums group-hover:scale-105 transition-transform origin-left">
                     {pkg.startingPriceDisplay}
                   </div>
                   <p className="mt-2 text-xs text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
@@ -780,13 +805,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 <div className="mt-5 pt-3 border-t border-[#D5DEE8] dark:border-[#30445B] flex flex-col gap-2">
                   <button
                     onClick={() => onNavigate(pkg.slug)}
-                    className="w-full py-2 text-xs font-semibold text-center text-[#315D82] dark:text-[#6F9FC5] hover:bg-white dark:hover:bg-[#1C2B40] rounded-xl transition-colors cursor-pointer border border-[#D5DEE8] dark:border-[#30445B]"
+                    className="w-full py-2 text-xs font-semibold text-center text-[#315D82] dark:text-[#6F9FC5] hover:bg-white dark:hover:bg-[#1C2B40] rounded-xl transition-colors cursor-pointer border border-[#D5DEE8] dark:border-[#30445B] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
                   >
                     {language === 'ta' ? 'விபரங்களைக் காண்க' : 'View Scope Details'}
                   </button>
                   <button
                     onClick={() => onNavigate('checkout')}
-                    className="w-full py-2 text-xs font-semibold text-center text-[#182638] dark:text-[#F1F5F9] bg-white hover:bg-[#F2F5F8] dark:bg-[#1C2B40] dark:hover:bg-[#17263A] rounded-xl transition-colors cursor-pointer border border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-center gap-1.5 shadow-xs"
+                    className="w-full py-2 text-xs font-semibold text-center text-[#182638] dark:text-[#F1F5F9] bg-white hover:bg-[#F2F5F8] dark:bg-[#1C2B40] dark:hover:bg-[#17263A] rounded-xl transition-colors cursor-pointer border border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-center gap-1.5 shadow-xs active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
                   >
                     <CreditCard className="w-3.5 h-3.5 text-[#315D82] dark:text-[#6F9FC5]" />
                     <span>{language === 'ta' ? 'மைல்கல் முன்பணம்' : 'Order Milestone'}</span>
@@ -802,7 +827,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             </div>
             <button
               onClick={() => onNavigate('pricing')}
-              className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline cursor-pointer flex items-center gap-1"
+              className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline cursor-pointer flex items-center gap-1 active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
             >
               <span>{language === 'ta' ? 'விலை கால்குலேட்டரைத் திறக்க' : 'Open Pricing & Cost Calculator'}</span>
               <ArrowRight className="w-3.5 h-3.5" />

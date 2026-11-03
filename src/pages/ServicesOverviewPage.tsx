@@ -21,7 +21,8 @@ import {
   Layers,
   ChevronRight,
   Terminal,
-  Cpu
+  Cpu,
+  Phone
 } from 'lucide-react';
 
 interface ServicesOverviewPageProps {
@@ -77,7 +78,7 @@ export const ServicesOverviewPage: React.FC<ServicesOverviewPageProps> = ({
         <div className="flex flex-wrap items-center gap-2 border-b border-[#D5DEE8] dark:border-[#30445B] pb-4">
           <button
             onClick={() => setActiveCategory('all')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-mono font-semibold transition-all cursor-pointer ${
+            className={`nav-tab-item px-4 py-2 rounded-xl text-xs sm:text-sm font-mono font-semibold transition-all cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5] focus-visible:ring-offset-2 ${
               activeCategory === 'all'
                 ? 'bg-[#315D82] dark:bg-[#416F98] text-white shadow-sm'
                 : 'bg-white dark:bg-[#1C2B40] text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-white border border-[#D5DEE8] dark:border-[#30445B]'
@@ -88,7 +89,7 @@ export const ServicesOverviewPage: React.FC<ServicesOverviewPageProps> = ({
 
           <button
             onClick={() => setActiveCategory('software')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-mono font-semibold transition-all flex items-center gap-2 cursor-pointer ${
+            className={`nav-tab-item px-4 py-2 rounded-xl text-xs sm:text-sm font-mono font-semibold transition-all flex items-center gap-2 cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5] focus-visible:ring-offset-2 ${
               activeCategory === 'software'
                 ? 'bg-[#315D82] dark:bg-[#416F98] text-white shadow-sm'
                 : 'bg-white dark:bg-[#1C2B40] text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-white border border-[#D5DEE8] dark:border-[#30445B]'
@@ -100,7 +101,7 @@ export const ServicesOverviewPage: React.FC<ServicesOverviewPageProps> = ({
 
           <button
             onClick={() => setActiveCategory('compliance')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-mono font-semibold transition-all flex items-center gap-2 cursor-pointer ${
+            className={`nav-tab-item px-4 py-2 rounded-xl text-xs sm:text-sm font-mono font-semibold transition-all flex items-center gap-2 cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5] focus-visible:ring-offset-2 ${
               activeCategory === 'compliance'
                 ? 'bg-[#315D82] dark:bg-[#416F98] text-white shadow-sm'
                 : 'bg-white dark:bg-[#1C2B40] text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-white border border-[#D5DEE8] dark:border-[#30445B]'
@@ -112,7 +113,7 @@ export const ServicesOverviewPage: React.FC<ServicesOverviewPageProps> = ({
 
           <button
             onClick={() => setActiveCategory('eservices')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-mono font-semibold transition-all flex items-center gap-2 cursor-pointer ${
+            className={`nav-tab-item px-4 py-2 rounded-xl text-xs sm:text-sm font-mono font-semibold transition-all flex items-center gap-2 cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5] focus-visible:ring-offset-2 ${
               activeCategory === 'eservices'
                 ? 'bg-[#315D82] dark:bg-[#416F98] text-white shadow-sm'
                 : 'bg-white dark:bg-[#1C2B40] text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-white border border-[#D5DEE8] dark:border-[#30445B]'
@@ -144,13 +145,13 @@ export const ServicesOverviewPage: React.FC<ServicesOverviewPageProps> = ({
             return (
               <div
                 key={service.id}
-                className="rounded-2xl p-6 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-sm hover:border-[#315D82] dark:hover:border-[#6F9FC5] transition-all"
+                className="interactive-card group rounded-2xl p-6 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-sm hover:border-[#315D82] dark:hover:border-[#6F9FC5]"
               >
                 <div className="space-y-4">
                   {/* Header Tag & Category */}
                   <div className="flex items-center justify-between gap-2">
                     <span
-                      className={`text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full border ${
+                      className={`text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full border transition-colors ${
                         isEService
                           ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800'
                           : service.category === 'compliance'
@@ -173,7 +174,7 @@ export const ServicesOverviewPage: React.FC<ServicesOverviewPageProps> = ({
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-lg font-bold font-display text-[#182638] dark:text-[#F1F5F9] leading-snug">
+                  <h3 className="text-lg font-bold font-display text-[#182638] dark:text-[#F1F5F9] leading-snug group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
                     {service.title}
                   </h3>
 
@@ -201,21 +202,33 @@ export const ServicesOverviewPage: React.FC<ServicesOverviewPageProps> = ({
                 </div>
 
                 {/* Action Buttons */}
-                <div className="pt-5 mt-4 border-t border-[#D5DEE8] dark:border-[#30445B] flex flex-col sm:flex-row gap-2">
-                  <a
-                    href={service.whatsappUrl || `https://wa.me/918220550829?text=${encodeURIComponent(service.whatsappMessage || service.title)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 py-2 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 border border-emerald-300 dark:border-emerald-700/50 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                  >
-                    <MessageSquare className="w-3.5 h-3.5" />
-                    <span>WhatsApp</span>
-                    <ExternalLink className="w-3 h-3 ml-0.5" />
-                  </a>
+                <div className="pt-5 mt-4 border-t border-[#D5DEE8] dark:border-[#30445B] space-y-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    <a
+                      href="tel:+918220550829"
+                      className="call-now-button py-2 px-2.5 rounded-xl bg-[#F2F5F8] hover:bg-[#E9EEF3] dark:bg-[#17263A] dark:hover:bg-[#20324b] border border-[#D5DEE8] dark:border-[#30445B] text-[#182638] dark:text-[#F1F5F9] hover:text-[#315D82] dark:hover:text-[#6F9FC5] text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5] focus-visible:ring-offset-2"
+                      title="Call RUBI TECH PARK directly at +91 82205 50829"
+                    >
+                      <Phone className="w-3.5 h-3.5 text-[#315D82] dark:text-[#6F9FC5]" />
+                      <span>Call Now</span>
+                    </a>
+
+                    <a
+                      href={service.whatsappUrl || `https://wa.me/918220550829?text=${encodeURIComponent(service.whatsappMessage || service.title)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="whatsapp-button py-2 px-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 border border-emerald-300 dark:border-emerald-700/50 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                      title="Chat on WhatsApp"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5" />
+                      <span>WhatsApp</span>
+                      <ExternalLink className="w-3 h-3 ml-0.5 opacity-70" />
+                    </a>
+                  </div>
 
                   <button
                     onClick={() => handleEnquire(service)}
-                    className="flex-1 py-2 px-3 rounded-xl bg-[#315D82] dark:bg-[#416F98] text-white hover:opacity-95 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                    className="cyber-button-primary w-full py-2.5 px-3 rounded-xl bg-[#315D82] dark:bg-[#416F98] text-white hover:opacity-95 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5] focus-visible:ring-offset-2"
                   >
                     <span>{isEService ? 'Book (₹236)' : 'Get Quote'}</span>
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -227,30 +240,38 @@ export const ServicesOverviewPage: React.FC<ServicesOverviewPageProps> = ({
         </div>
 
         {/* Bottom Contact Guidance Strip */}
-        <div className="bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm">
+        <div className="interactive-card bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm">
           <div className="space-y-1 text-center sm:text-left">
             <h4 className="text-base font-bold text-[#182638] dark:text-[#F1F5F9]">
               Need custom enterprise architecture or a bundled software package?
             </h4>
             <p className="text-xs text-[#526477] dark:text-[#B8C5D4]">
-              Speak directly with our senior technology and compliance advisors on WhatsApp or submit your project specification.
+              Speak directly with our senior technology and compliance advisors on phone or WhatsApp or submit your project specification.
             </p>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+            <a
+              href="tel:+918220550829"
+              className="call-now-button py-2.5 px-3.5 rounded-xl bg-[#F2F5F8] hover:bg-[#E9EEF3] dark:bg-[#17263A] dark:hover:bg-[#20324b] border border-[#D5DEE8] dark:border-[#30445B] text-[#182638] dark:text-[#F1F5F9] hover:text-[#315D82] dark:hover:text-[#6F9FC5] text-xs font-semibold flex items-center gap-1.5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5] focus-visible:ring-offset-2"
+            >
+              <Phone className="w-4 h-4 text-[#315D82] dark:text-[#6F9FC5]" />
+              <span>Call Now</span>
+            </a>
+
             <a
               href="https://wa.me/918220550829?text=Hello%20RUBI%20TECH%20PARK%2C%20I%20would%20like%20to%20discuss%20a%20custom%20service%20requirement."
               target="_blank"
               rel="noopener noreferrer"
-              className="py-2.5 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 border border-emerald-300 dark:border-emerald-700/50 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer"
+              className="whatsapp-button py-2.5 px-3.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 border border-emerald-300 dark:border-emerald-700/50 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center gap-1.5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
             >
               <MessageSquare className="w-4 h-4" />
-              <span>Chat on WhatsApp</span>
+              <span>WhatsApp</span>
             </a>
 
             <button
               onClick={() => onNavigate('contact')}
-              className="py-2.5 px-4 rounded-xl bg-[#315D82] dark:bg-[#416F98] text-white hover:opacity-95 text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer shadow-xs"
+              className="cyber-button-primary py-2.5 px-4 rounded-xl bg-[#315D82] dark:bg-[#416F98] text-white hover:opacity-95 text-xs font-semibold flex items-center gap-2 cursor-pointer shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5] focus-visible:ring-offset-2"
             >
               <span>Submit Brief</span>
               <ArrowRight className="w-4 h-4" />

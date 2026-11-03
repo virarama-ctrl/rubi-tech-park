@@ -42,37 +42,36 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
   };
 
   return (
-    <div className="relative futuristic-mesh-bg min-h-screen text-slate-900 dark:text-white transition-colors">
-      {/* Background Grid & Lighting */}
-      <div className="absolute inset-0 cyber-grid opacity-30 pointer-events-none -z-10" />
-      <div className="absolute top-10 left-1/3 w-96 h-96 bg-[#00D4FF]/10 blur-[130px] pointer-events-none -z-10" />
+    <div className="relative futuristic-mesh-bg min-h-screen text-[#182638] dark:text-[#F1F5F9] transition-colors">
+      {/* Background Grid */}
+      <div className="absolute inset-0 cyber-grid opacity-25 pointer-events-none -z-10" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-16 relative z-10">
         {/* Header */}
         <div className="max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white dark:bg-[#0B1530] border border-blue-200 dark:border-[#00D4FF]/30 text-xs font-mono text-[#0284C7] dark:text-[#00D4FF] shadow-xs">
-            <Sparkles className="w-3.5 h-3.5 text-[#0284C7] dark:text-[#00D4FF]" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] text-xs font-mono text-[#315D82] dark:text-[#6F9FC5] shadow-xs">
+            <Sparkles className="w-3.5 h-3.5 text-[#315D82] dark:text-[#6F9FC5]" />
             <span>{t.header.work}</span>
-            <span aria-hidden="true" className="text-slate-400 dark:text-[#8292AA]">·</span>
+            <span aria-hidden="true" className="text-[#526477] dark:text-[#B8C5D4]">·</span>
             <span>{t.brand.name}</span>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-bold font-display text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-3xl sm:text-5xl font-bold font-display text-[#182638] dark:text-[#F1F5F9] tracking-tight">
             {t.portfolio.title}
           </h1>
-          <p className="text-base text-slate-600 dark:text-[#CBD5E1] leading-relaxed">
+          <p className="text-base text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
             {t.portfolio.subtitle}
           </p>
         </div>
 
         {/* Portfolio Integrity Statement Box */}
-        <div className="p-5 bg-white dark:bg-[#0B1530]/80 backdrop-blur-xl border border-slate-200 dark:border-[#00D4FF]/20 rounded-2xl text-xs sm:text-sm text-slate-600 dark:text-[#CBD5E1] shadow-lg shadow-slate-200/50 dark:shadow-xl dark:shadow-black/50">
+        <div className="p-5 bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] rounded-2xl text-xs sm:text-sm text-[#182638] dark:text-[#F1F5F9] shadow-xs">
           <div className="flex items-start gap-3">
-            <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-[#00E5A3] shrink-0 mt-0.5" />
+            <ShieldCheck className="w-5 h-5 text-[#315D82] dark:text-[#6F9FC5] shrink-0 mt-0.5" />
             <div className="space-y-1">
-              <span className="font-semibold text-slate-900 dark:text-white">
+              <span className="font-semibold text-[#182638] dark:text-[#F1F5F9]">
                 {language === 'ta' ? 'எங்கள் போர்ட்ஃபோலியோ உண்மைத்தன்மைக் கொள்கை:' : 'Our Strict Engineering Integrity Policy:'}
               </span>
-              <p className="text-slate-600 dark:text-[#CBD5E1] leading-relaxed text-xs">
+              <p className="text-[#526477] dark:text-[#B8C5D4] leading-relaxed text-xs">
                 {language === 'ta'
                   ? 'கீழே உள்ள ஒவ்வொரு திட்டமும் அதன் உண்மை நிலையுடன் துல்லியமாக குறிப்பிடப்பட்டுள்ளது: லைவ் (நேரலை), செயல்பாட்டில் உள்ளது அல்லது டெமோ. நாங்கள் ஒருபோதும் போலி வாடிக்கையாளர் பெயர்களையோ அல்லது புனையப்பட்ட 5-நட்சத்திர சான்றுகளையோ பயன்படுத்துவதில்லை.'
                   : 'Every project below is truthfully represented with its verified status: Live (deployed in production), In Progress (in active development milestone), or Demo (our internal reference architecture). We never fabricate client names, invent fake 5-star customer testimonials, or publish unverified vanity statistics.'}
@@ -83,7 +82,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
 
         {/* Interactive Filter Segmented Control */}
         <div className="flex items-center gap-2 pb-2 overflow-x-auto">
-          <span className="text-xs font-mono text-slate-600 dark:text-[#CBD5E1] mr-2 shrink-0">
+          <span className="text-xs font-mono text-[#526477] dark:text-[#B8C5D4] mr-2 shrink-0">
             {language === 'ta' ? 'நிலை வடிகட்டுதல்:' : 'Filter Pipeline:'}
           </span>
           {(['All', 'Live', 'In Progress', 'Demo'] as const).map((filter) => (
@@ -91,10 +90,10 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
               key={filter}
               type="button"
               onClick={() => setActiveFilter(filter)}
-              className={`px-4 py-2 text-xs font-mono font-semibold rounded-xl transition-all whitespace-nowrap cursor-pointer ${
+              className={`nav-tab-item px-4 py-2 text-xs font-mono font-semibold rounded-xl transition-all whitespace-nowrap cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5] focus-visible:ring-offset-2 ${
                 activeFilter === filter
-                  ? 'bg-gradient-to-r from-blue-600 to-[#0284C7] dark:from-[#00D4FF] dark:to-[#356BFF] text-white shadow-md shadow-blue-500/20 dark:shadow-[#00D4FF]/20'
-                  : 'bg-white dark:bg-[#0B1530] text-slate-700 dark:text-[#CBD5E1] hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-[#00D4FF]/20 shadow-xs'
+                  ? 'bg-[#315D82] dark:bg-[#416F98] text-white shadow-xs'
+                  : 'bg-white dark:bg-[#1C2B40] text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-[#F1F5F9] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs'
               }`}
             >
               {filter === 'All' ? t.portfolio.filterAll : filter}
@@ -114,11 +113,11 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
         </div>
 
         {/* Footer CTA */}
-        <div className="bg-white dark:bg-[#0B1530]/85 backdrop-blur-xl border border-slate-200 dark:border-[#00D4FF]/25 rounded-3xl p-8 sm:p-12 text-center max-w-3xl mx-auto space-y-4 shadow-xl shadow-slate-200/50 dark:shadow-2xl dark:shadow-black/70">
-          <h2 className="text-2xl font-bold font-display text-slate-900 dark:text-white">
+        <div className="interactive-card bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] rounded-3xl p-8 sm:p-12 text-center max-w-3xl mx-auto space-y-4 shadow-xs">
+          <h2 className="text-2xl font-bold font-display text-[#182638] dark:text-[#F1F5F9]">
             {language === 'ta' ? 'இதுபோன்ற மென்பொருள் திட்டம் தேவையா?' : 'Have an Architecture Challenge in Mind?'}
           </h2>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-[#CBD5E1] leading-relaxed max-w-xl mx-auto">
+          <p className="text-xs sm:text-sm text-[#526477] dark:text-[#B8C5D4] leading-relaxed max-w-xl mx-auto">
             {language === 'ta'
               ? 'வாட்ஸ்அப் ஆட்டோமேஷன் கொண்ட டிஜிட்டல் கேட்டலாக், இ-காமர்ஸ் தளம் அல்லது பிரத்யேக CRM மென்பொருள் எதுவாக இருந்தாலும் உங்கள் வணிக செயல்பாட்டிற்கேற்ப எங்களால் கட்டமைக்க முடியும்.'
               : 'Whether you require an automated catalog, high-concurrency fintech valuation tool, e-commerce engine, or a secure private CRM, our engineering team can architect a solution tailored to your operational realities.'}
@@ -126,7 +125,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
           <div className="pt-2">
             <button
               onClick={() => onNavigate('contact')}
-              className="px-7 py-3 text-xs sm:text-sm font-semibold cyber-button-primary rounded-xl transition-all shadow-lg inline-flex items-center gap-2 cursor-pointer"
+              className="px-7 py-3 text-xs sm:text-sm font-semibold cyber-button-primary rounded-xl transition-all shadow-xs inline-flex items-center gap-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5] focus-visible:ring-offset-2"
             >
               <span>{t.home.primaryCta}</span>
               <ArrowRight className="w-4 h-4" />

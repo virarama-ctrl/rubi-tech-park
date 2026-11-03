@@ -59,7 +59,7 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({
   const renderProjectScreenshotMockup = () => {
     if (study.id === 'tamil-gold-buyer') {
       return (
-        <div className="mt-6 rounded-2xl overflow-hidden border border-[#D5DEE8] dark:border-[#30445B] bg-[#F2F5F8] dark:bg-[#17263A] p-4 sm:p-5 shadow-xs relative">
+        <div className="mt-6 rounded-2xl overflow-hidden border border-[#D5DEE8] dark:border-[#30445B] bg-[#F2F5F8] dark:bg-[#17263A] p-4 sm:p-5 shadow-xs relative transition-transform duration-300 group-hover:scale-[1.015]">
           <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#D5DEE8] dark:border-[#30445B]">
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-[#315D82] dark:bg-[#6F9FC5]" />
@@ -116,7 +116,7 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({
 
     if (study.id === 'kuralvaani') {
       return (
-        <div className="mt-6 rounded-2xl overflow-hidden border border-[#D5DEE8] dark:border-[#30445B] bg-[#F2F5F8] dark:bg-[#17263A] p-4 sm:p-5 shadow-xs">
+        <div className="mt-6 rounded-2xl overflow-hidden border border-[#D5DEE8] dark:border-[#30445B] bg-[#F2F5F8] dark:bg-[#17263A] p-4 sm:p-5 shadow-xs transition-transform duration-300 group-hover:scale-[1.015]">
           <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#D5DEE8] dark:border-[#30445B]">
             <div className="flex items-center gap-2">
               <Mic className="w-4 h-4 text-[#315D82] dark:text-[#6F9FC5]" />
@@ -154,7 +154,7 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({
 
     if (study.id === 'bulkmate') {
       return (
-        <div className="mt-6 rounded-2xl overflow-hidden border border-[#D5DEE8] dark:border-[#30445B] bg-[#F2F5F8] dark:bg-[#17263A] p-4 sm:p-5 shadow-xs">
+        <div className="mt-6 rounded-2xl overflow-hidden border border-[#D5DEE8] dark:border-[#30445B] bg-[#F2F5F8] dark:bg-[#17263A] p-4 sm:p-5 shadow-xs transition-transform duration-300 group-hover:scale-[1.015]">
           <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#D5DEE8] dark:border-[#30445B]">
             <div className="flex items-center gap-2">
               <Send className="w-4 h-4 text-[#315D82] dark:text-[#6F9FC5]" />
@@ -196,7 +196,7 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({
 
   return (
     <article
-      className={`rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-all bg-white dark:bg-[#1C2B40] ${
+      className={`interactive-card group rounded-2xl p-6 sm:p-8 flex flex-col justify-between bg-white dark:bg-[#1C2B40] hover:border-[#315D82] dark:hover:border-[#6F9FC5] ${
         isPrimaryFeatured
           ? 'border-2 border-[#315D82] dark:border-[#6F9FC5] shadow-xs relative'
           : 'border border-[#D5DEE8] dark:border-[#30445B] shadow-xs'
@@ -315,7 +315,7 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({
               href={study.liveUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl cyber-button-primary text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-xs cursor-pointer"
+              className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl cyber-button-primary text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5] focus-visible:ring-offset-2"
             >
               <span>View Live Platform</span>
               <ExternalLink className="w-4 h-4" />
@@ -325,10 +325,10 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({
           {onRequestQuoteForSimilar && (
             <button
               onClick={() => onRequestQuoteForSimilar(study)}
-              className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1 cursor-pointer"
+              className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1 cursor-pointer group/btn active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
             >
               <span>Request Scope</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
+              <ArrowUpRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
             </button>
           )}
         </div>

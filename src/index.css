@@ -2,11 +2,17 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+  --font-sans: 'Inter', 'Noto Sans Tamil', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Inter', 'Noto Sans Tamil', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Inter', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
 @layer base {
   :root {
-    --font-sans: 'Plus Jakarta Sans', 'Noto Sans Tamil', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-display: 'Outfit', 'Noto Sans Tamil', 'Plus Jakarta Sans', sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+    --font-sans: 'Inter', 'Noto Sans Tamil', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-display: 'Inter', 'Noto Sans Tamil', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'Inter', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
     /* Executive Navy Palette (Dark Default) */
     --theme-bg-main: #101B2C;
@@ -62,20 +68,84 @@
     background-color: var(--theme-bg-main);
     color: var(--theme-text-primary);
     overflow-x: hidden;
+    line-height: 1.6;
+    letter-spacing: -0.011em;
+    font-feature-settings: "cv05" 1, "cv11" 1, "calt" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     transition: background-color 0.2s ease, color 0.2s ease;
   }
 
-  h1, h2, h3, .font-display {
+  /* International Software Enterprise Typographic Hierarchy */
+  h1, .hero-heading {
     font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.028em;
   }
 
-  /* Tamil text natural rendering without collision */
+  h2, .section-heading {
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.022em;
+  }
+
+  h3, .card-heading {
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+  }
+
+  h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    line-height: 1.65;
+    letter-spacing: -0.006em;
+  }
+
+  button, input, optgroup, select, textarea {
+    font-family: var(--font-sans);
+  }
+
+  button {
+    letter-spacing: -0.01em;
+  }
+
+  /* Numbers and statistics: Inter with tabular number support */
+  .tabular-nums, .font-mono, .statistic-value, [data-tabular] {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1, "cv05" 1, "cv11" 1;
+  }
+
+  /* Tamil text natural rendering without collision or clipping */
   :lang(ta), [lang="ta"], .tamil-content {
-    font-family: 'Noto Sans Tamil', 'Plus Jakarta Sans', system-ui, sans-serif;
-    line-height: 1.6;
+    font-family: 'Noto Sans Tamil', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.68;
     letter-spacing: normal !important;
     word-break: normal;
     overflow-wrap: break-word;
+  }
+
+  :lang(ta) h1, [lang="ta"] h1,
+  :lang(ta) h2, [lang="ta"] h2,
+  :lang(ta) h3, [lang="ta"] h3,
+  :lang(ta) .font-display, [lang="ta"] .font-display {
+    font-family: 'Noto Sans Tamil', 'Inter', system-ui, sans-serif;
+    letter-spacing: normal !important;
+    line-height: 1.35;
+  }
+
+  :lang(ta) p, [lang="ta"] p {
+    line-height: 1.7;
+    letter-spacing: normal !important;
   }
 }
 
@@ -212,6 +282,10 @@ html.light .cyan-gradient-text, html.light .gold-gradient-text {
   -webkit-text-fill-color: transparent;
 }
 
+/* ===================================================================
+   MODERN DIGITAL INTERACTIVE BUTTON & CARD SYSTEM
+   =================================================================== */
+
 /* Primary Corporate Button */
 .brand-gradient-button, .cyber-button-primary {
   background-color: #416F98;
@@ -219,17 +293,25 @@ html.light .cyan-gradient-text, html.light .gold-gradient-text {
   font-weight: 600;
   border: 1px solid rgba(111, 159, 197, 0.35);
   box-shadow: 0 2px 6px rgba(10, 16, 28, 0.3);
-  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, box-shadow;
 }
 
 .brand-gradient-button:hover, .cyber-button-primary:hover {
   background-color: #4B7EA9;
   border-color: #6F9FC5;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px -2px rgba(10, 16, 28, 0.45), 0 0 12px rgba(111, 159, 197, 0.25);
 }
 
 .brand-gradient-button:active, .cyber-button-primary:active {
-  transform: translateY(0);
+  transform: translateY(0.5px) scale(0.985);
+  box-shadow: 0 1px 3px rgba(10, 16, 28, 0.4);
+}
+
+.brand-gradient-button:focus-visible, .cyber-button-primary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #101B2C, 0 0 0 4px #6F9FC5;
 }
 
 html.light .brand-gradient-button, html.light .cyber-button-primary {
@@ -242,6 +324,18 @@ html.light .brand-gradient-button, html.light .cyber-button-primary {
 html.light .brand-gradient-button:hover, html.light .cyber-button-primary:hover {
   background-color: #274C6C;
   border-color: #315D82;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px -2px rgba(49, 93, 130, 0.22), 0 0 8px rgba(49, 93, 130, 0.15);
+}
+
+html.light .brand-gradient-button:active, html.light .cyber-button-primary:active {
+  transform: translateY(0.5px) scale(0.985);
+  box-shadow: 0 1px 3px rgba(24, 38, 56, 0.15);
+}
+
+html.light .brand-gradient-button:focus-visible, html.light .cyber-button-primary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px #315D82;
 }
 
 /* Secondary Button */
@@ -249,14 +343,27 @@ html.light .brand-gradient-button:hover, html.light .cyber-button-primary:hover 
   background-color: #17263A;
   color: #F1F5F9;
   border: 1px solid #30445B;
-  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+  box-shadow: 0 1px 3px rgba(10, 16, 28, 0.25);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, box-shadow, border-color;
 }
 
 .cyber-button-secondary:hover {
   background-color: #1C2B40;
   border-color: #6F9FC5;
   color: #F1F5F9;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px -3px rgba(10, 16, 28, 0.4);
+}
+
+.cyber-button-secondary:active {
+  transform: translateY(0.5px) scale(0.985);
+  box-shadow: 0 1px 2px rgba(10, 16, 28, 0.3);
+}
+
+.cyber-button-secondary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #101B2C, 0 0 0 4px #6F9FC5;
 }
 
 html.light .cyber-button-secondary {
@@ -270,6 +377,132 @@ html.light .cyber-button-secondary:hover {
   background-color: #F2F5F8;
   border-color: #315D82;
   color: #315D82;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 14px -3px rgba(24, 38, 56, 0.1);
+}
+
+html.light .cyber-button-secondary:active {
+  transform: translateY(0.5px) scale(0.985);
+}
+
+html.light .cyber-button-secondary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px #315D82;
+}
+
+/* Call Now Button Interactive Feedback */
+.call-now-button {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, box-shadow;
+}
+
+.call-now-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px -2px rgba(49, 93, 130, 0.2);
+}
+
+.call-now-button:active {
+  transform: translateY(0.5px) scale(0.98);
+}
+
+.call-now-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--theme-bg-main), 0 0 0 4px var(--theme-accent);
+}
+
+/* WhatsApp Button Interactive Feedback */
+.whatsapp-button {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, box-shadow;
+}
+
+.whatsapp-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px -2px rgba(16, 185, 129, 0.25);
+}
+
+.whatsapp-button:active {
+  transform: translateY(0.5px) scale(0.98);
+}
+
+.whatsapp-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--theme-bg-main), 0 0 0 4px #10B981;
+}
+
+/* Interactive Navigation Tabs */
+.nav-tab-item {
+  position: relative;
+  border-radius: 0.625rem;
+  padding: 0.45rem 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  outline: none;
+}
+
+.nav-tab-item:hover {
+  background-color: rgba(111, 159, 197, 0.12);
+  color: #F1F5F9;
+  transform: translateY(-1px);
+}
+
+.nav-tab-item:active {
+  transform: translateY(0.5px) scale(0.98);
+}
+
+.nav-tab-item:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #101B2C, 0 0 0 4px #6F9FC5;
+}
+
+.nav-tab-item.active {
+  background-color: rgba(111, 159, 197, 0.16);
+  color: #6F9FC5;
+  font-weight: 600;
+}
+
+html.light .nav-tab-item:hover {
+  background-color: rgba(49, 93, 130, 0.08);
+  color: #182638;
+}
+
+html.light .nav-tab-item.active {
+  background-color: rgba(49, 93, 130, 0.12);
+  color: #315D82;
+}
+
+html.light .nav-tab-item:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px #315D82;
+}
+
+/* Interactive Service & Technology Cards */
+.interactive-card {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, box-shadow;
+}
+
+.interactive-card:hover {
+  transform: translateY(-4px);
+  border-color: #6F9FC5;
+  box-shadow: 0 12px 28px -6px rgba(10, 16, 28, 0.65), 0 0 1px 1px rgba(111, 159, 197, 0.3);
+}
+
+html.light .interactive-card:hover {
+  transform: translateY(-4px);
+  border-color: #315D82;
+  box-shadow: 0 10px 24px -5px rgba(24, 38, 56, 0.12), 0 0 1px 1px rgba(49, 93, 130, 0.2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-gradient-button:hover, .cyber-button-primary:hover,
+  .cyber-button-secondary:hover, .call-now-button:hover,
+  .whatsapp-button:hover, .nav-tab-item:hover, .interactive-card:hover {
+    transform: none !important;
+  }
 }
 
 /* Logo Frame */
@@ -300,14 +533,16 @@ html.light .rtp-logo-container {
   line-height: 1.25;
   margin-bottom: 0.35rem;
   word-break: break-word;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "cv05" 1, "cv11" 1;
 }
 
 .statistic-label {
   font-size: 0.75rem;
-  line-height: 1.55;
+  line-height: 1.6;
   word-break: normal;
   overflow-wrap: break-word;
-  letter-spacing: normal;
+  letter-spacing: normal !important;
 }
 
 /* Reduced Motion */

@@ -294,7 +294,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
         <button
           type="button"
           onClick={() => handleTabChange('general')}
-          className={`py-3.5 px-3 flex items-center justify-center gap-1.5 transition-colors border-b-2 cursor-pointer ${
+          className={`nav-tab-item py-3.5 px-3 flex items-center justify-center gap-1.5 transition-colors border-b-2 cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5] ${
             activeTab === 'general'
               ? 'border-[#315D82] dark:border-[#6F9FC5] text-[#315D82] dark:text-[#6F9FC5] bg-white dark:bg-[#1C2B40]'
               : 'border-transparent text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-[#F1F5F9]'
@@ -307,7 +307,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
         <button
           type="button"
           onClick={() => handleTabChange('software')}
-          className={`py-3.5 px-3 flex items-center justify-center gap-1.5 transition-colors border-b-2 cursor-pointer ${
+          className={`nav-tab-item py-3.5 px-3 flex items-center justify-center gap-1.5 transition-colors border-b-2 cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5] ${
             activeTab === 'software'
               ? 'border-[#315D82] dark:border-[#6F9FC5] text-[#315D82] dark:text-[#6F9FC5] bg-white dark:bg-[#1C2B40]'
               : 'border-transparent text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-[#F1F5F9]'
@@ -320,7 +320,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
         <button
           type="button"
           onClick={() => handleTabChange('compliance')}
-          className={`py-3.5 px-3 flex items-center justify-center gap-1.5 transition-colors border-b-2 cursor-pointer ${
+          className={`nav-tab-item py-3.5 px-3 flex items-center justify-center gap-1.5 transition-colors border-b-2 cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5] ${
             activeTab === 'compliance'
               ? 'border-[#315D82] dark:border-[#6F9FC5] text-[#315D82] dark:text-[#6F9FC5] bg-white dark:bg-[#1C2B40]'
               : 'border-transparent text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-[#F1F5F9]'
@@ -333,7 +333,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
         <button
           type="button"
           onClick={() => handleTabChange('eservice')}
-          className={`py-3.5 px-3 flex items-center justify-center gap-1.5 transition-colors border-b-2 cursor-pointer ${
+          className={`nav-tab-item py-3.5 px-3 flex items-center justify-center gap-1.5 transition-colors border-b-2 cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5] ${
             activeTab === 'eservice'
               ? 'border-[#315D82] dark:border-[#6F9FC5] text-[#315D82] dark:text-[#6F9FC5] bg-white dark:bg-[#1C2B40]'
               : 'border-transparent text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-[#F1F5F9]'
@@ -599,7 +599,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-3.5 px-6 rounded-xl cyber-button-primary disabled:opacity-50 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+            className="w-full py-3.5 px-6 rounded-xl cyber-button-primary disabled:opacity-50 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5] focus-visible:ring-offset-2"
           >
             {isSubmitting ? (
               <>

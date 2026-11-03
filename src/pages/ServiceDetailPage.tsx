@@ -7,7 +7,8 @@ import {
   CheckCircle2,
   Terminal,
   Cpu,
-  ArrowRight
+  ArrowRight,
+  Phone
 } from 'lucide-react';
 
 interface ServiceDetailPageProps {
@@ -60,12 +61,19 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({ service, o
                 {localized.tagline}
               </p>
 
-              <div className="pt-4 flex flex-wrap items-center gap-4">
+              <div className="pt-4 flex flex-wrap items-center gap-3">
                 <a
                   href="#enquiry-form"
                   className="px-6 py-3 bg-[#315D82] dark:bg-[#416F98] text-white hover:opacity-95 text-xs sm:text-sm font-semibold rounded-xl transition-all shadow-xs inline-block cursor-pointer"
                 >
                   {language === 'ta' ? 'இச்சேவைக்கான விலை மதிப்பீடு பெறுக' : `Request Quotation for ${localized.title}`}
+                </a>
+                <a
+                  href="tel:+918220550829"
+                  className="px-5 py-3 text-xs sm:text-sm font-semibold text-[#182638] dark:text-[#F1F5F9] hover:text-[#315D82] dark:hover:text-[#6F9FC5] bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] rounded-xl transition-colors cursor-pointer flex items-center gap-2 shadow-2xs"
+                >
+                  <Phone className="w-4 h-4 text-[#315D82] dark:text-[#6F9FC5]" />
+                  <span>Call Now</span>
                 </a>
                 <button
                   onClick={() => onNavigate('pricing')}

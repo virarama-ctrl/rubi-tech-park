@@ -303,7 +303,7 @@ export const RubiAssistantChatbot: React.FC = () => {
           </div>
 
           {/* Messages Body */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-slate-50 dark:bg-[#070B18]/90 text-sm">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-[#E9EEF3] dark:bg-[#101B2C] text-sm">
             {messages.map((m) => (
               <div
                 key={m.id}
@@ -312,14 +312,14 @@ export const RubiAssistantChatbot: React.FC = () => {
                 <div
                   className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 shadow-xs ${
                     m.sender === 'user'
-                      ? 'bg-gradient-to-r from-blue-600 to-[#0284C7] dark:from-[#00D4FF] dark:to-[#356BFF] text-white rounded-br-none font-medium'
-                      : 'bg-white dark:bg-[#0B1530] text-slate-800 dark:text-[#CBD5E1] border border-slate-200 dark:border-[#00D4FF]/20 rounded-bl-none shadow-xs'
+                      ? 'bg-[#315D82] dark:bg-[#416F98] text-white rounded-br-none font-medium'
+                      : 'bg-white dark:bg-[#1C2B40] text-[#182638] dark:text-[#F1F5F9] border border-[#D5DEE8] dark:border-[#30445B] rounded-bl-none shadow-xs'
                   }`}
                 >
                   <p className="whitespace-pre-line leading-relaxed text-xs sm:text-sm">{m.text}</p>
 
                   {m.isEnquiryConfirmation && m.enquiryData?.whatsappUrl && (
-                    <div className="mt-3 pt-2.5 border-t border-slate-200 dark:border-slate-700 flex flex-col gap-2">
+                    <div className="mt-3 pt-2.5 border-t border-[#D5DEE8] dark:border-[#30445B] flex flex-col gap-2">
                       <a
                         href={m.enquiryData.whatsappUrl}
                         target="_blank"
@@ -333,20 +333,20 @@ export const RubiAssistantChatbot: React.FC = () => {
                     </div>
                   )}
                 </div>
-                <span className="text-[10px] text-slate-400 mt-1 px-1">{m.timestamp}</span>
+                <span className="text-[10px] text-[#526477] dark:text-[#B8C5D4] mt-1 px-1 font-mono">{m.timestamp}</span>
               </div>
             ))}
 
             {/* In-chat interactive lead capture wizard if triggered */}
             {activeFormStep !== 'none' && (
-              <div className="p-3.5 rounded-xl bg-purple-50 dark:bg-slate-800 border border-purple-200 dark:border-purple-800/50 space-y-3 shadow-md animate-in fade-in duration-200">
+              <div className="p-3.5 rounded-xl bg-white dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] space-y-3 shadow-xs animate-in fade-in duration-200">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#315D82] dark:text-[#6F9FC5]">
                     Quick Enquiry Form
                   </h4>
                   <button
                     onClick={() => setActiveFormStep('none')}
-                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs"
+                    className="text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-white text-xs cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -354,7 +354,7 @@ export const RubiAssistantChatbot: React.FC = () => {
 
                 <div className="space-y-2">
                   <div>
-                    <label className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                    <label className="text-[11px] font-medium text-[#526477] dark:text-[#B8C5D4]">
                       Full Name *
                     </label>
                     <input
@@ -362,13 +362,13 @@ export const RubiAssistantChatbot: React.FC = () => {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="e.g. Ramesh Kumar"
-                      className="w-full text-xs px-2.5 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100"
+                      className="w-full text-xs px-2.5 py-1.5 rounded-md border border-[#D5DEE8] dark:border-[#30445B] bg-[#F2F5F8] dark:bg-[#101B2C] text-[#182638] dark:text-[#F1F5F9]"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                      <label className="text-[11px] font-medium text-[#526477] dark:text-[#B8C5D4]">
                         Mobile Number *
                       </label>
                       <input
@@ -376,11 +376,11 @@ export const RubiAssistantChatbot: React.FC = () => {
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         placeholder="10-digit number"
-                        className="w-full text-xs px-2.5 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100"
+                        className="w-full text-xs px-2.5 py-1.5 rounded-md border border-[#D5DEE8] dark:border-[#30445B] bg-[#F2F5F8] dark:bg-[#101B2C] text-[#182638] dark:text-[#F1F5F9]"
                       />
                     </div>
                     <div>
-                      <label className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                      <label className="text-[11px] font-medium text-[#526477] dark:text-[#B8C5D4]">
                         Email Address *
                       </label>
                       <input
@@ -388,19 +388,19 @@ export const RubiAssistantChatbot: React.FC = () => {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="name@domain.com"
-                        className="w-full text-xs px-2.5 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100"
+                        className="w-full text-xs px-2.5 py-1.5 rounded-md border border-[#D5DEE8] dark:border-[#30445B] bg-[#F2F5F8] dark:bg-[#101B2C] text-[#182638] dark:text-[#F1F5F9]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                    <label className="text-[11px] font-medium text-[#526477] dark:text-[#B8C5D4]">
                       Category
                     </label>
                     <select
                       value={formData.category}
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      className="w-full text-xs px-2.5 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100"
+                      className="w-full text-xs px-2.5 py-1.5 rounded-md border border-[#D5DEE8] dark:border-[#30445B] bg-[#F2F5F8] dark:bg-[#101B2C] text-[#182638] dark:text-[#F1F5F9]"
                     >
                       <option value="Software Development & Digital Solutions">Software Development & Digital Solutions</option>
                       <option value="Statutory & Compliance Services">Statutory & Compliance Services</option>
@@ -409,7 +409,7 @@ export const RubiAssistantChatbot: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                    <label className="text-[11px] font-medium text-[#526477] dark:text-[#B8C5D4]">
                       Requirement Details *
                     </label>
                     <textarea
@@ -417,7 +417,7 @@ export const RubiAssistantChatbot: React.FC = () => {
                       value={formData.requirement}
                       onChange={(e) => setFormData({ ...formData, requirement: e.target.value })}
                       placeholder="Describe your project, registration or service requirement..."
-                      className="w-full text-xs px-2.5 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100"
+                      className="w-full text-xs px-2.5 py-1.5 rounded-md border border-[#D5DEE8] dark:border-[#30445B] bg-[#F2F5F8] dark:bg-[#101B2C] text-[#182638] dark:text-[#F1F5F9]"
                     />
                   </div>
 
@@ -430,7 +430,7 @@ export const RubiAssistantChatbot: React.FC = () => {
                   <button
                     onClick={submitFinalEnquiry}
                     disabled={!formData.name || !formData.phone || !formData.email || isLoading}
-                    className="w-full py-2 px-3 rounded-lg bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="w-full py-2 px-3 rounded-lg bg-[#315D82] hover:bg-[#274C6C] dark:bg-[#416F98] dark:hover:bg-[#4B7EA9] disabled:opacity-50 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     {isLoading ? 'Submitting...' : 'Confirm & Submit Enquiry'}
                   </button>
@@ -439,11 +439,11 @@ export const RubiAssistantChatbot: React.FC = () => {
             )}
 
             {isLoading && (
-              <div className="flex items-center gap-2 text-slate-400 text-xs py-1">
-                <span className="w-2 h-2 rounded-full bg-purple-500 animate-bounce" />
-                <span className="w-2 h-2 rounded-full bg-purple-500 animate-bounce [animation-delay:0.2s]" />
-                <span className="w-2 h-2 rounded-full bg-purple-500 animate-bounce [animation-delay:0.4s]" />
-                <span className="text-[11px]">RUBI Assistant is composing...</span>
+              <div className="flex items-center gap-2 text-[#526477] dark:text-[#B8C5D4] text-xs py-1">
+                <span className="w-2 h-2 rounded-full bg-[#315D82] dark:bg-[#6F9FC5] animate-bounce" />
+                <span className="w-2 h-2 rounded-full bg-[#315D82] dark:bg-[#6F9FC5] animate-bounce [animation-delay:0.2s]" />
+                <span className="w-2 h-2 rounded-full bg-[#315D82] dark:bg-[#6F9FC5] animate-bounce [animation-delay:0.4s]" />
+                <span className="text-[11px] font-mono">RUBI Assistant is composing...</span>
               </div>
             )}
             <div ref={messagesEndRef} />

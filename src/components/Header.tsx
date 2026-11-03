@@ -61,7 +61,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, onNavigate }) => {
         {/* Zone 2: Navigation Links */}
         <nav 
           aria-label="Main Navigation"
-          className="hidden xl:flex items-center gap-7 text-sm font-medium shrink-0"
+          className="hidden xl:flex items-center gap-1 text-sm font-medium shrink-0"
         >
           {navLinks.map((link) => {
             const isActive =
@@ -71,13 +71,19 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, onNavigate }) => {
               <button
                 key={link.route}
                 onClick={() => handleLinkClick(link.route)}
-                className={`transition-all whitespace-nowrap shrink-0 py-1 border-b-2 cursor-pointer font-medium ${
+                className={`relative px-3.5 py-1.5 rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5] focus-visible:ring-offset-2 active:scale-95 group ${
                   isActive
-                    ? 'text-[#315D82] dark:text-[#6F9FC5] border-[#315D82] dark:border-[#6F9FC5] font-semibold'
-                    : 'text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-[#F1F5F9] hover:border-[#315D82]/40 dark:hover:border-[#6F9FC5]/40 border-transparent'
+                    ? 'text-[#315D82] dark:text-[#6F9FC5] bg-[#315D82]/10 dark:bg-[#6F9FC5]/15 font-semibold shadow-2xs'
+                    : 'text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-[#F1F5F9] hover:bg-[#315D82]/5 dark:hover:bg-[#6F9FC5]/10 font-medium'
                 }`}
               >
-                {link.label}
+                <span>{link.label}</span>
+                {/* Refined Accent Underline Indicator */}
+                {isActive ? (
+                  <span className="absolute bottom-0 left-3 right-3 h-0.5 rounded-full bg-[#315D82] dark:bg-[#6F9FC5] shadow-[0_0_8px_rgba(111,159,197,0.6)]" />
+                ) : (
+                  <span className="absolute bottom-0 left-3 right-3 h-0.5 rounded-full bg-[#315D82]/40 dark:bg-[#6F9FC5]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                )}
               </button>
             );
           })}
@@ -94,10 +100,10 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, onNavigate }) => {
             <button
               type="button"
               onClick={() => setLanguage('ta')}
-              className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+              className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all duration-200 cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5] ${
                 language === 'ta'
                   ? 'bg-[#315D82] dark:bg-[#416F98] text-white shadow-xs'
-                  : 'text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-[#F1F5F9]'
+                  : 'text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-[#F1F5F9] hover:bg-[#315D82]/10 dark:hover:bg-[#6F9FC5]/10'
               }`}
             >
               தமிழ்
@@ -105,10 +111,10 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, onNavigate }) => {
             <button
               type="button"
               onClick={() => setLanguage('en')}
-              className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+              className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all duration-200 cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5] ${
                 language === 'en'
                   ? 'bg-[#315D82] dark:bg-[#416F98] text-white shadow-xs'
-                  : 'text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-[#F1F5F9]'
+                  : 'text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-[#F1F5F9] hover:bg-[#315D82]/10 dark:hover:bg-[#6F9FC5]/10'
               }`}
             >
               English
@@ -119,24 +125,24 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, onNavigate }) => {
           <button
             type="button"
             onClick={toggleTheme}
-            className="p-2 rounded-lg border border-[#D5DEE8] dark:border-[#30445B] bg-[#F2F5F8] dark:bg-[#17263A] text-[#526477] dark:text-[#B8C5D4] hover:text-[#315D82] dark:hover:text-[#6F9FC5] hover:border-[#315D82]/50 dark:hover:border-[#6F9FC5]/50 transition-all cursor-pointer flex items-center justify-center shadow-xs"
+            className="p-2 rounded-lg border border-[#D5DEE8] dark:border-[#30445B] bg-[#F2F5F8] dark:bg-[#17263A] text-[#526477] dark:text-[#B8C5D4] hover:text-[#315D82] dark:hover:text-[#6F9FC5] hover:border-[#315D82]/50 dark:hover:border-[#6F9FC5]/50 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 cursor-pointer flex items-center justify-center shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5] focus-visible:ring-offset-2"
             aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             title={theme === 'dark' ? t.theme.switchToLight : t.theme.switchToDark}
           >
             {theme === 'dark' ? (
-              <Sun className="w-4 h-4 text-amber-400" />
+              <Sun className="w-4 h-4 text-amber-400 transition-transform duration-300 hover:rotate-45" />
             ) : (
-              <Moon className="w-4 h-4 text-[#315D82]" />
+              <Moon className="w-4 h-4 text-[#315D82] transition-transform duration-300 hover:-rotate-12" />
             )}
           </button>
 
           {/* Primary Action Button */}
           <button
             onClick={() => handleLinkClick('contact')}
-            className="px-4 py-2 text-xs font-semibold rounded-xl cyber-button-primary flex items-center gap-2 cursor-pointer shadow-xs"
+            className="px-4 py-2 text-xs font-semibold rounded-xl cyber-button-primary flex items-center gap-2 cursor-pointer shadow-xs active:scale-95 transition-all group"
           >
             <span>{t.home.primaryCta}</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
+            <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </button>
         </div>
 
@@ -147,7 +153,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, onNavigate }) => {
             <button
               type="button"
               onClick={() => setLanguage('ta')}
-              className={`px-2 py-0.5 text-[11px] font-semibold rounded ${
+              className={`px-2 py-0.5 text-[11px] font-semibold rounded active:scale-95 transition-all ${
                 language === 'ta'
                   ? 'bg-[#315D82] dark:bg-[#416F98] text-white font-bold'
                   : 'text-[#526477] dark:text-[#B8C5D4]'
@@ -158,7 +164,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, onNavigate }) => {
             <button
               type="button"
               onClick={() => setLanguage('en')}
-              className={`px-2 py-0.5 text-[11px] font-semibold rounded ${
+              className={`px-2 py-0.5 text-[11px] font-semibold rounded active:scale-95 transition-all ${
                 language === 'en'
                   ? 'bg-[#315D82] dark:bg-[#416F98] text-white font-bold'
                   : 'text-[#526477] dark:text-[#B8C5D4]'
@@ -172,7 +178,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, onNavigate }) => {
           <button
             type="button"
             onClick={toggleTheme}
-            className="p-1.5 rounded-md border border-[#D5DEE8] dark:border-[#30445B] bg-[#F2F5F8] dark:bg-[#17263A] text-[#526477] dark:text-[#B8C5D4]"
+            className="p-1.5 rounded-md border border-[#D5DEE8] dark:border-[#30445B] bg-[#F2F5F8] dark:bg-[#17263A] text-[#526477] dark:text-[#B8C5D4] active:scale-90 transition-transform"
             aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             title={theme === 'dark' ? t.theme.switchToLight : t.theme.switchToDark}
           >
@@ -186,7 +192,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, onNavigate }) => {
           {/* Hamburger Menu Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-md text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-[#F1F5F9] border border-[#D5DEE8] dark:border-[#30445B] bg-[#F2F5F8] dark:bg-[#17263A]"
+            className="p-2 rounded-md text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-[#F1F5F9] border border-[#D5DEE8] dark:border-[#30445B] bg-[#F2F5F8] dark:bg-[#17263A] active:scale-90 transition-transform"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5 text-[#315D82] dark:text-[#6F9FC5]" /> : <Menu className="w-5 h-5" />}
@@ -196,8 +202,8 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, onNavigate }) => {
 
       {/* Mobile Dropdown Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white dark:bg-[#101B2C] border-b border-[#D5DEE8] dark:border-[#30445B] px-4 pt-3 pb-6 space-y-3 shadow-lg">
-          <nav className="flex flex-col gap-1">
+        <div className="lg:hidden bg-white dark:bg-[#101B2C] border-b border-[#D5DEE8] dark:border-[#30445B] px-4 pt-3 pb-6 space-y-3 shadow-lg animate-in slide-in-from-top-3 duration-200">
+          <nav className="flex flex-col gap-1.5">
             {navLinks.map((link) => {
               const isActive =
                 currentRoute === link.route ||
@@ -206,13 +212,14 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, onNavigate }) => {
                 <button
                   key={link.route}
                   onClick={() => handleLinkClick(link.route)}
-                  className={`text-left px-3 py-2.5 rounded-lg text-sm transition-all font-medium ${
+                  className={`text-left px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 font-medium active:scale-98 flex items-center justify-between ${
                     isActive
-                      ? 'bg-[#F2F5F8] dark:bg-[#1C2B40] text-[#315D82] dark:text-[#6F9FC5] border border-[#D5DEE8] dark:border-[#30445B] font-semibold'
+                      ? 'bg-[#315D82]/10 dark:bg-[#6F9FC5]/15 text-[#315D82] dark:text-[#6F9FC5] border border-[#315D82]/20 dark:border-[#6F9FC5]/30 font-semibold shadow-2xs'
                       : 'text-[#526477] dark:text-[#B8C5D4] hover:bg-[#F2F5F8] dark:hover:bg-[#17263A] hover:text-[#182638] dark:hover:text-[#F1F5F9]'
                   }`}
                 >
-                  {link.label}
+                  <span>{link.label}</span>
+                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[#315D82] dark:bg-[#6F9FC5]" />}
                 </button>
               );
             })}
@@ -221,7 +228,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, onNavigate }) => {
           <div className="pt-2 border-t border-[#D5DEE8] dark:border-[#30445B] flex flex-col gap-2">
             <button
               onClick={() => handleLinkClick('contact')}
-              className="w-full py-2.5 px-4 text-xs font-semibold rounded-lg cyber-button-primary flex items-center justify-center gap-2"
+              className="w-full py-2.5 px-4 text-xs font-semibold rounded-xl cyber-button-primary flex items-center justify-center gap-2 active:scale-95 transition-all shadow-xs"
             >
               <span>{t.home.primaryCta}</span>
               <ArrowUpRight className="w-4 h-4" />
