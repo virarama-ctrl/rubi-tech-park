@@ -43,7 +43,17 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <div className="pt-2 space-y-2.5 text-xs text-[#526477] dark:text-[#B8C5D4]">
               <div className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-[#315D82] dark:text-[#6F9FC5] shrink-0 mt-0.5" />
-                <span>{t.brand.fullLocation}</span>
+                <span className="leading-relaxed word-keep text-pretty">
+                  {language === 'ta' ? (
+                    <>
+                      காந்திபுரம், <span className="city-wordmark">கோயம்புத்தூர்</span>, தமிழ்நாடு, இந்தியா
+                    </>
+                  ) : (
+                    <>
+                      Gandhipuram, <span className="city-wordmark">Coimbatore</span>, Tamil Nadu, India
+                    </>
+                  )}
+                </span>
               </div>
               <div className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-[#315D82] dark:text-[#6F9FC5] shrink-0" />

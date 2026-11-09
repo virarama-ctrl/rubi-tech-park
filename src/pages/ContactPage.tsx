@@ -82,9 +82,16 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                     <MapPin className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="text-[#526477] dark:text-[#B8C5D4] block text-[11px] font-mono">{t.contact.addressLabel}</span>
-                    <span className="font-medium text-[#182638] dark:text-[#F1F5F9] leading-relaxed block">
-                      {t.brand.fullLocation}
+                    <span className="font-medium text-[#182638] dark:text-[#F1F5F9] leading-relaxed block word-keep text-pretty">
+                      {language === 'ta' ? (
+                        <>
+                          காந்திபுரம், <span className="city-wordmark">கோயம்புத்தூர்</span>, தமிழ்நாடு, இந்தியா
+                        </>
+                      ) : (
+                        <>
+                          Gandhipuram, <span className="city-wordmark">Coimbatore</span>, Tamil Nadu, India
+                        </>
+                      )}
                     </span>
                   </div>
                 </div>

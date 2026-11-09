@@ -112,15 +112,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             <div className="lg:col-span-7 space-y-6 text-left">
               
               {/* Engineering Status Pill */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] text-xs font-mono text-[#315D82] dark:text-[#6F9FC5] shadow-xs">
-                <span className="w-2 h-2 rounded-full bg-[#315D82] dark:bg-[#6F9FC5]" />
-                <span className="font-semibold">RUBI TECH PARK</span>
-                <span className="text-[#8A9CAE]">/</span>
-                <span className="text-[#526477] dark:text-[#B8C5D4]">{language === 'ta' ? 'நவீன மென்பொருள் & கிளவுட் கட்டமைப்பு' : 'ENTERPRISE SOFTWARE & CLOUD ARCHITECTURE'}</span>
+              <div className="inline-flex flex-wrap sm:flex-nowrap items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 rounded-xl sm:rounded-full bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] text-xs font-mono text-[#315D82] dark:text-[#6F9FC5] shadow-xs max-w-full">
+                <span className="w-2 h-2 rounded-full bg-[#315D82] dark:bg-[#6F9FC5] shrink-0" />
+                <span className="font-semibold shrink-0">RUBI TECH PARK</span>
+                <span className="text-[#8A9CAE] hidden sm:inline">/</span>
+                <span className="text-[#526477] dark:text-[#B8C5D4] text-pretty">{language === 'ta' ? 'நவீன மென்பொருள் & கிளவுட் கட்டமைப்பு' : 'ENTERPRISE SOFTWARE & CLOUD ARCHITECTURE'}</span>
               </div>
 
-              {/* Authoritative Hero Headline */}
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-display text-[#182638] dark:text-[#F1F5F9] tracking-tight leading-[1.18] text-balance">
+              {/* Authoritative Hero Headline with fluid clamp */}
+              <h1 className="hero-headline font-bold font-display text-[#182638] dark:text-[#F1F5F9] tracking-tight leading-[1.18] text-balance">
                 {language === 'ta' ? (
                   <>
                     நவீன நிறுவன மென்பொருட்கள் &{' '}
@@ -135,7 +135,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               </h1>
 
               {/* Supporting Subtitle */}
-              <p className="text-base sm:text-lg text-[#526477] dark:text-[#B8C5D4] leading-relaxed max-w-2xl font-normal">
+              <p className="text-sm sm:text-base lg:text-lg text-[#526477] dark:text-[#B8C5D4] leading-relaxed max-w-2xl font-normal text-pretty">
                 {t.home.heroSubtitle}
               </p>
 
@@ -143,7 +143,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               <div className="pt-2 flex flex-col sm:flex-row items-center gap-3.5 sm:gap-4">
                 <button
                   onClick={() => onNavigate('contact')}
-                  className="w-full sm:w-auto px-7 py-3 rounded-xl text-sm font-semibold cyber-button-primary flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                  className="w-full sm:w-auto px-7 py-3 rounded-xl text-sm font-semibold cyber-button-primary flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-95 transition-all"
                 >
                   <span>{t.home.primaryCta}</span>
                   <ArrowRight className="w-4 h-4" />
@@ -151,7 +151,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
                 <button
                   onClick={() => onNavigate('pricing')}
-                  className="w-full sm:w-auto px-7 py-3 rounded-xl text-sm font-semibold cyber-button-secondary flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full sm:w-auto px-7 py-3 rounded-xl text-sm font-semibold cyber-button-secondary flex items-center justify-center gap-2 cursor-pointer active:scale-95 transition-all"
                 >
                   <span>{t.home.secondaryCta}</span>
                   <ArrowUpRight className="w-4 h-4 text-[#315D82] dark:text-[#6F9FC5]" />
@@ -162,40 +162,40 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               <div className="pt-8 border-t border-[#D5DEE8] dark:border-[#30445B] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
                 {/* Stat 1 */}
                 <div className="interactive-card group p-4 sm:p-5 rounded-xl bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs flex flex-col justify-between min-h-[96px] h-auto hover:border-[#315D82] dark:hover:border-[#6F9FC5]">
-                  <div className="text-xl sm:text-2xl font-bold font-mono text-[#315D82] dark:text-[#6F9FC5] tabular-nums leading-tight group-hover:scale-105 transition-transform origin-left">
+                  <div className="text-lg sm:text-xl lg:text-2xl font-bold font-mono text-[#315D82] dark:text-[#6F9FC5] tabular-nums leading-tight group-hover:scale-105 transition-transform origin-left word-keep">
                     {t.home.quickStats.pricingStart}
                   </div>
-                  <div className="text-xs text-[#526477] dark:text-[#B8C5D4] mt-2 font-normal leading-relaxed break-words">
+                  <div className="text-xs text-[#526477] dark:text-[#B8C5D4] mt-2 font-normal leading-relaxed text-pretty word-keep">
                     {t.home.quickStats.pricingStartLabel}
                   </div>
                 </div>
 
                 {/* Stat 2 */}
                 <div className="interactive-card group p-4 sm:p-5 rounded-xl bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs flex flex-col justify-between min-h-[96px] h-auto hover:border-[#315D82] dark:hover:border-[#6F9FC5]">
-                  <div className="text-xl sm:text-2xl font-bold font-mono text-[#182638] dark:text-[#F1F5F9] tabular-nums leading-tight group-hover:scale-105 transition-transform origin-left">
+                  <div className="text-lg sm:text-xl lg:text-2xl font-bold font-mono text-[#182638] dark:text-[#F1F5F9] tabular-nums leading-tight group-hover:scale-105 transition-transform origin-left word-keep">
                     {t.home.quickStats.ownership}
                   </div>
-                  <div className="text-xs text-[#526477] dark:text-[#B8C5D4] mt-2 font-normal leading-relaxed break-words">
+                  <div className="text-xs text-[#526477] dark:text-[#B8C5D4] mt-2 font-normal leading-relaxed text-pretty word-keep">
                     {t.home.quickStats.ownershipLabel}
                   </div>
                 </div>
 
-                {/* Stat 3 (Tamil City Value) */}
+                {/* Stat 3 (Tamil & English City Value: Coimbatore / கோயம்புத்தூர் kept whole) */}
                 <div className="interactive-card group p-4 sm:p-5 rounded-xl bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs flex flex-col justify-between min-h-[96px] h-auto hover:border-[#315D82] dark:hover:border-[#6F9FC5]">
-                  <div className="text-xl sm:text-2xl font-bold font-sans text-[#315D82] dark:text-[#6F9FC5] leading-tight break-words group-hover:scale-105 transition-transform origin-left">
-                    {t.home.quickStats.deployment}
+                  <div className="text-lg sm:text-xl lg:text-2xl font-bold font-sans text-[#315D82] dark:text-[#6F9FC5] leading-tight group-hover:scale-105 transition-transform origin-left word-keep">
+                    <span className="city-wordmark">{t.home.quickStats.deployment}</span>
                   </div>
-                  <div className="text-xs text-[#526477] dark:text-[#B8C5D4] mt-2 font-normal leading-relaxed break-words">
+                  <div className="text-xs text-[#526477] dark:text-[#B8C5D4] mt-2 font-normal leading-relaxed text-pretty word-keep">
                     {t.home.quickStats.deploymentLabel}
                   </div>
                 </div>
 
                 {/* Stat 4 */}
                 <div className="interactive-card group p-4 sm:p-5 rounded-xl bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs flex flex-col justify-between min-h-[96px] h-auto hover:border-[#315D82] dark:hover:border-[#6F9FC5]">
-                  <div className="text-xl sm:text-2xl font-bold font-sans text-[#182638] dark:text-[#F1F5F9] leading-tight break-words group-hover:scale-105 transition-transform origin-left">
+                  <div className="text-lg sm:text-xl lg:text-2xl font-bold font-sans text-[#182638] dark:text-[#F1F5F9] leading-tight group-hover:scale-105 transition-transform origin-left word-keep">
                     {t.home.quickStats.support}
                   </div>
-                  <div className="text-xs text-[#526477] dark:text-[#B8C5D4] mt-2 font-normal leading-relaxed break-words">
+                  <div className="text-xs text-[#526477] dark:text-[#B8C5D4] mt-2 font-normal leading-relaxed text-pretty word-keep">
                     {t.home.quickStats.supportLabel}
                   </div>
                 </div>
@@ -244,7 +244,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 Modern responsive websites, custom CRM platforms, billing software, mobile apps, and workflow automation. Transparent work-based quotations with zero vendor lock-in.
               </p>
             </div>
-            <div className="mt-6 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-between gap-2">
+            <div className="mt-6 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] flex flex-wrap sm:flex-nowrap items-center justify-between gap-2">
               <button
                 onClick={() => onNavigate('services')}
                 className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1.5 cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
@@ -275,11 +275,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               <h3 className="text-xl font-bold font-display text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
                 Statutory & Compliance Services
               </h3>
-              <p className="text-xs text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
+              <p className="text-xs text-[#526477] dark:text-[#B8C5D4] leading-relaxed text-pretty">
                 GST registration, ITR filing, MSME/Udyam, FSSAI food licensing, trademark protection, and trade licences. Verified documentation support with full regulatory disclosures.
               </p>
             </div>
-            <div className="mt-6 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-between gap-2">
+            <div className="mt-6 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] flex flex-wrap sm:flex-nowrap items-center justify-between gap-2">
               <button
                 onClick={() => onNavigate('services')}
                 className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1.5 cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
@@ -310,11 +310,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               <h3 className="text-xl font-bold font-display text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
                 Citizen Digital E-Services
               </h3>
-              <p className="text-xs text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
+              <p className="text-xs text-[#526477] dark:text-[#B8C5D4] leading-relaxed text-pretty">
                 Online guidance for PAN cards, Voter ID, Passport, Ration Cards, and EB service connections. Clear ₹200 + 18% GST ₹36 booking fee with full transparency.
               </p>
             </div>
-            <div className="mt-6 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-between gap-2">
+            <div className="mt-6 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] flex flex-wrap sm:flex-nowrap items-center justify-between gap-2">
               <button
                 onClick={() => onNavigate('services')}
                 className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1.5 cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"

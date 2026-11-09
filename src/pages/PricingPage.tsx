@@ -65,7 +65,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onNavigate }) => {
           {PRICING_PACKAGES.map((pkg) => (
             <div
               key={pkg.id}
-              className="p-6 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] rounded-2xl shadow-xs hover:border-[#315D82] dark:hover:border-[#6F9FC5] transition-all"
+              className="interactive-card p-6 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] rounded-2xl shadow-xs hover:border-[#315D82] dark:hover:border-[#6F9FC5] transition-all"
             >
               <div>
                 <div className="text-xs font-mono font-semibold uppercase tracking-wider text-[#526477] dark:text-[#B8C5D4]">
@@ -107,14 +107,14 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onNavigate }) => {
               <div className="mt-6 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] space-y-2">
                 <button
                   onClick={() => onNavigate('checkout')}
-                  className="w-full py-2.5 px-3 text-xs font-semibold cyber-button-primary rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-xs"
+                  className="w-full py-2.5 px-3 text-xs font-semibold cyber-button-primary rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-xs active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
                 >
                   <CreditCard className="w-3.5 h-3.5" />
                   <span>{language === 'ta' ? 'ஆன்லைனில் கட்டணம் செலுத்துங்கள்' : 'Pay Online / Book Plan'}</span>
                 </button>
                 <button
                   onClick={() => onNavigate(pkg.slug)}
-                  className="w-full py-2 px-3 text-xs text-[#182638] dark:text-[#F1F5F9] hover:bg-[#F2F5F8] dark:hover:bg-[#17263A] bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] rounded-xl transition-colors cursor-pointer"
+                  className="w-full py-2 px-3 text-xs text-[#182638] dark:text-[#F1F5F9] hover:bg-[#F2F5F8] dark:hover:bg-[#17263A] bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] rounded-xl transition-all cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
                 >
                   {language === 'ta' ? 'சேவை எல்லைகளைக் காண்க' : 'View Service Scope'}
                 </button>

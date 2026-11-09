@@ -38,16 +38,6 @@ import {
   Send
 } from 'lucide-react';
 
-interface SupabaseConfigStatus {
-  configured: boolean;
-  connected: boolean;
-  urlConfigured: boolean;
-  keyConfigured: boolean;
-  error: string | null;
-  mode: 'supabase' | 'local_persistent';
-  requiredEnvVars: string[];
-}
-
 interface AdminDashboardPageProps {
   onNavigate: (route: PageRoute) => void;
   onLogout: () => void;
@@ -72,12 +62,6 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
     lost: 0,
     totalPipelineValueINR: 0
   });
-
-  // Supabase Status State
-  const [supabaseStatus, setSupabaseStatus] = useState<SupabaseConfigStatus | null>(null);
-  const [isCheckingSupabase, setIsCheckingSupabase] = useState(false);
-  const [showSupabaseModal, setShowSupabaseModal] = useState(false);
-  const [copiedSchema, setCopiedSchema] = useState(false);
 
   // UI & Filter States
   const [loading, setLoading] = useState(true);
@@ -122,22 +106,6 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
     setTimeout(() => setCopiedUtr(null), 2000);
   };
 
-  // Fetch Supabase status
-  const checkSupabaseStatus = async () => {
-    setIsCheckingSupabase(true);
-    try {
-      const res = await fetch('/api/admin/supabase-status');
-      if (res.ok) {
-        const data: SupabaseConfigStatus = await res.json();
-        setSupabaseStatus(data);
-      }
-    } catch (e) {
-      console.warn('Could not query Supabase status:', e);
-    } finally {
-      setIsCheckingSupabase(false);
-    }
-  };
-
   // Check auth and load leads
   useEffect(() => {
     const storedToken = sessionStorage.getItem('rtp_admin_token') || sessionStorage.getItem('edh_admin_token');
@@ -159,7 +127,6 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
     fetchLeads(storedToken);
     fetchPayments(storedToken);
-    checkSupabaseStatus();
   }, []);
 
   const fetchPayments = async (authToken?: string) => {
@@ -505,33 +472,6 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
     }
   };
 
-  const copySqlSchema = () => {
-    const sql = `-- RUBI TECH PARK - Supabase SQL Schema
-CREATE TABLE IF NOT EXISTS public.leads (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    customer_name TEXT NOT NULL,
-    phone_number TEXT NOT NULL,
-    email TEXT NOT NULL,
-    business_name TEXT,
-    service_interested TEXT NOT NULL,
-    message TEXT,
-    source_page TEXT DEFAULT 'Website',
-    status TEXT NOT NULL DEFAULT 'New' CHECK (status IN ('New', 'Contacted', 'Interested', 'Converted', 'Not Interested', 'Qualified', 'Proposal Sent', 'Won', 'Lost')),
-    admin_notes TEXT,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Allow public lead inserts" ON public.leads FOR INSERT TO anon, authenticated WITH CHECK (true);
-CREATE POLICY "Allow service role full lead access" ON public.leads FOR ALL TO service_role USING (true) WITH CHECK (true);`;
-
-    navigator.clipboard.writeText(sql);
-    setCopiedSchema(true);
-    setTimeout(() => setCopiedSchema(false), 2500);
-  };
-
   return (
     <div className="min-h-screen bg-[#E9EEF3] dark:bg-[#101B2C] text-[#182638] dark:text-[#F1F5F9] pb-20 transition-colors">
       {/* Toast Alert */}
@@ -585,7 +525,7 @@ CREATE POLICY "Allow service role full lead access" ON public.leads FOR ALL TO s
 
             <button
               onClick={() => onNavigate('home')}
-              className="hidden md:flex px-3 py-1.5 text-xs text-[#182638] dark:text-[#F1F5F9] hover:bg-slate-100 dark:hover:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] rounded-lg transition-colors cursor-pointer items-center gap-1.5"
+              className="hidden md:flex px-3 py-1.5 text-xs text-[#182638] dark:text-[#F1F5F9] hover:bg-slate-100 dark:hover:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] rounded-lg transition-all cursor-pointer items-center gap-1.5 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
             >
               <span>Public Site</span>
               <ExternalLink className="w-3 h-3 text-[#315D82] dark:text-[#6F9FC5]" />
@@ -594,7 +534,7 @@ CREATE POLICY "Allow service role full lead access" ON public.leads FOR ALL TO s
             <button
               onClick={handleTriggerBackup}
               title="Record instant database backup snapshot"
-              className="hidden lg:flex px-3 py-1.5 text-xs text-[#182638] dark:text-[#F1F5F9] hover:bg-slate-100 dark:hover:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] rounded-lg transition-colors cursor-pointer items-center gap-1.5"
+              className="hidden lg:flex px-3 py-1.5 text-xs text-[#182638] dark:text-[#F1F5F9] hover:bg-slate-100 dark:hover:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] rounded-lg transition-all cursor-pointer items-center gap-1.5 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
             >
               <Database className="w-3.5 h-3.5 text-[#526477] dark:text-[#B8C5D4]" />
               <span>Snapshot</span>
@@ -602,7 +542,7 @@ CREATE POLICY "Allow service role full lead access" ON public.leads FOR ALL TO s
 
             <button
               onClick={handleExportCSV}
-              className="px-3 py-1.5 text-xs font-semibold text-white bg-[#315D82] dark:bg-[#416F98] hover:opacity-95 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shadow-xs"
+              className="px-3 py-1.5 text-xs font-semibold text-white bg-[#315D82] dark:bg-[#416F98] hover:opacity-95 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shadow-xs active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
             >
               <Download className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Export CSV</span>
@@ -610,7 +550,7 @@ CREATE POLICY "Allow service role full lead access" ON public.leads FOR ALL TO s
 
             <button
               onClick={handleLogoutClick}
-              className="p-2 text-[#526477] hover:text-rose-600 dark:text-[#B8C5D4] dark:hover:text-rose-400 bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] rounded-lg transition-colors cursor-pointer"
+              className="p-2 text-[#526477] hover:text-rose-600 dark:text-[#B8C5D4] dark:hover:text-rose-400 bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] rounded-lg transition-all cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
               title="Sign Out of CRM"
             >
               <LogOut className="w-4 h-4" />
@@ -1318,111 +1258,6 @@ CREATE POLICY "Allow service role full lead access" ON public.leads FOR ALL TO s
         )}
       </div>
 
-      {/* Supabase Setup Modal */}
-      {showSupabaseModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-[#0D1527] border border-[#E5E9F2] dark:border-white/10 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-[#E5E9F2] dark:border-slate-800 pb-3">
-              <div className="flex items-center gap-2">
-                <Server className="w-5 h-5 text-[#6654E8]" />
-                <h3 className="text-base font-bold font-display text-[#172033] dark:text-white">
-                  Supabase Integration & Database Setup
-                </h3>
-              </div>
-              <button
-                onClick={() => setShowSupabaseModal(false)}
-                className="p-1.5 text-slate-400 hover:text-black dark:hover:text-white rounded-lg cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Current Live State */}
-            <div className="p-4 rounded-xl bg-[#FAFBFF] dark:bg-[#070B14] border border-[#E5E9F2] dark:border-slate-800 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-[#647087] dark:text-slate-400 uppercase tracking-wider">
-                  Live Engine Status
-                </span>
-                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                  supabaseStatus?.connected
-                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
-                    : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
-                }`}>
-                  {supabaseStatus?.connected ? 'Supabase Connected' : 'Local Persistent Mode'}
-                </span>
-              </div>
-              <p className="text-xs text-[#172033] dark:text-slate-300">
-                {supabaseStatus?.connected
-                  ? 'Your Supabase cloud database is actively receiving and serving customer leads with Row Level Security enabled.'
-                  : 'Supabase environment variables are currently pending. All customer leads are being safely recorded in local persistent storage (data/crm_leads.json), ensuring zero data loss.'}
-              </p>
-              {supabaseStatus?.error && (
-                <div className="text-[11px] text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 p-2 rounded-lg border border-amber-200 dark:border-amber-800">
-                  {supabaseStatus.error}
-                </div>
-              )}
-            </div>
-
-            {/* 3 Easy Setup Steps */}
-            <div className="space-y-3">
-              <h4 className="text-xs font-bold text-[#172033] dark:text-white uppercase tracking-wider">
-                How to Connect Your Real Supabase Project:
-              </h4>
-
-              <div className="space-y-2.5 text-xs text-[#647087] dark:text-slate-300">
-                <div className="p-3 bg-slate-50 dark:bg-[#131D33] rounded-xl space-y-1">
-                  <div className="font-semibold text-[#172033] dark:text-white">Step 1: Create Supabase Project</div>
-                  <p>Visit <a href="https://supabase.com" target="_blank" rel="noreferrer" className="text-[#6654E8] dark:text-[#9689FF] underline">supabase.com</a>, create a new project, and select the region (e.g. Mumbai, India).</p>
-                </div>
-
-                <div className="p-3 bg-slate-50 dark:bg-[#131D33] rounded-xl space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-[#172033] dark:text-white">Step 2: Run SQL Schema in Supabase</span>
-                    <button
-                      type="button"
-                      onClick={copySqlSchema}
-                      className="px-2.5 py-1 bg-[#6654E8] hover:bg-[#5343D6] text-white rounded-lg text-[11px] font-semibold flex items-center gap-1 cursor-pointer"
-                    >
-                      {copiedSchema ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                      <span>{copiedSchema ? 'Copied SQL!' : 'Copy SQL Schema'}</span>
-                    </button>
-                  </div>
-                  <p>In your Supabase dashboard, open the <strong>SQL Editor</strong>, paste the schema from <code className="text-[#6654E8] font-mono">supabase/schema.sql</code>, and click <strong>Run</strong>.</p>
-                </div>
-
-                <div className="p-3 bg-slate-50 dark:bg-[#131D33] rounded-xl space-y-1">
-                  <div className="font-semibold text-[#172033] dark:text-white">Step 3: Add Environment Variables</div>
-                  <p>In your <code className="font-mono text-[#6654E8]">.env</code> or deployment dashboard, add:</p>
-                  <pre className="mt-1 p-2 bg-[#070B14] text-emerald-400 rounded-lg text-[11px] overflow-x-auto font-mono">
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-secret-key
-                  </pre>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-2 border-t border-[#E5E9F2] dark:border-slate-800">
-              <button
-                type="button"
-                onClick={checkSupabaseStatus}
-                disabled={isCheckingSupabase}
-                className="px-3 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-xs font-semibold rounded-xl flex items-center gap-1.5 cursor-pointer text-[#172033] dark:text-white disabled:opacity-50"
-              >
-                <RefreshCw className={`w-3.5 h-3.5 ${isCheckingSupabase ? 'animate-spin' : ''}`} />
-                <span>Test Supabase Connection</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setShowSupabaseModal(false)}
-                className="px-4 py-2 bg-[#6654E8] hover:bg-[#5343D6] text-white text-xs font-semibold rounded-xl cursor-pointer"
-              >
-                Done
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Delete Lead Confirmation Modal */}
       {leadToDelete && (
@@ -1617,7 +1452,7 @@ SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-secret-key
                   <>
                     {selectedLead.admin_notes && (
                       <div className="p-3 bg-slate-50 dark:bg-[#070B14] rounded-xl border border-slate-200 dark:border-slate-800 space-y-1">
-                        <div className="text-[10px] text-[#6654E8] font-semibold">Supabase Admin Remarks</div>
+                        <div className="text-[10px] text-[#6654E8] font-semibold">Admin Remarks</div>
                         <p className="text-slate-800 dark:text-slate-200 whitespace-pre-wrap">{selectedLead.admin_notes}</p>
                       </div>
                     )}

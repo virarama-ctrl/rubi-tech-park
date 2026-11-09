@@ -27,7 +27,6 @@ import {
   BUSINESS_NAME,
   TRUSTED_PRICING_CATALOG
 } from './src/server/payments';
-import { supabaseService } from './src/server/supabase';
 import {
   formatBusinessWhatsAppNotification,
   generateBusinessWhatsAppLink,
@@ -381,9 +380,7 @@ app.get('/api/payments/catalog', (_req: Request, res: Response) => {
     success: true,
     catalog: TRUSTED_PRICING_CATALOG,
     businessUpiId: BUSINESS_UPI_ID,
-    businessName: BUSINESS_NAME,
-    gatewayMode: process.env.PAYMENT_GATEWAY_MODE || 'sandbox',
-    razorpayKeyId: process.env.RAZORPAY_KEY_ID || 'rzp_test_rtp_sandbox'
+    businessName: BUSINESS_NAME
   });
 });
 
@@ -790,19 +787,6 @@ app.post('/api/admin/migrate-json', requireAdminAuth, async (_req: Authenticated
 });
 
 /**
- * Check live Supabase connection status & configuration state
- * GET /api/admin/supabase-status
- */
-app.get('/api/admin/supabase-status', async (_req: Request, res: Response) => {
-  try {
-    const status = await supabaseService.getStatus();
-    res.status(200).json(status);
-  } catch (err: any) {
-    res.status(500).json({ error: 'Status Check Failed', message: err.message });
-  }
-});
-
-/**
  * Get All Leads with Filters and Dashboard Metrics (Directly from Firestore)
  * GET /api/admin/leads
  */
@@ -930,7 +914,7 @@ app.post('/api/admin/leads/:id/notes', requireAdminAuth, async (req: Authenticat
  * DELETE /api/admin/leads/:id
  */
 app.delete('/api/admin/leads/:id', requireAdminAuth, async (req: AuthenticatedRequest, res: Response) => {
-  const success = await supabaseService.deleteLead(req.params.id);
+  const success = await firebaseCRM.deleteLead(req.params.id);
   if (!success) {
     res.status(404).json({ error: 'Not Found', message: 'Lead not found or could not be deleted.' });
     return;

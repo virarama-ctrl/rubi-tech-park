@@ -25,16 +25,19 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-16 relative z-10">
         {/* Header */}
         <div className="max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] text-xs font-mono text-[#315D82] dark:text-[#6F9FC5] shadow-xs">
-            <Sparkles className="w-3.5 h-3.5 text-[#315D82] dark:text-[#6F9FC5]" />
-            <span>{t.about.title}</span>
-            <span aria-hidden="true" className="text-[#526477] dark:text-[#B8C5D4]">·</span>
-            <span>{language === 'ta' ? 'கோயம்புத்தூர் & அகில இந்திய இயக்கம்' : 'Coimbatore & Pan-India Consultancy'}</span>
+          <div className="inline-flex flex-wrap sm:flex-nowrap items-center gap-1.5 sm:gap-2 px-3 py-1.5 rounded-xl sm:rounded-full bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] text-xs font-mono text-[#315D82] dark:text-[#6F9FC5] shadow-xs">
+            <Sparkles className="w-3.5 h-3.5 text-[#315D82] dark:text-[#6F9FC5] shrink-0" />
+            <span className="shrink-0">{t.about.title}</span>
+            <span aria-hidden="true" className="text-[#526477] dark:text-[#B8C5D4] hidden sm:inline">·</span>
+            <span className="word-keep">
+              <span className="city-wordmark">{language === 'ta' ? 'கோயம்புத்தூர்' : 'Coimbatore'}</span>
+              <span>{language === 'ta' ? ' & அகில இந்திய இயக்கம்' : ' & Pan-India Consultancy'}</span>
+            </span>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-bold font-display text-[#182638] dark:text-[#F1F5F9] tracking-tight">
+          <h1 className={`text-3xl sm:text-5xl font-bold font-display text-[#182638] dark:text-[#F1F5F9] text-balance ${language === 'ta' ? 'tracking-normal leading-[1.38]' : 'tracking-tight'}`}>
             {t.about.philosophyTitle}
           </h1>
-          <p className="text-base text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
+          <p className="text-base text-[#526477] dark:text-[#B8C5D4] leading-relaxed text-pretty">
             {t.about.philosophyDesc}
           </p>
         </div>
@@ -97,8 +100,16 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
               <MapPin className="w-4 h-4 text-[#315D82] dark:text-[#6F9FC5]" />
               <span>{t.about.coimbatoreHubTitle}</span>
             </div>
-            <h2 className="text-2xl font-bold font-display text-[#182638] dark:text-[#F1F5F9] mt-1">
-              {language === 'ta' ? 'காந்திபுரம், கோயம்புத்தூர் தலைமையகம்' : 'Headquartered in Gandhipuram, Coimbatore'}
+            <h2 className="text-2xl font-bold font-display text-[#182638] dark:text-[#F1F5F9] mt-1 text-balance">
+              {language === 'ta' ? (
+                <>
+                  காந்திபுரம், <span className="city-wordmark">கோயம்புத்தூர்</span> தலைமையகம்
+                </>
+              ) : (
+                <>
+                  Headquartered in Gandhipuram, <span className="city-wordmark">Coimbatore</span>
+                </>
+              )}
             </h2>
             <p className="text-xs sm:text-sm text-[#526477] dark:text-[#B8C5D4] mt-2 leading-relaxed">
               {t.about.coimbatoreHubDesc}

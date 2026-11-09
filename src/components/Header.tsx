@@ -29,16 +29,16 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, onNavigate }) => {
 
   return (
     <header className="sticky top-0 z-40 w-full bg-[#FFFFFF]/95 dark:bg-[#101B2C]/95 backdrop-blur-md border-b border-[#D5DEE8] dark:border-[#30445B] transition-colors shadow-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4 sm:gap-6">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-2 sm:gap-6">
         
         {/* Zone 1: Official RUBI TECH PARK Emblem Logo & Brand Wordmark */}
         <button
           onClick={() => handleLinkClick('home')}
-          className="flex items-center gap-3 text-left group shrink-0 focus:outline-none focus:ring-2 focus:ring-[#315D82]/30 dark:focus:ring-[#6F9FC5]/30 rounded-xl p-1 transition-all cursor-pointer"
+          className="flex items-center gap-2 sm:gap-3 text-left group shrink min-w-0 focus:outline-none focus:ring-2 focus:ring-[#315D82]/30 dark:focus:ring-[#6F9FC5]/30 rounded-xl p-0.5 sm:p-1 transition-all cursor-pointer"
           aria-label="RUBI TECH PARK Home"
         >
           {/* Official Emblem Frame */}
-          <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden border border-[#D5DEE8] dark:border-[#30445B] shadow-xs bg-white dark:bg-[#17263A] shrink-0 flex items-center justify-center group-hover:border-[#315D82] dark:group-hover:border-[#6F9FC5] transition-all">
+          <div className="relative w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl overflow-hidden border border-[#D5DEE8] dark:border-[#30445B] shadow-xs bg-white dark:bg-[#17263A] shrink-0 flex items-center justify-center group-hover:border-[#315D82] dark:group-hover:border-[#6F9FC5] transition-all">
             <img
               src="/assets/aistudio/Ruby_Tech_Park_Luxury_Emblem_3b5d2b3d.png"
               alt="RUBI TECH PARK Emblem"
@@ -47,8 +47,8 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, onNavigate }) => {
             />
           </div>
           
-          <div className="flex flex-col shrink-0">
-            <span className="text-base sm:text-lg font-bold font-display tracking-tight text-[#182638] dark:text-[#F1F5F9] leading-none whitespace-nowrap">
+          <div className="flex flex-col min-w-0">
+            <span className="text-xs sm:text-lg font-bold font-display tracking-tight text-[#182638] dark:text-[#F1F5F9] leading-none truncate">
               RUBI <span className="text-[#315D82] dark:text-[#6F9FC5] font-extrabold">TECH PARK</span>
             </span>
             <span className="text-[10px] tracking-wider uppercase text-[#526477] dark:text-[#B8C5D4] font-medium hidden sm:flex items-center gap-1.5 whitespace-nowrap mt-1">
@@ -147,13 +147,13 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, onNavigate }) => {
         </div>
 
         {/* Mobile Controls: Language & Menu Toggle */}
-        <div className="flex sm:hidden items-center gap-2">
+        <div className="flex sm:hidden items-center gap-1.5 shrink-0">
           {/* Mobile Language Switcher */}
           <div className="flex items-center bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] rounded-md p-0.5">
             <button
               type="button"
               onClick={() => setLanguage('ta')}
-              className={`px-2 py-0.5 text-[11px] font-semibold rounded active:scale-95 transition-all ${
+              className={`px-1.5 py-0.5 text-[10px] font-semibold rounded active:scale-95 transition-all ${
                 language === 'ta'
                   ? 'bg-[#315D82] dark:bg-[#416F98] text-white font-bold'
                   : 'text-[#526477] dark:text-[#B8C5D4]'
@@ -164,7 +164,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, onNavigate }) => {
             <button
               type="button"
               onClick={() => setLanguage('en')}
-              className={`px-2 py-0.5 text-[11px] font-semibold rounded active:scale-95 transition-all ${
+              className={`px-1.5 py-0.5 text-[10px] font-semibold rounded active:scale-95 transition-all ${
                 language === 'en'
                   ? 'bg-[#315D82] dark:bg-[#416F98] text-white font-bold'
                   : 'text-[#526477] dark:text-[#B8C5D4]'
@@ -183,19 +183,19 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, onNavigate }) => {
             title={theme === 'dark' ? t.theme.switchToLight : t.theme.switchToDark}
           >
             {theme === 'dark' ? (
-              <Sun className="w-4 h-4 text-amber-400" />
+              <Sun className="w-3.5 h-3.5 text-amber-400" />
             ) : (
-              <Moon className="w-4 h-4 text-[#315D82]" />
+              <Moon className="w-3.5 h-3.5 text-[#315D82]" />
             )}
           </button>
 
           {/* Hamburger Menu Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-md text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-[#F1F5F9] border border-[#D5DEE8] dark:border-[#30445B] bg-[#F2F5F8] dark:bg-[#17263A] active:scale-90 transition-transform"
+            className="p-1.5 rounded-md text-[#526477] dark:text-[#B8C5D4] hover:text-[#182638] dark:hover:text-[#F1F5F9] border border-[#D5DEE8] dark:border-[#30445B] bg-[#F2F5F8] dark:bg-[#17263A] active:scale-90 transition-transform"
             aria-label="Toggle menu"
           >
-            {mobileMenuOpen ? <X className="w-5 h-5 text-[#315D82] dark:text-[#6F9FC5]" /> : <Menu className="w-5 h-5" />}
+            {mobileMenuOpen ? <X className="w-4 h-4 text-[#315D82] dark:text-[#6F9FC5]" /> : <Menu className="w-4 h-4" />}
           </button>
         </div>
       </div>

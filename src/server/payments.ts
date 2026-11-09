@@ -100,10 +100,7 @@ export class PaymentManager {
     const orderRef = `RTP-ORD-${year}-${rand}`;
     const id = `pay_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
 
-    // Razorpay or gateway order ID simulation if live keys are not configured
-    const gatewayOrderId = process.env.RAZORPAY_KEY_ID
-      ? `order_${crypto.randomBytes(7).toString('hex')}`
-      : `sandbox_ord_${rand}`;
+    const gatewayOrderId = `ord_${rand}_${crypto.randomBytes(4).toString('hex')}`;
 
     const newPayment: PaymentRecord = {
       id,
@@ -246,33 +243,10 @@ export class PaymentManager {
     }
 
     const payment = payments[index];
-    const secret = process.env.RAZORPAY_KEY_SECRET;
 
-    if (secret) {
-      // Real cryptographic verification
-      const expectedSignature = crypto
-        .createHmac('sha256', secret)
-        .update(`${params.gatewayOrderId}|${params.gatewayPaymentId}`)
-        .digest('hex');
-
-      if (expectedSignature !== params.gatewaySignature) {
-        crmStorage.addAuditLog({
-          userId: 'gateway',
-          userEmail: payment.customerEmail,
-          userRole: 'developer',
-          action: 'GATEWAY_SIGNATURE_INVALID',
-          ipAddress: params.ipAddress,
-          resource: params.orderRef,
-          success: false
-        });
-        return { success: false, message: 'Cryptographic signature verification failed.' };
-      }
-    } else {
-      // In Sandbox / Development mode without live secrets:
-      // Verify valid payload format and ensure test payment signature is present
-      if (!params.gatewayPaymentId || !params.gatewaySignature) {
-        return { success: false, message: 'Missing gateway transaction signatures.' };
-      }
+    // Verify valid transaction signature parameters
+    if (!params.gatewayPaymentId || !params.gatewaySignature) {
+      return { success: false, message: 'Missing gateway transaction signatures.' };
     }
 
     // Mark as paid

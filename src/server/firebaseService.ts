@@ -10,6 +10,7 @@ import {
   where,
   orderBy,
   updateDoc,
+  deleteDoc,
   Firestore,
   serverTimestamp
 } from 'firebase/firestore';
@@ -23,6 +24,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import dotenv from 'dotenv';
 import { StoredLead, LeadStatus } from '../types/crm';
+import { crmStorage } from './storage';
 
 dotenv.config();
 
@@ -458,6 +460,25 @@ export class FirebaseCRMService {
       verifiedLeads,
       errors
     };
+  }
+
+  /**
+   * Delete single Lead by ID from Firestore and local backup
+   */
+  public async deleteLead(id: string): Promise<boolean> {
+    await this.ensureAdminAuth();
+    let firestoreDeleted = false;
+    if (this.db) {
+      try {
+        const docRef = doc(this.db, 'crm_leads', id);
+        await deleteDoc(docRef);
+        firestoreDeleted = true;
+      } catch (err: any) {
+        console.warn('Could not delete lead from Firestore:', err.message);
+      }
+    }
+    const localDeleted = crmStorage.deleteLead(id);
+    return firestoreDeleted || localDeleted;
   }
 }
 

@@ -1,5 +1,49 @@
 [
   {
+    "id": "audit_1794204603509_ab2627",
+    "userId": "usr_admin_rtp",
+    "userEmail": "admin@rubitechpark.com",
+    "userRole": "super_admin",
+    "action": "LEAD_DELETE",
+    "ipAddress": "127.0.0.1",
+    "resource": "LEAD_RTP-2026-4085",
+    "timestamp": "2026-11-09T06:10:03.509Z",
+    "success": true
+  },
+  {
+    "id": "audit_1794204597464_3a4630",
+    "userId": "usr_admin_rtp",
+    "userEmail": "admin@rubitechpark.com",
+    "userRole": "super_admin",
+    "action": "LOGIN_SUCCESS",
+    "ipAddress": "127.0.0.1",
+    "resource": "AUTH",
+    "timestamp": "2026-11-09T06:09:57.464Z",
+    "success": true
+  },
+  {
+    "id": "audit_1794204578605_9a6832",
+    "userId": "system_mailer",
+    "userEmail": "rubienterprisesgst@gmail.com",
+    "userRole": "developer",
+    "action": "EMAIL_NOTIFICATION_RECORDED",
+    "ipAddress": "127.0.0.1",
+    "resource": "EMAIL_QUEUE:RTP-2026-4085",
+    "timestamp": "2026-11-09T06:09:38.605Z",
+    "success": true
+  },
+  {
+    "id": "audit_1794204578603",
+    "userId": "public_lead_form",
+    "userEmail": "verify@rubitechpark.com",
+    "userRole": "developer",
+    "action": "LEAD_SUBMISSION",
+    "ipAddress": "127.0.0.1",
+    "resource": "LEAD:RTP-2026-8950",
+    "timestamp": "2026-11-09T06:09:38.601Z",
+    "success": true
+  },
+  {
     "id": "audit_1793514278058_eb919a",
     "userId": "usr_admin_rtp",
     "userEmail": "admin@rubitechpark.com",

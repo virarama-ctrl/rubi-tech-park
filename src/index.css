@@ -63,11 +63,19 @@
     --theme-card-shadow-hover: 0 8px 20px -4px rgba(24, 38, 56, 0.12), 0 0 1px 1px #D5DEE8;
   }
 
+  html {
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+  }
+
   body {
     font-family: var(--font-sans);
     background-color: var(--theme-bg-main);
     color: var(--theme-text-primary);
     overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
     line-height: 1.6;
     letter-spacing: -0.011em;
     font-feature-settings: "cv05" 1, "cv11" 1, "calt" 1;
@@ -77,11 +85,11 @@
     transition: background-color 0.2s ease, color 0.2s ease;
   }
 
-  /* International Software Enterprise Typographic Hierarchy */
+  /* International Software Enterprise Typographic Hierarchy (English) */
   h1, .hero-heading {
     font-family: var(--font-display);
     font-weight: 700;
-    line-height: 1.15;
+    line-height: 1.18;
     letter-spacing: -0.028em;
   }
 
@@ -113,10 +121,53 @@
 
   button, input, optgroup, select, textarea {
     font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    hyphens: none;
+    -webkit-hyphens: none;
   }
 
   button {
     letter-spacing: -0.01em;
+  }
+
+  /* Anti-syllable-splitting rules: guarantees full words stay together */
+  .word-keep {
+    word-break: keep-all;
+    overflow-wrap: normal;
+    hyphens: none;
+  }
+
+  /* Indivisible wordmark badge: especially for Coimbatore / கோயம்புத்தூர் */
+  .city-wordmark {
+    white-space: nowrap;
+    word-break: keep-all;
+    hyphens: none;
+    display: inline-block;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* Fluid responsive typography with clamp() */
+  .hero-headline {
+    font-size: clamp(1.85rem, 5vw, 3.75rem);
+    line-height: 1.18;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  .section-headline {
+    font-size: clamp(1.5rem, 3.5vw, 2.35rem);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
   }
 
   /* Numbers and statistics: Inter with tabular number support */
@@ -128,10 +179,11 @@
   /* Tamil text natural rendering without collision or clipping */
   :lang(ta), [lang="ta"], .tamil-content {
     font-family: 'Noto Sans Tamil', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    line-height: 1.68;
+    line-height: 1.72;
     letter-spacing: normal !important;
     word-break: normal;
-    overflow-wrap: break-word;
+    overflow-wrap: normal;
+    hyphens: none;
   }
 
   :lang(ta) h1, [lang="ta"] h1,
@@ -140,12 +192,18 @@
   :lang(ta) .font-display, [lang="ta"] .font-display {
     font-family: 'Noto Sans Tamil', 'Inter', system-ui, sans-serif;
     letter-spacing: normal !important;
-    line-height: 1.35;
+    line-height: 1.38;
+    word-break: normal;
+    overflow-wrap: normal;
+    hyphens: none;
   }
 
   :lang(ta) p, [lang="ta"] p {
-    line-height: 1.7;
+    line-height: 1.72;
     letter-spacing: normal !important;
+    word-break: normal;
+    overflow-wrap: normal;
+    hyphens: none;
   }
 }
 
@@ -532,17 +590,21 @@ html.light .rtp-logo-container {
   font-weight: 700;
   line-height: 1.25;
   margin-bottom: 0.35rem;
-  word-break: break-word;
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum" 1, "cv05" 1, "cv11" 1;
 }
 
 .statistic-label {
   font-size: 0.75rem;
-  line-height: 1.6;
+  line-height: 1.55;
   word-break: normal;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
+  hyphens: none;
   letter-spacing: normal !important;
+  text-wrap: pretty;
 }
 
 /* Reduced Motion */
