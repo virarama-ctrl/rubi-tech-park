@@ -86,7 +86,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         ? 'மென்பொருள் சோர்ஸ் கோட், டொமைன் மற்றும் ஹோஸ்டிங் யாருக்குச் சொந்தமாகும்?'
         : 'Do I own the source code, domain, and hosting?',
       a: language === 'ta'
-        ? 'முழுமையாக 100% உங்களுக்கே சொந்தம். RUBI TECH PARK-ல் வெண்டார் லாக்-இன் கிடையாது. திட்டம் நிறைவடைந்தவுடன் அனைத்து மூலக் குறியீடுகள், டொமைன் நற்சான்றிதழ்கள் மற்றும் தரவுத்தள உரிமைகள் உங்களிடம் ஒப்படைக்கப்படும்.'
+        ? 'முழுமையாக 100% உங்களுக்கே சொந்தம். ரூபி டெக் பார்க்-ல் வெண்டார் லாக்-இன் கிடையாது. திட்டம் நிறைவடைந்தவுடன் அனைத்து மூலக் குறியீடுகள், டொமைன் நற்சான்றிதழ்கள் மற்றும் தரவுத்தள உரிமைகள் உங்களிடம் ஒப்படைக்கப்படும்.'
       : 'Yes, 100%. At RUBI TECH PARK, we do not believe in vendor lock-in. You retain full legal ownership of your code, domain credentials, and database assets upon project handover.'
     },
     {
@@ -131,7 +131,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               {/* Engineering Status Pill */}
               <div className="inline-flex flex-wrap sm:flex-nowrap items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 rounded-xl sm:rounded-full bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] text-xs font-mono text-[#315D82] dark:text-[#6F9FC5] shadow-xs max-w-full">
                 <span className="w-2 h-2 rounded-full bg-[#315D82] dark:bg-[#6F9FC5] shrink-0" />
-                <span className="font-semibold shrink-0">RUBI TECH PARK</span>
+                <span className="font-semibold shrink-0">{language === 'ta' ? 'ரூபி டெக் பார்க்' : 'RUBI TECH PARK'}</span>
                 <span className="text-[#8A9CAE] hidden sm:inline">/</span>
                 <span className="text-[#526477] dark:text-[#B8C5D4] text-pretty">{language === 'ta' ? 'நவீன மென்பொருள் & கிளவுட் கட்டமைப்பு' : 'ENTERPRISE SOFTWARE & CLOUD ARCHITECTURE'}</span>
               </div>

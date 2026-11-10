@@ -30,7 +30,7 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onNavigate }) => {
         </h1>
         <p className="text-xs text-slate-400">
           {language === 'ta'
-            ? 'கடைசியாக புதுப்பிக்கப்பட்டது: அக்டோபர் 2026 · RUBI TECH PARK மென்பொருள் மேம்பாட்டு விதிமுறைகள்.'
+            ? 'கடைசியாக புதுப்பிக்கப்பட்டது: அக்டோபர் 2026 · ரூபி டெக் பார்க் மென்பொருள் மேம்பாட்டு விதிமுறைகள்.'
             : 'Last revised: October 2026 · Standard terms governing technology development contracts with RUBI TECH PARK.'}
         </p>
       </div>
@@ -86,7 +86,7 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onNavigate }) => {
           </h2>
           <p>
             {language === 'ta'
-              ? 'RUBI TECH PARK ஒரு தனியார் தொழில்நுட்ப மற்றும் ஆவண வசதி ஆலோசனை நிறுவனமாகும்; இது எந்தவொரு அரசு துறையையும் சாராதது. ஜிஎஸ்டி (GST), வருமான வரி (ITR), MSME, FSSAI, வர்த்தக முத்திரை (TM) மற்றும் பிற உரிமங்கள் தொடர்பான சேவைகள் வாடிக்கையாளரின் ஆவணங்களின் உண்மைத்தன்மை மற்றும் அரசின் விதிகளுக்கு உட்பட்டவை. ஒப்புதல் உத்தரவாதம் அளிக்கப்படாது. அரசு கட்டணங்கள் மற்றும் எங்கள் தொழில்முறை சேவை கட்டணங்கள் தனித்தனியானவை.'
+              ? 'ரூபி டெக் பார்க் ஒரு தனியார் தொழில்நுட்ப மற்றும் ஆவண வசதி ஆலோசனை நிறுவனமாகும்; இது எந்தவொரு அரசு துறையையும் சாராதது. ஜிஎஸ்டி (GST), வருமான வரி (ITR), MSME, FSSAI, வர்த்தக முத்திரை (TM) மற்றும் பிற உரிமங்கள் தொடர்பான சேவைகள் வாடிக்கையாளரின் ஆவணங்களின் உண்மைத்தன்மை மற்றும் அரசின் விதிகளுக்கு உட்பட்டவை. ஒப்புதல் உத்தரவாதம் அளிக்கப்படாது. அரசு கட்டணங்கள் மற்றும் எங்கள் தொழில்முறை சேவை கட்டணங்கள் தனித்தனியானவை.'
               : 'RUBI TECH PARK operates as an independent private software consultancy and professional document facilitation agency. We are NOT a government department, ministry, or statutory authority. All statutory registrations (including GST, ITR, MSME/Udyam, FSSAI, Trademarks, Patents, and Trade Licences) are strictly subject to client eligibility, authentic documentation, and prevailing government regulations. Approval or grant of any licence is at the sole discretion of respective government authorities; no guaranteed approval is represented or implied. Official statutory fees levied by the government and professional facilitation fees are billed separately.'}
           </p>
         </section>
@@ -108,7 +108,7 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onNavigate }) => {
           </h2>
           <p>
             {language === 'ta'
-              ? 'RUBI TECH PARK உடன் மேற்கொள்ளப்படும் அனைத்து வணிக ஒப்பந்தங்களும் இந்திய குடியரசின் சட்டங்களுக்கு உட்பட்டவை. ஏதேனும் சட்ட சிக்கல்கள் ஏற்பட்டால் கோயம்புத்தூர், தமிழ்நாடு நீதிமன்றங்களின் பிரத்யேக அதிகார வரம்பிற்கு உட்பட்டது.'
+              ? 'ரூபி டெக் பார்க் உடன் மேற்கொள்ளப்படும் அனைத்து வணிக ஒப்பந்தங்களும் இந்திய குடியரசின் சட்டங்களுக்கு உட்பட்டவை. ஏதேனும் சட்ட சிக்கல்கள் ஏற்பட்டால் கோயம்புத்தூர், தமிழ்நாடு நீதிமன்றங்களின் பிரத்யேக அதிகார வரம்பிற்கு உட்பட்டது.'
               : 'Commercial agreements entered into with RUBI TECH PARK are governed by the laws of the Republic of India. Any legal dispute shall be subject to the exclusive jurisdiction of the competent courts in Coimbatore, Tamil Nadu.'}
           </p>
         </section>

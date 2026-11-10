@@ -49,7 +49,11 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, onNavigate }) => {
           
           <div className="flex flex-col min-w-0">
             <span className="text-xs sm:text-lg font-bold font-display tracking-tight text-[#182638] dark:text-[#F1F5F9] leading-none truncate">
-              RUBI <span className="text-[#315D82] dark:text-[#6F9FC5] font-extrabold">TECH PARK</span>
+              {language === 'ta' ? (
+                <>ரூபி <span className="text-[#315D82] dark:text-[#6F9FC5] font-extrabold">டெக் பார்க்</span></>
+              ) : (
+                <>RUBI <span className="text-[#315D82] dark:text-[#6F9FC5] font-extrabold">TECH PARK</span></>
+              )}
             </span>
             <span className="text-[10px] tracking-wider uppercase text-[#526477] dark:text-[#B8C5D4] font-medium hidden sm:flex items-center gap-1.5 whitespace-nowrap mt-1">
               <span className="w-1.5 h-1.5 rounded-full bg-[#315D82] dark:bg-[#6F9FC5]" />

@@ -346,7 +346,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
               <ShieldCheck className="w-5 h-5 shrink-0 text-emerald-400 mt-0.5" />
               <span>
                 {language === 'ta'
-                  ? 'கட்டணம் வெற்றிகரமாக உறுதி செய்யப்பட்டு RUBI TECH PARK கணக்கில் வரவு வைக்கப்பட்டுள்ளது. உங்கள் திட்ட துவக்கப் பணிகள் உடனடியாகத் தொடங்கப்படுகின்றன.'
+                  ? 'கட்டணம் வெற்றிகரமாக உறுதி செய்யப்பட்டு ரூபி டெக் பார்க் கணக்கில் வரவு வைக்கப்பட்டுள்ளது. உங்கள் திட்ட துவக்கப் பணிகள் உடனடியாகத் தொடங்கப்படுகின்றன.'
                   : 'Payment verified and credited to RUBI TECH PARK current account. Project kickoff details have been dispatched to your email.'}
               </span>
             </div>
@@ -435,7 +435,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
             <a
               href={`https://wa.me/918220550829?text=${encodeURIComponent(
                 language === 'ta'
-                  ? `வணக்கம் RUBI TECH PARK, நான் ஆர்டர் ${currentOrder.orderRef} க்கான கட்டணத்தை UPI மூலம் செலுத்திவிட்டேன் (UTR: ${currentOrder.upiTransactionRef}). தயவுசெய்து சரிபார்க்கவும்.`
+                  ? `வணக்கம் ரூபி டெக் பார்க், நான் ஆர்டர் ${currentOrder.orderRef} க்கான கட்டணத்தை UPI மூலம் செலுத்திவிட்டேன் (UTR: ${currentOrder.upiTransactionRef}). தயவுசெய்து சரிபார்க்கவும்.`
                   : `Hello RUBI TECH PARK, I have made the payment for Order ${currentOrder.orderRef} via UPI (UTR: ${currentOrder.upiTransactionRef}). Please confirm verification.`
               )}`}
               target="_blank"

@@ -3,7 +3,7 @@ import { Language, TranslationDictionary } from './types';
 export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
   ta: {
     brand: {
-      name: 'RUBI TECH PARK',
+      name: 'ரூபி டெக் பார்க்',
       tagline: 'உங்கள் வணிக வளர்ச்சிக்கான டிஜிட்டல் தீர்வுகள்',
       location: 'காந்திபுரம், கோயம்புத்தூர்',
       fullLocation: 'காந்திபுரம், கோயம்புத்தூர், தமிழ்நாடு, இந்தியா',
@@ -128,7 +128,7 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       verifiedNote: 'உண்மை வாடிக்கையாளர் திட்டப் பதிவு'
     },
     about: {
-      title: 'RUBI TECH PARK பற்றி',
+      title: 'ரூபி டெக் பார்க் பற்றி',
       subtitle: 'கோயம்புத்தூரில் தலைமையிடமாகக் கொண்டு செயல்படும் நம்பகமான மென்பொருள் பொறியியல் மற்றும் தொழில்நுட்ப ஆலோசனை நிறுவனம்.',
       philosophyTitle: 'எங்கள் அணுகுமுறை & நெறிமுறைகள்',
       philosophyDesc: 'பொய்யான சான்றுகளோ மிகைப்படுத்தல்களோ இன்றி, வணிகங்களுக்கு உண்மையான பயன் தரும் மென்பொருட்களை உருவாக்குவதே எங்கள் நோக்கம். வாடிக்கையாளர் தேவைகளுக்கு நேர்மையான தீர்வளிப்பதில் நாங்கள் உறுதியாக இருக்கிறோம்.',
@@ -226,7 +226,7 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       }
     },
     footer: {
-      description: 'கோயம்புத்தூரில் தலைமையிடத்தைக் கொண்டு இயங்கும் RUBI TECH PARK, நவீன வலைத்தளங்கள், இ-காமர்ஸ் மற்றும் தனிப்பயன் CRM மென்பொருட்களை இந்திய நிறுவனங்களுக்கு வழங்கி வருகிறது.',
+      description: 'கோயம்புத்தூரில் தலைமையிடத்தைக் கொண்டு இயங்கும் ரூபி டெக் பார்க், நவீன வலைத்தளங்கள், இ-காமர்ஸ் மற்றும் தனிப்பயன் CRM மென்பொருட்களை இந்திய நிறுவனங்களுக்கு வழங்கி வருகிறது.',
       panIndiaScope: 'காந்திபுரம், கோயம்புத்தூர், தமிழ்நாடு · இந்தியா முழுவதும் ஆன்லைன் சேவை',
       ownershipNote: '100% வாடிக்கையாளர் மூலக் குறியீடு மற்றும் டொமைன் உரிமை ஒப்படைப்பு',
       solutionsHeading: 'தீர்வுகள்',
@@ -242,20 +242,20 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
     },
     whatsApp: {
       tooltip: 'வாட்ஸ்அப்பில் பேசுங்கள்',
-      prefilledMessage: 'வணக்கம் RUBI TECH PARK, உங்கள் மென்பொருள் மேம்பாட்டுச் சேவைகள் குறித்து விவரங்கள் தெரிந்துகொள்ள விரும்புகிறேன்.',
+      prefilledMessage: 'வணக்கம் ரூபி டெக் பார்க், உங்கள் மென்பொருள் மேம்பாட்டுச் சேவைகள் குறித்து விவரங்கள் தெரிந்துகொள்ள விரும்புகிறேன்.',
       modalTitle: 'வாட்ஸ்அப் நேரடி தொடர்பு',
-      modalSubtitle: 'RUBI TECH PARK அதிகாரப்பூர்வ உதவி எண்',
+      modalSubtitle: 'ரூபி டெக் பார்க் அதிகாரப்பூர்வ உதவி எண்',
       noticeTitle: 'நேரடி வாட்ஸ்அப் இணைப்பு:',
       noticeText: 'உடனடி திட்ட ஆலோசனை மற்றும் விலை விபரங்களுக்கு கீழே உள்ள பொத்தானைக் கிளிக் செய்யவும்.',
       directChatAction: 'வாட்ஸ்அப்பில் அரட்டையைத் தொடங்குங்கள்'
     },
     admin: {
       loginTitle: 'CRM நிர்வாகி உள்நுழைவு',
-      loginSubtitle: 'அங்கீகரிக்கப்பட்ட RUBI TECH PARK நிர்வாகிகளுக்கு மட்டும்',
+      loginSubtitle: 'அங்கீகரிக்கப்பட்ட ரூபி டெக் பார்க் நிர்வாகிகளுக்கு மட்டும்',
       emailLabel: 'நிர்வாகி மின்னஞ்சல்',
       passwordLabel: 'கடவுச்சொல்',
       loginBtn: 'பாதுகாப்பாக உள்நுழைக',
-      dashboardTitle: 'RUBI TECH PARK லீட் மேலாண்மை கன்சோல்',
+      dashboardTitle: 'ரூபி டெக் பார்க் லீட் மேலாண்மை கன்சோல்',
       logoutBtn: 'வெளியேறு',
       leadsCount: 'மொத்த விசாரணைகள்',
       exportCsv: 'CSV கோப்பாகப் பதிவிறக்கு',
@@ -268,7 +268,7 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       darkMode: 'இருண்ட பயன்முறை'
     },
     checkout: {
-      pageTitle: 'பாதுகாப்பான கட்டண முறை – RUBI TECH PARK',
+      pageTitle: 'பாதுகாப்பான கட்டண முறை – ரூபி டெக் பார்க்',
       pageSubtitle: 'UPI, நெட் பேங்கிங் மற்றும் கார்டுகள் மூலம் உங்கள் மென்பொருள் கட்டணத்தை எளிதாகச் செலுத்துங்கள்',
       checkoutHeading: 'கட்டணம் செலுத்துங்கள்',
       paymentMethod: 'கட்டண முறை',

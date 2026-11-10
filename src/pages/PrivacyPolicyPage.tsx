@@ -42,7 +42,7 @@ export const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = ({ onNavigate
           </h2>
           <p>
             {language === 'ta'
-              ? 'RUBI TECH PARK வலைத்தளத்தில் நீங்கள் திட்ட விசாரணையைச் சமர்ப்பிக்கும்போது, வணிக மதிப்பீட்டு நோக்கங்களுக்காக நீங்கள் வெளிப்படையாக வழங்கும் தகவல்களை நாங்கள் சேகரிக்கிறோம்:'
+              ? 'ரூபி டெக் பார்க் வலைத்தளத்தில் நீங்கள் திட்ட விசாரணையைச் சமர்ப்பிக்கும்போது, வணிக மதிப்பீட்டு நோக்கங்களுக்காக நீங்கள் வெளிப்படையாக வழங்கும் தகவல்களை நாங்கள் சேகரிக்கிறோம்:'
               : 'When you submit an inquiry through the RUBI TECH PARK portal, we collect personal and commercial information you explicitly provide:'}
           </p>
           <ul className="list-disc pl-5 space-y-1.5 text-xs text-slate-400">
@@ -70,7 +70,7 @@ export const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = ({ onNavigate
           </h2>
           <p>
             {language === 'ta'
-              ? 'RUBI TECH PARK உங்கள் தொடர்பு தகவல்களையோ அல்லது திட்ட விபரங்களையோ விளம்பரதாரர்களுக்கோ அல்லது மூன்றாம் தரப்பு நிறுவனங்களுக்கோ ஒருபோதும் விற்பனை செய்வதோ, வாடகைக்கு விடுவதோ இல்லை.'
+              ? 'ரூபி டெக் பார்க் உங்கள் தொடர்பு தகவல்களையோ அல்லது திட்ட விபரங்களையோ விளம்பரதாரர்களுக்கோ அல்லது மூன்றாம் தரப்பு நிறுவனங்களுக்கோ ஒருபோதும் விற்பனை செய்வதோ, வாடகைக்கு விடுவதோ இல்லை.'
               : 'RUBI TECH PARK does not sell, rent, lease, trade, or monetize your contact information or project specifications to external advertisers, lead brokers, or marketing syndicates.'}
           </p>
         </section>

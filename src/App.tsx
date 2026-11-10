@@ -98,7 +98,7 @@ function AppContent() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     let pageTitle = language === 'ta'
-      ? 'RUBI TECH PARK – உங்கள் வணிக வளர்ச்சிக்கான டிஜிட்டல் தீர்வுகள்'
+      ? 'ரூபி டெக் பார்க் – உங்கள் வணிக வளர்ச்சிக்கான டிஜிட்டல் தீர்வுகள்'
       : 'RUBI TECH PARK – Digital Solutions That Help Your Business Grow';
 
     let metaDescription = language === 'ta'
@@ -108,69 +108,69 @@ function AppContent() {
     switch (currentRoute) {
       case 'home':
         pageTitle = language === 'ta'
-          ? 'RUBI TECH PARK – உங்கள் வணிக வளர்ச்சிக்கான டிஜிட்டல் தீர்வுகள்'
+          ? 'ரூபி டெக் பார்க் – உங்கள் வணிக வளர்ச்சிக்கான டிஜிட்டல் தீர்வுகள்'
           : 'RUBI TECH PARK – Digital Solutions That Help Your Business Grow';
         break;
       case 'services':
         pageTitle = language === 'ta'
-          ? 'சேவைகள் – வணிக வலைத்தளங்கள், இ-காமர்ஸ், CRM | RUBI TECH PARK'
+          ? 'சேவைகள் – வணிக வலைத்தளங்கள், இ-காமர்ஸ், CRM | ரூபி டெக் பார்க்'
           : 'Services Overview – Business Websites, E-Commerce, Custom CRM | RUBI TECH PARK';
         break;
       case 'service-business-websites':
         pageTitle = language === 'ta'
-          ? 'வணிக வலைத்தள உருவாக்கம் (₹5,000+) | RUBI TECH PARK'
+          ? 'வணிக வலைத்தள உருவாக்கம் (₹5,000+) | ரூபி டெக் பார்க்'
           : 'Business Website Development (₹5,000+) | RUBI TECH PARK';
         break;
       case 'service-ecommerce':
         pageTitle = language === 'ta'
-          ? 'இ-காமர்ஸ் தளங்கள் (₹15,000+) | RUBI TECH PARK'
+          ? 'இ-காமர்ஸ் தளங்கள் (₹15,000+) | ரூபி டெக் பார்க்'
           : 'E-commerce Development (₹15,000+) | RUBI TECH PARK';
         break;
       case 'service-custom-crm':
         pageTitle = language === 'ta'
-          ? 'பிரத்யேக CRM மற்றும் வணிக மென்பொருள் (₹20,000+) | RUBI TECH PARK'
+          ? 'பிரத்யேக CRM மற்றும் வணிக மென்பொருள் (₹20,000+) | ரூபி டெக் பார்க்'
           : 'Custom CRM & Business Software (₹20,000+) | RUBI TECH PARK';
         break;
       case 'service-crm-integration':
         pageTitle = language === 'ta'
-          ? 'வலைத்தளம் + CRM ஒருங்கிணைப்பு (₹30,000+) | RUBI TECH PARK'
+          ? 'வலைத்தளம் + CRM ஒருங்கிணைப்பு (₹30,000+) | ரூபி டெக் பார்க்'
           : 'Website + CRM Integration (₹30,000+) | RUBI TECH PARK';
         break;
       case 'service-ai-automation':
         pageTitle = language === 'ta'
-          ? 'AI & பணிப்பாய்வு ஆட்டோமேஷன் (₹25,000+) | RUBI TECH PARK'
+          ? 'AI & பணிப்பாய்வு ஆட்டோமேஷன் (₹25,000+) | ரூபி டெக் பார்க்'
           : 'AI & Workflow Automation (₹25,000+) | RUBI TECH PARK';
         break;
       case 'pricing':
         pageTitle = language === 'ta'
-          ? 'வெளிப்படையான தொடக்க விலை & திட்ட கால்குலேட்டர் | RUBI TECH PARK'
+          ? 'வெளிப்படையான தொடக்க விலை & திட்ட கால்குலேட்டர் | ரூபி டெக் பார்க்'
           : 'Transparent Starting Pricing & Cost Estimator | RUBI TECH PARK';
         break;
       case 'portfolio':
         pageTitle = language === 'ta'
-          ? 'திட்டங்கள் & வழக்கு ஆய்வுகள் | RUBI TECH PARK'
+          ? 'திட்டங்கள் & வழக்கு ஆய்வுகள் | ரூபி டெக் பார்க்'
           : 'Case Studies & Verified Deployments | RUBI TECH PARK';
         break;
       case 'about':
         pageTitle = language === 'ta'
-          ? 'எங்களைப்பற்றி – கோயம்புத்தூர் மென்பொருள் ஆலோசனை | RUBI TECH PARK'
+          ? 'எங்களைப்பற்றி – கோயம்புத்தூர் மென்பொருள் ஆலோசனை | ரூபி டெக் பார்க்'
           : 'About Us – Credible Engineering for Indian Business | RUBI TECH PARK';
         break;
       case 'contact':
         pageTitle = language === 'ta'
-          ? 'உங்கள் திட்டத்தைப் பற்றி பேசுங்கள் | RUBI TECH PARK'
+          ? 'உங்கள் திட்டத்தைப் பற்றி பேசுங்கள் | ரூபி டெக் பார்க்'
           : 'Discuss Your Project – Commercial Enquiries | RUBI TECH PARK';
         break;
       case 'privacy-policy':
-        pageTitle = language === 'ta' ? 'தனியுரிமைக் கொள்கை | RUBI TECH PARK' : 'Privacy Policy | RUBI TECH PARK';
+        pageTitle = language === 'ta' ? 'தனியுரிமைக் கொள்கை | ரூபி டெக் பார்க்' : 'Privacy Policy | RUBI TECH PARK';
         break;
       case 'terms':
-        pageTitle = language === 'ta' ? 'விதிமுறைகள் மற்றும் நிபந்தனைகள் | RUBI TECH PARK' : 'Terms & Conditions of Service | RUBI TECH PARK';
+        pageTitle = language === 'ta' ? 'விதிமுறைகள் மற்றும் நிபந்தனைகள் | ரூபி டெக் பார்க்' : 'Terms & Conditions of Service | RUBI TECH PARK';
         break;
       case 'checkout':
-        pageTitle = language === 'ta' ? 'கட்டணம் செலுத்துங்கள் – ஆன்லைன் கட்டண தளம் | RUBI TECH PARK' : 'Checkout & Online Payments – RUBI TECH PARK';
+        pageTitle = language === 'ta' ? 'கட்டணம் செலுத்துங்கள் – ஆன்லைன் கட்டண தளம் | ரூபி டெக் பார்க்' : 'Checkout & Online Payments – RUBI TECH PARK';
         metaDescription = language === 'ta'
-          ? 'RUBI TECH PARK மென்பொருள் சேவைகளுக்கான UPI, கார்டுகள் மற்றும் நெட் பேங்கிங் மூலம் பாதுகாப்பான ஆன்லைன் கட்டணம்.'
+          ? 'ரூபி டெக் பார்க் மென்பொருள் சேவைகளுக்கான UPI, கார்டுகள் மற்றும் நெட் பேங்கிங் மூலம் பாதுகாப்பான ஆன்லைன் கட்டணம்.'
           : 'Secure encrypted online payments for RUBI TECH PARK software development and consultancy services via UPI, Cards, and Net Banking.';
         break;
       case 'admin-login':
@@ -180,7 +180,7 @@ function AppContent() {
         pageTitle = 'Lead Management CRM Dashboard | RUBI TECH PARK';
         break;
       case 'not-found':
-        pageTitle = language === 'ta' ? 'பக்கம் கிடைக்கவில்லை (404) | RUBI TECH PARK' : 'Page Not Found (404) | RUBI TECH PARK';
+        pageTitle = language === 'ta' ? 'பக்கம் கிடைக்கவில்லை (404) | ரூபி டெக் பார்க்' : 'Page Not Found (404) | RUBI TECH PARK';
         break;
     }
 

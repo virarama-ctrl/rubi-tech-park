@@ -137,7 +137,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           </h2>
           <p className="text-xs sm:text-sm text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
             {language === 'ta'
-              ? 'RUBI TECH PARK இணையதளத்தில் பெறப்படும் அனைத்து விசாரணைகளும் எங்களின் பாதுகாப்பான CRM தரவுத்தளத்தில் நேரடியாகப் பதிவு செய்யப்படுகின்றன. அங்கீகரிக்கப்பட்ட நிர்வாகிகள் மட்டுமே இந்தத் தரவுகளை அணுக முடியும்.'
+              ? 'ரூபி டெக் பார்க் இணையதளத்தில் பெறப்படும் அனைத்து விசாரணைகளும் எங்களின் பாதுகாப்பான CRM தரவுத்தளத்தில் நேரடியாகப் பதிவு செய்யப்படுகின்றன. அங்கீகரிக்கப்பட்ட நிர்வாகிகள் மட்டுமே இந்தத் தரவுகளை அணுக முடியும்.'
               : 'All enquiries submitted on the RUBI TECH PARK platform are validated on the server and persisted directly into our secure CRM database with strict server-side session authentication, role-based access control, rate limiting, and auditable logging.'}
           </p>
         </div>

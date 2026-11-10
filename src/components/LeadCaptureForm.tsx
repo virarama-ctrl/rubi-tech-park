@@ -11,6 +11,7 @@ import {
   AGENCY_CONFIG
 } from '../config/agencyConfig';
 import { useLanguage } from '../context/LanguageContext';
+import { getLocalizedService } from '../utils/serviceLocalization';
 import {
   CheckCircle2,
   AlertCircle,
@@ -71,13 +72,16 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
     setActiveTab(tab);
     setErrors({});
     if (tab === 'software') {
-      setSelectedService(SOFTWARE_SERVICES[0].title);
+      const s = getLocalizedService(SOFTWARE_SERVICES[0], language);
+      setSelectedService(s.title);
     } else if (tab === 'compliance') {
-      setSelectedService(COMPLIANCE_SERVICES[0].title);
+      const s = getLocalizedService(COMPLIANCE_SERVICES[0], language);
+      setSelectedService(s.title);
     } else if (tab === 'eservice') {
-      setSelectedService(E_SERVICES[0].title);
+      const s = getLocalizedService(E_SERVICES[0], language);
+      setSelectedService(s.title);
     } else {
-      setSelectedService('General Business Enquiry');
+      setSelectedService(language === 'ta' ? 'பொதுவான வணிக தேவைகள்' : 'General Business Enquiry');
     }
   };
 
@@ -168,7 +172,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
       setSubmittedSuccess(true);
       setErrors({});
     } catch (err: any) {
-      setServerError(err.message || 'Network error occurred. Please contact us on WhatsApp.');
+      setServerError(err.message || (language === 'ta' ? 'பிணையப் பிழை ஏற்பட்டது. வாட்ஸ்அப்பில் எங்களை தொடர்பு கொள்ளவும்.' : 'Network error occurred. Please contact us on WhatsApp.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -205,10 +209,13 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           </div>
           <div>
             <h3 className="text-lg sm:text-xl font-bold font-display text-[#172033] dark:text-white">
-              {activeTab === 'eservice' ? 'E-Service Booking Request Received' : 'Enquiry Successfully Registered'}
+              {language === 'ta'
+                ? (activeTab === 'eservice' ? 'இ-சேவை முன்பதிவு கோரிக்கை பெறப்பட்டது' : 'விசாரணை வெற்றிகரமாக பதிவு செய்யப்பட்டது')
+                : (activeTab === 'eservice' ? 'E-Service Booking Request Received' : 'Enquiry Successfully Registered')}
             </h3>
             <p className="text-xs text-[#647087] dark:text-slate-400">
-              Reference ID: <span className="font-mono text-[#6654E8] dark:text-[#9689FF] font-semibold">{referenceId}</span>
+              {language === 'ta' ? 'குறிப்பு எண்:' : 'Reference ID:'}{' '}
+              <span className="font-mono text-[#6654E8] dark:text-[#9689FF] font-semibold">{referenceId}</span>
             </p>
           </div>
         </div>
@@ -218,45 +225,63 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
             <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 space-y-2 text-xs">
               <div className="flex items-center gap-2 font-bold text-amber-900 dark:text-amber-200">
                 <Info className="w-4 h-4 text-amber-600" />
-                <span>Initial Booking Amount Breakdown</span>
+                <span>{language === 'ta' ? 'முன்பதிவு கட்டண விவரம்' : 'Initial Booking Amount Breakdown'}</span>
               </div>
               <div className="grid grid-cols-2 gap-2 text-slate-700 dark:text-slate-300 pt-1">
-                <div>Base Booking Charge: <strong>₹200</strong></div>
-                <div>18% GST: <strong>₹36</strong></div>
+                <div>{language === 'ta' ? 'அடிப்படை கட்டணம்:' : 'Base Booking Charge:'} <strong>₹200</strong></div>
+                <div>{language === 'ta' ? '18% ஜிஎஸ்டி:' : '18% GST:'} <strong>₹36</strong></div>
                 <div className="col-span-2 pt-1 border-t border-amber-200 dark:border-amber-800 font-semibold text-amber-900 dark:text-amber-100">
-                  Total Initial Booking Amount: ₹236 (Payment Status: Pending Verification)
+                  {language === 'ta'
+                    ? 'மொத்த முன்பதிவுக் கட்டணம்: ₹236 (கட்டண நிலை: சரிபார்ப்பில் உள்ளது)'
+                    : 'Total Initial Booking Amount: ₹236 (Payment Status: Pending Verification)'}
                 </div>
               </div>
               <p className="text-[11px] text-amber-800/90 dark:text-amber-300/80 pt-1 leading-relaxed">
-                *The remaining service charges will be communicated after reviewing your requirements and collected after completion of the work. Applicable government fees and additional charges, if any, will be informed separately.*
+                {language === 'ta'
+                  ? '*உங்கள் தேவைகளை ஆய்வு செய்த பிறகு மீதமுள்ள சேவை கட்டணம் தெரிவிக்கப்பட்டு, பணி முடிந்ததும் வசூலிக்கப்படும். அரசு கட்டணங்கள் இருப்பின் தனியாக தெரிவிக்கப்படும்.*'
+                  : '*The remaining service charges will be communicated after reviewing your requirements and collected after completion of the work. Applicable government fees and additional charges, if any, will be informed separately.*'}
               </p>
             </div>
           ) : (
             <p className="text-sm text-[#172033] dark:text-slate-200 leading-relaxed">
-              Thank you, <strong>{fullName}</strong>. Your enquiry has been safely recorded in our database. Our specialist consultant will review your brief and contact you via WhatsApp / Phone shortly.
+              {language === 'ta' ? (
+                <>
+                  நன்றி, <strong>{fullName}</strong>. உங்கள் கோரிக்கை பாதுகாப்பாக பதிவு செய்யப்பட்டுள்ளது. எங்கள் மூத்த ஆலோசகர் உங்கள் திட்ட விவரங்களை ஆய்வு செய்து விரைவில் வாட்ஸ்அப் அல்லது தொலைபேசி வழியாக தொடர்புகொள்வார்.
+                </>
+              ) : (
+                <>
+                  Thank you, <strong>{fullName}</strong>. Your enquiry has been safely recorded in our database. Our specialist consultant will review your brief and contact you via WhatsApp / Phone shortly.
+                </>
+              )}
             </p>
           )}
 
           <div className="bg-[#FAFBFF] dark:bg-[#172038] rounded-xl p-4 border border-[#E5E9F2] dark:border-white/10 space-y-2 text-xs">
             <div className="flex items-center justify-between">
-              <span className="text-[#647087] dark:text-slate-400">Reference Tracking Code:</span>
+              <span className="text-[#647087] dark:text-slate-400">
+                {language === 'ta' ? 'கண்காணிப்பு குறிப்பு எண்:' : 'Reference Tracking Code:'}
+              </span>
               <div className="flex items-center gap-2">
                 <span className="font-mono font-bold text-sm text-[#6654E8] dark:text-[#9689FF]">{referenceId}</span>
                 <button
                   onClick={handleCopyReference}
                   className="p-1 rounded-md text-[#647087] hover:text-[#172033] dark:hover:text-white transition-colors cursor-pointer"
-                  title="Copy Reference"
+                  title={language === 'ta' ? 'குறிப்பை நகலெடுக்க' : 'Copy Reference'}
                 >
                   {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                 </button>
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-[#647087] dark:text-slate-400">Selected Service:</span>
-              <span className="font-medium text-[#172033] dark:text-white">{selectedService || 'General Inquiry'}</span>
+              <span className="text-[#647087] dark:text-slate-400">
+                {language === 'ta' ? 'தேர்ந்தெடுக்கப்பட்ட சேவை:' : 'Selected Service:'}
+              </span>
+              <span className="font-medium text-[#172033] dark:text-white">{selectedService || (language === 'ta' ? 'பொதுவான விசாரணை' : 'General Inquiry')}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-[#647087] dark:text-slate-400">Direct Desk WhatsApp:</span>
+              <span className="text-[#647087] dark:text-slate-400">
+                {language === 'ta' ? 'நேரடி வாட்ஸ்அப் உதவி:' : 'Direct Desk WhatsApp:'}
+              </span>
               <span className="font-mono text-[#172033] dark:text-white">+91 82205 50829</span>
             </div>
           </div>
@@ -271,7 +296,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
               className="flex-1 py-3 px-4 rounded-xl bg-[#25D366] hover:bg-[#20BD5A] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer"
             >
               <MessageSquare className="w-4 h-4" />
-              <span>Forward to WhatsApp Desk (+91 82205 50829)</span>
+              <span>{language === 'ta' ? 'வாட்ஸ்அப் உதவி மையத்திற்கு அனுப்பவும் (+91 82205 50829)' : 'Forward to WhatsApp Desk (+91 82205 50829)'}</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           )}
@@ -280,7 +305,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
             className="py-3 px-5 rounded-xl border border-[#E5E9F2] dark:border-white/10 hover:bg-[#FAFBFF] dark:hover:bg-white/5 text-[#172033] dark:text-white text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
           >
             <RefreshCw className="w-3.5 h-3.5" />
-            <span>Submit Another Request</span>
+            <span>{language === 'ta' ? 'மற்றொரு கோரிக்கையைச் சமர்ப்பிக்க' : 'Submit Another Request'}</span>
           </button>
         </div>
       </div>
@@ -301,7 +326,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           }`}
         >
           <HelpCircle className="w-4 h-4 shrink-0" />
-          <span className="truncate">General Discovery</span>
+          <span className="truncate">{language === 'ta' ? 'பொதுவான ஆலோசனை' : 'General Discovery'}</span>
         </button>
 
         <button
@@ -314,7 +339,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           }`}
         >
           <Code2 className="w-4 h-4 shrink-0" />
-          <span className="truncate">Software Architecture</span>
+          <span className="truncate">{language === 'ta' ? 'மென்பொருள் கட்டமைப்பு' : 'Software Architecture'}</span>
         </button>
 
         <button
@@ -327,7 +352,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           }`}
         >
           <Shield className="w-4 h-4 shrink-0" />
-          <span className="truncate">Statutory / Compliance</span>
+          <span className="truncate">{language === 'ta' ? 'சட்டப்பூர்வ / வரி இணக்கம்' : 'Statutory / Compliance'}</span>
         </button>
 
         <button
@@ -340,7 +365,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           }`}
         >
           <FileText className="w-4 h-4 shrink-0" />
-          <span className="truncate">E-Services (₹236)</span>
+          <span className="truncate">{language === 'ta' ? 'பொதுமக்கள் இ-சேவைகள் (₹236)' : 'E-Services (₹236)'}</span>
         </button>
       </div>
 
@@ -350,10 +375,12 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           <div className="mb-6 p-4 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] text-xs text-[#182638] dark:text-[#F1F5F9] space-y-1.5">
             <div className="font-bold flex items-center gap-1.5 text-[#315D82] dark:text-[#6F9FC5]">
               <Info className="w-4 h-4" />
-              <span>Mandatory Citizen E-Service Booking Deposit Rule</span>
+              <span>{language === 'ta' ? 'பொதுமக்கள் இ-சேவைகள் முன்பதிவு விதிமுறை' : 'Mandatory Citizen E-Service Booking Deposit Rule'}</span>
             </div>
             <p className="leading-relaxed text-[#526477] dark:text-[#B8C5D4]">
-              Book your e-service by paying <strong>₹236 (₹200 base charge + 18% GST ₹36)</strong>. The remaining service charges will be communicated after reviewing your requirements and collected after completion of the work. Applicable government fees and additional charges, if any, will be informed separately.
+              {language === 'ta'
+                ? 'உங்கள் இ-சேவையை முன்பதிவு செய்ய ₹236 (₹200 அடிப்படை கட்டணம் + 18% ஜிஎஸ்டி ₹36) செலுத்தவும். உங்கள் தேவைகளை ஆய்வு செய்த பிறகு மீதமுள்ள கட்டணம் தெரிவிக்கப்பட்டு, பணி முடிந்ததும் வசூலிக்கப்படும்.'
+                : 'Book your e-service by paying ₹236 (₹200 base charge + 18% GST ₹36). The remaining service charges will be communicated after reviewing your requirements and collected after completion of the work. Applicable government fees and additional charges, if any, will be informed separately.'}
             </p>
           </div>
         )}
@@ -362,10 +389,12 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           <div className="mb-6 p-4 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] text-xs text-[#182638] dark:text-[#F1F5F9] space-y-1.5">
             <div className="font-bold flex items-center gap-1.5 text-[#315D82] dark:text-[#6F9FC5]">
               <Shield className="w-4 h-4" />
-              <span>Statutory Compliance & Registration Guidance</span>
+              <span>{language === 'ta' ? 'சட்டப்பூர்வ இணக்கம் மற்றும் பதிவு வழிகாட்டுதல்' : 'Statutory Compliance & Registration Guidance'}</span>
             </div>
             <p className="leading-relaxed text-[#526477] dark:text-[#B8C5D4]">
-              Services are subject to eligibility, document verification, and applicable government rules. Government official fees and professional charges are separate, and customized work-based quotations are offered after initial document review.
+              {language === 'ta'
+                ? 'சேவைகள் தகுதி, ஆவண சரிபார்ப்பு மற்றும் பொருந்தக்கூடிய அரசு விதிகளுக்கு உட்பட்டவை. அரசு கட்டணங்கள் மற்றும் தொழில்முறை கட்டணங்கள் தனித்தனியானவை.'
+                : 'Services are subject to eligibility, document verification, and applicable government rules. Government official fees and professional charges are separate, and customized work-based quotations are offered after initial document review.'}
             </p>
           </div>
         )}
@@ -374,10 +403,12 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           <div className="mb-6 p-4 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] text-xs text-[#182638] dark:text-[#F1F5F9] space-y-1.5">
             <div className="font-bold flex items-center gap-1.5 text-[#315D82] dark:text-[#6F9FC5]">
               <Code2 className="w-4 h-4" />
-              <span>Custom Software & Digital Solutions Quotation</span>
+              <span>{language === 'ta' ? 'தனிப்பயன் மென்பொருள் & டிஜிட்டல் தீர்வுகள் விலை மதிப்பீடு' : 'Custom Software & Digital Solutions Quotation'}</span>
             </div>
             <p className="leading-relaxed text-[#526477] dark:text-[#B8C5D4]">
-              Pricing is work-based upon project complexity, technical deliverables, and agreed milestones. Share your brief below to receive an architectural scope estimate.
+              {language === 'ta'
+                ? 'திட்டத்தின் சிக்கலான தன்மை, தொழில்நுட்ப அம்சங்கள் மற்றும் ஒப்புக்கொள்ளப்பட்ட மைல்கற்களின் அடிப்படையில் கட்டணம் தீர்மானிக்கப்படுகிறது.'
+                : 'Pricing is work-based upon project complexity, technical deliverables, and agreed milestones. Share your brief below to receive an architectural scope estimate.'}
             </p>
           </div>
         )}
@@ -405,13 +436,13 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-[#182638] dark:text-[#F1F5F9] mb-1.5">
-                Full Name *
+                {language === 'ta' ? 'முழு பெயர் *' : 'Full Name *'}
               </label>
               <input
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                placeholder="e.g. Ramesh Kumar"
+                placeholder={language === 'ta' ? 'எ.கா: ரமேஷ் குமார்' : 'e.g. Ramesh Kumar'}
                 className={`w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm bg-[#F2F5F8] dark:bg-[#17263A] text-[#182638] dark:text-[#F1F5F9] placeholder-[#526477]/60 dark:placeholder-[#B8C5D4]/60 focus:outline-none focus:ring-2 ${
                   errors.fullName ? 'border-rose-500 focus:ring-rose-500/20' : 'border-[#D5DEE8] dark:border-[#30445B] focus:ring-[#315D82]/20 focus:border-[#315D82]'
                 }`}
@@ -421,17 +452,17 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
 
             <div>
               <label className="block text-xs font-semibold text-[#182638] dark:text-[#F1F5F9] mb-1.5">
-                Customer Type
+                {language === 'ta' ? 'வாடிக்கையாளர் வகை' : 'Customer Type'}
               </label>
               <select
                 value={customerType}
                 onChange={(e) => setCustomerType(e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5DEE8] dark:border-[#30445B] text-xs sm:text-sm bg-[#F2F5F8] dark:bg-[#17263A] text-[#182638] dark:text-[#F1F5F9] focus:outline-none focus:ring-2 focus:ring-[#315D82]/20 focus:border-[#315D82]"
               >
-                <option value="Business">Registered Business / Company</option>
-                <option value="Startup">Early-Stage Startup</option>
-                <option value="Individual">Individual Citizen</option>
-                <option value="Retail">Retail Shop / SME</option>
+                <option value="Business">{language === 'ta' ? 'பதிவு செய்யப்பட்ட நிறுவனம் / கம்பெனி' : 'Registered Business / Company'}</option>
+                <option value="Startup">{language === 'ta' ? 'தொடக்க நிலை ஸ்டார்ட்அப்' : 'Early-Stage Startup'}</option>
+                <option value="Individual">{language === 'ta' ? 'தனிநபர் / குடிமகன்' : 'Individual Citizen'}</option>
+                <option value="Retail">{language === 'ta' ? 'சில்லறை கடை / சிறு வணிகம்' : 'Retail Shop / SME'}</option>
               </select>
             </div>
           </div>
@@ -440,7 +471,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-[#182638] dark:text-[#F1F5F9] mb-1.5">
-                Mobile Number (Calling) *
+                {language === 'ta' ? 'தொலைபேசி எண் (அழைப்புக்கு) *' : 'Mobile Number (Calling) *'}
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-2.5 text-xs text-[#526477] font-semibold">+91</span>
@@ -459,7 +490,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
 
             <div>
               <label className="block text-xs font-semibold text-[#182638] dark:text-[#F1F5F9] mb-1.5">
-                Email Address *
+                {language === 'ta' ? 'மின்னஞ்சல் முகவரி *' : 'Email Address *'}
               </label>
               <input
                 type="email"
@@ -484,14 +515,16 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
               className="rounded text-[#315D82] focus:ring-[#315D82] cursor-pointer"
             />
             <label htmlFor="sameAsPhone" className="text-xs text-[#526477] dark:text-[#B8C5D4] cursor-pointer">
-              WhatsApp number is the same as calling number (+91 {phone || '...' })
+              {language === 'ta'
+                ? `வாட்ஸ்அப் எண் அழைப்பு எண்ணே தான் (+91 ${phone || '...' })`
+                : `WhatsApp number is the same as calling number (+91 ${phone || '...' })`}
             </label>
           </div>
 
           {!sameAsPhone && (
             <div>
               <label className="block text-xs font-semibold text-[#182638] dark:text-[#F1F5F9] mb-1.5">
-                WhatsApp Number
+                {language === 'ta' ? 'வாட்ஸ்அப் எண்' : 'WhatsApp Number'}
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-2.5 text-xs text-[#526477] font-semibold">+91</span>
@@ -509,7 +542,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           {/* Row 3: Service Selection Dropdown */}
           <div>
             <label className="block text-xs font-semibold text-[#182638] dark:text-[#F1F5F9] mb-1.5">
-              Select Specific Service *
+              {language === 'ta' ? 'குறிப்பிட்ட சேவையைத் தேர்ந்தெடுக்கவும் *' : 'Select Specific Service *'}
             </label>
             <select
               value={selectedService}
@@ -517,32 +550,49 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
               className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5DEE8] dark:border-[#30445B] text-xs sm:text-sm bg-[#F2F5F8] dark:bg-[#17263A] text-[#182638] dark:text-[#F1F5F9] focus:outline-none focus:ring-2 focus:ring-[#315D82]/20 focus:border-[#315D82]"
             >
               {activeTab === 'software' &&
-                SOFTWARE_SERVICES.map((s) => (
-                  <option key={s.id} value={s.title}>
-                    {s.title}
-                  </option>
-                ))}
+                SOFTWARE_SERVICES.map((raw) => {
+                  const s = getLocalizedService(raw, language);
+                  return (
+                    <option key={s.id} value={s.title}>
+                      {s.title}
+                    </option>
+                  );
+                })}
 
               {activeTab === 'compliance' &&
-                COMPLIANCE_SERVICES.map((s) => (
-                  <option key={s.id} value={s.title}>
-                    {s.title}
-                  </option>
-                ))}
+                COMPLIANCE_SERVICES.map((raw) => {
+                  const s = getLocalizedService(raw, language);
+                  return (
+                    <option key={s.id} value={s.title}>
+                      {s.title}
+                    </option>
+                  );
+                })}
 
               {activeTab === 'eservice' &&
-                E_SERVICES.map((s) => (
-                  <option key={s.id} value={s.title}>
-                    {s.title} (₹236 initial booking)
-                  </option>
-                ))}
+                E_SERVICES.map((raw) => {
+                  const s = getLocalizedService(raw, language);
+                  return (
+                    <option key={s.id} value={s.title}>
+                      {s.title} ({language === 'ta' ? '₹236 முன்பதிவு' : '₹236 initial booking'})
+                    </option>
+                  );
+                })}
 
               {activeTab === 'general' && (
                 <>
-                  <option value="General Software Inquiry">General Software Inquiry</option>
-                  <option value="Statutory & Tax Compliance Inquiry">Statutory & Tax Compliance Inquiry</option>
-                  <option value="Citizen E-Services Consultation">Citizen E-Services Consultation</option>
-                  <option value="Partnership / Other Business Opportunity">Partnership / Other Opportunity</option>
+                  <option value={language === 'ta' ? 'பொதுவான மென்பொருள் தேவைகள்' : 'General Software Inquiry'}>
+                    {language === 'ta' ? 'பொதுவான மென்பொருள் தேவைகள்' : 'General Software Inquiry'}
+                  </option>
+                  <option value={language === 'ta' ? 'சட்டப்பூர்வ & வரி இணக்க தேவைகள்' : 'Statutory & Tax Compliance Inquiry'}>
+                    {language === 'ta' ? 'சட்டப்பூர்வ & வரி இணக்க தேவைகள்' : 'Statutory & Tax Compliance Inquiry'}
+                  </option>
+                  <option value={language === 'ta' ? 'பொதுமக்கள் இ-சேவைகள் ஆலோசனை' : 'Citizen E-Services Consultation'}>
+                    {language === 'ta' ? 'பொதுமக்கள் இ-சேவைகள் ஆலோசனை' : 'Citizen E-Services Consultation'}
+                  </option>
+                  <option value={language === 'ta' ? 'கூட்டாண்மை / பிற வணிக வாய்ப்புகள்' : 'Partnership / Other Business Opportunity'}>
+                    {language === 'ta' ? 'கூட்டாண்மை / பிற வணிக வாய்ப்புகள்' : 'Partnership / Other Opportunity'}
+                  </option>
                 </>
               )}
             </select>
@@ -551,20 +601,28 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           {/* Row 4: Requirement Textarea */}
           <div>
             <label className="block text-xs font-semibold text-[#182638] dark:text-[#F1F5F9] mb-1.5">
-              Requirement Details / Scope Overview *
+              {language === 'ta' ? 'திட்ட விவரங்கள் / தேவை சுருக்கம் *' : 'Requirement Details / Scope Overview *'}
             </label>
             <textarea
               rows={3}
               value={requirement}
               onChange={(e) => setRequirement(e.target.value)}
               placeholder={
-                activeTab === 'software'
-                  ? 'Describe features, target audience, preferred integrations (payment gateway, WhatsApp), timeline...'
-                  : activeTab === 'compliance'
-                  ? 'Describe your business turnover, state, current registration status, or licence required...'
-                  : activeTab === 'eservice'
-                  ? 'Mention existing document details or corrections needed for your application...'
-                  : 'How can we help your business achieve digital excellence?'
+                language === 'ta'
+                  ? (activeTab === 'software'
+                      ? 'அம்சங்கள், தேவையான இணைப்புகள் (வாட்ஸ்அப், பேமெண்ட் கேட்வே), கால அவகாசம் ஆகியவற்றை விவரிக்கவும்...'
+                      : activeTab === 'compliance'
+                      ? 'உங்கள் வணிக விற்றுமுதல், தற்போதைய பதிவு நிலை அல்லது தேவையான உரிமத்தை விவரிக்கவும்...'
+                      : activeTab === 'eservice'
+                      ? 'உங்கள் விண்ணப்பத்திற்குத் தேவையான ஆவண விவரங்கள் அல்லது திருத்தங்களைக் குறிப்பிடவும்...'
+                      : 'உங்கள் வணிகத்தின் டிஜிட்டல் வளர்ச்சிக்கு நாங்கள் எவ்வாறு உதவலாம்?')
+                  : (activeTab === 'software'
+                      ? 'Describe features, target audience, preferred integrations (payment gateway, WhatsApp), timeline...'
+                      : activeTab === 'compliance'
+                      ? 'Describe your business turnover, state, current registration status, or licence required...'
+                      : activeTab === 'eservice'
+                      ? 'Mention existing document details or corrections needed for your application...'
+                      : 'How can we help your business achieve digital excellence?')
               }
               className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5DEE8] dark:border-[#30445B] text-xs sm:text-sm bg-[#F2F5F8] dark:bg-[#17263A] text-[#182638] dark:text-[#F1F5F9] placeholder-[#526477]/60 dark:placeholder-[#B8C5D4]/60 focus:outline-none focus:ring-2 focus:ring-[#315D82]/20 focus:border-[#315D82]"
             />
@@ -581,15 +639,31 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
                 className="mt-1 rounded text-[#315D82] focus:ring-[#315D82] cursor-pointer"
               />
               <label htmlFor="consentCheck" className="text-xs text-[#526477] dark:text-[#B8C5D4] leading-relaxed cursor-pointer">
-                I agree to the{' '}
-                <button
-                  type="button"
-                  onClick={onNavigateToPrivacy}
-                  className="text-[#315D82] dark:text-[#6F9FC5] underline hover:no-underline font-medium"
-                >
-                  Privacy Policy
-                </button>{' '}
-                and understand that RUBI TECH PARK provides verified facilitation and development services.
+                {language === 'ta' ? (
+                  <>
+                    நான்{' '}
+                    <button
+                      type="button"
+                      onClick={onNavigateToPrivacy}
+                      className="text-[#315D82] dark:text-[#6F9FC5] underline hover:no-underline font-medium"
+                    >
+                      தனியுரிமைக் கொள்கையை
+                    </button>{' '}
+                    ஏற்கிறேன் மற்றும் ரூபி டெக் பார்க் நம்பகமான மென்பொருள் மற்றும் வணிக சேவைகளை வழங்குகிறது என்பதைப் புரிந்துகொள்கிறேன்.
+                  </>
+                ) : (
+                  <>
+                    I agree to the{' '}
+                    <button
+                      type="button"
+                      onClick={onNavigateToPrivacy}
+                      className="text-[#315D82] dark:text-[#6F9FC5] underline hover:no-underline font-medium"
+                    >
+                      Privacy Policy
+                    </button>{' '}
+                    and understand that RUBI TECH PARK provides verified facilitation and development services.
+                  </>
+                )}
               </label>
             </div>
             {errors.consentAgreed && <p className="text-[11px] text-rose-500 mt-1">{errors.consentAgreed}</p>}
@@ -604,17 +678,23 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
             {isSubmitting ? (
               <>
                 <RefreshCw className="w-4 h-4 animate-spin" />
-                <span>Recording in Database...</span>
+                <span>{language === 'ta' ? 'பதிவு செய்யப்படுகிறது...' : 'Recording in Database...'}</span>
               </>
             ) : (
               <>
                 <Send className="w-4 h-4" />
                 <span>
-                  {activeTab === 'eservice'
-                    ? 'Submit E-Service Booking Request (₹236)'
-                    : activeTab === 'software'
-                    ? 'Request Software Architecture Quotation'
-                    : 'Submit Official Business Enquiry'}
+                  {language === 'ta'
+                    ? (activeTab === 'eservice'
+                        ? 'இ-சேவை முன்பதிவைச் சமர்ப்பிக்க (₹236)'
+                        : activeTab === 'software'
+                        ? 'மென்பொருள் கட்டமைப்பு விலை மதிப்பீடு கோருக'
+                        : 'அதிகாரப்பூர்வ வணிக விசாரணையைச் சமர்ப்பிக்க')
+                    : (activeTab === 'eservice'
+                        ? 'Submit E-Service Booking Request (₹236)'
+                        : activeTab === 'software'
+                        ? 'Request Software Architecture Quotation'
+                        : 'Submit Official Business Enquiry')}
                 </span>
               </>
             )}

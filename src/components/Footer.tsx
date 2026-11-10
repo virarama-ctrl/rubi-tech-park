@@ -26,7 +26,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                 />
               </div>
               <span className="text-xl font-bold font-display text-[#182638] dark:text-[#F1F5F9] tracking-tight">
-                RUBI <span className="text-[#315D82] dark:text-[#6F9FC5] font-extrabold">TECH PARK</span>
+                {language === 'ta' ? (
+                  <>ரூபி <span className="text-[#315D82] dark:text-[#6F9FC5] font-extrabold">டெக் பார்க்</span></>
+                ) : (
+                  <>RUBI <span className="text-[#315D82] dark:text-[#6F9FC5] font-extrabold">TECH PARK</span></>
+                )}
               </span>
             </div>
             
@@ -263,9 +267,15 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
         {/* Bottom Strip */}
         <div className="mt-14 pt-6 border-t border-[#D5DEE8] dark:border-[#30445B] flex flex-col sm:flex-row items-center justify-between text-xs text-[#526477] dark:text-[#B8C5D4] gap-4">
           <div className="flex items-center gap-2">
-            <span>© 2026 RUBI TECH PARK. All rights reserved.</span>
+            <span>
+              {language === 'ta'
+                ? '© 2026 ரூபி டெக் பார்க். அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.'
+                : '© 2026 RUBI TECH PARK. All rights reserved.'}
+            </span>
             <span aria-hidden="true">·</span>
-            <span className="text-[#315D82] dark:text-[#6F9FC5]">Enterprise Software & Digital Infrastructure</span>
+            <span className="text-[#315D82] dark:text-[#6F9FC5]">
+              {language === 'ta' ? 'கார்ப்பரேட் மென்பொருள் & டிஜிட்டல் உள்கட்டமைப்பு' : 'Enterprise Software & Digital Infrastructure'}
+            </span>
           </div>
 
           <div className="flex items-center gap-4">
@@ -274,7 +284,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               className="hover:text-[#315D82] dark:hover:text-[#6F9FC5] transition-colors flex items-center gap-1 cursor-pointer"
             >
               <Lock className="w-3 h-3" />
-              <span>Admin Login</span>
+              <span>{language === 'ta' ? 'நிர்வாகி உள்நுழைவு' : 'Admin Login'}</span>
             </button>
             <span aria-hidden="true">·</span>
             <a
@@ -283,7 +293,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               rel="noopener noreferrer"
               className="hover:text-[#315D82] dark:hover:text-[#6F9FC5] underline"
             >
-              Support: +91 82205 50829
+              {language === 'ta' ? 'ஆதரவு: +91 82205 50829' : 'Support: +91 82205 50829'}
             </a>
           </div>
         </div>
