@@ -1,5 +1,49 @@
 [
   {
+    "id": "audit_1794314157123_6f74f8",
+    "userId": "admin@rubitechpark.com",
+    "userEmail": "admin@rubitechpark.com",
+    "userRole": "super_admin",
+    "action": "DELETE_SERVICE_IMAGE",
+    "ipAddress": "127.0.0.1",
+    "resource": "service_images/business-websites",
+    "timestamp": "2026-11-10T12:35:57.123Z",
+    "success": true
+  },
+  {
+    "id": "audit_1794314142211_b2f79b",
+    "userId": "admin@rubitechpark.com",
+    "userEmail": "admin@rubitechpark.com",
+    "userRole": "super_admin",
+    "action": "UPDATE_SERVICE_IMAGE",
+    "ipAddress": "127.0.0.1",
+    "resource": "service_images/business-websites",
+    "timestamp": "2026-11-10T12:35:42.211Z",
+    "success": true
+  },
+  {
+    "id": "audit_1794314126762_768c18",
+    "userId": "usr_admin_rtp",
+    "userEmail": "admin@rubitechpark.com",
+    "userRole": "super_admin",
+    "action": "LOGIN_SUCCESS",
+    "ipAddress": "127.0.0.1",
+    "resource": "AUTH",
+    "timestamp": "2026-11-10T12:35:26.762Z",
+    "success": true
+  },
+  {
+    "id": "audit_1794314094129_2aae6c",
+    "userId": "unknown",
+    "userEmail": "admin@rubitechpark.com",
+    "userRole": "developer",
+    "action": "LOGIN_FAILURE",
+    "ipAddress": "127.0.0.1",
+    "resource": "AUTH",
+    "timestamp": "2026-11-10T12:34:54.129Z",
+    "success": false
+  },
+  {
     "id": "audit_1794204603509_ab2627",
     "userId": "usr_admin_rtp",
     "userEmail": "admin@rubitechpark.com",

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageRoute, ServiceDetail } from '../types';
 import { LeadCaptureForm } from '../components/LeadCaptureForm';
 import { useLanguage } from '../context/LanguageContext';
+import { ServiceReferenceImage } from '../config/serviceImages';
 import {
   ArrowLeft,
   CheckCircle2,
@@ -18,18 +19,38 @@ interface ServiceDetailPageProps {
 
 export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({ service, onNavigate }) => {
   const { t, language } = useLanguage();
+  const [customImages, setCustomImages] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch('/api/services/images')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (isMounted && data && data.images) {
+          setCustomImages(data.images);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const serviceKey = service.id === 'business-websites'
     ? 'businessWebsites'
-    : service.id === 'ecommerce'
+    : service.id === 'ecommerce' || service.id === 'ecommerce-website-development'
     ? 'ecommerce'
-    : service.id === 'custom-crm'
+    : service.id === 'custom-crm' || service.id === 'custom-software-development'
     ? 'customCrm'
     : service.id === 'crm-integration'
     ? 'crmIntegration'
     : 'aiAutomation';
 
-  const localized = t.services.items[serviceKey as keyof typeof t.services.items];
+  const localized = t.services.items[serviceKey as keyof typeof t.services.items] || {
+    title: service.title,
+    tagline: service.shortDescription,
+    price: service.isWorkBasedPricing ? 'Work-Based' : '₹5,000+'
+  };
 
   return (
     <div className="relative min-h-screen bg-[#E9EEF3] dark:bg-[#101B2C] text-[#182638] dark:text-[#F1F5F9] transition-colors">
@@ -44,43 +65,60 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({ service, o
             <span>{language === 'ta' ? 'அனைத்து சேவைகளுக்கும் திரும்புக' : 'Back to All Services'}</span>
           </button>
 
-          {/* Hero Banner */}
-          <div className="bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] rounded-2xl p-6 sm:p-12 shadow-sm relative overflow-hidden">
-            <div className="max-w-3xl space-y-4">
-              <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-[#315D82] dark:text-[#6F9FC5]">
-                <span>{language === 'ta' ? 'RUBI TECH PARK சேவை விவரம்' : 'Enterprise Service Specification'}</span>
-                <span aria-hidden="true" className="text-[#526477] dark:text-[#B8C5D4]">·</span>
-                <span>{language === 'ta' ? 'தொடக்க விலை:' : 'Starting from'} {localized.price}</span>
+          {/* Hero Banner with Large Reference Image */}
+          <div className="bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] rounded-2xl p-6 sm:p-10 shadow-sm relative overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              {/* Left Column: Details & Actions */}
+              <div className="lg:col-span-7 space-y-4">
+                <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-[#315D82] dark:text-[#6F9FC5]">
+                  <span>{language === 'ta' ? 'RUBI TECH PARK சேவை விவரம்' : 'Enterprise Service Specification'}</span>
+                  <span aria-hidden="true" className="text-[#526477] dark:text-[#B8C5D4]">·</span>
+                  <span>{language === 'ta' ? 'தொடக்க விலை:' : 'Starting from'} {localized.price}</span>
+                </div>
+
+                <h1 className="text-3xl sm:text-5xl font-bold font-display text-[#182638] dark:text-[#F1F5F9] tracking-tight leading-tight">
+                  {localized.title}
+                </h1>
+
+                <p className="text-base sm:text-lg text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
+                  {localized.tagline}
+                </p>
+
+                <div className="pt-4 flex flex-wrap items-center gap-3">
+                  <a
+                    href="#enquiry-form"
+                    className="px-6 py-3 bg-[#315D82] dark:bg-[#416F98] text-white hover:opacity-95 text-xs sm:text-sm font-semibold rounded-xl transition-all shadow-xs inline-block cursor-pointer"
+                  >
+                    {language === 'ta' ? 'இச்சேவைக்கான விலை மதிப்பீடு பெறுக' : `Request Quotation for ${localized.title}`}
+                  </a>
+                  <a
+                    href="tel:+918220550829"
+                    className="px-5 py-3 text-xs sm:text-sm font-semibold text-[#182638] dark:text-[#F1F5F9] hover:text-[#315D82] dark:hover:text-[#6F9FC5] bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] rounded-xl transition-colors cursor-pointer flex items-center gap-2 shadow-2xs"
+                  >
+                    <Phone className="w-4 h-4 text-[#315D82] dark:text-[#6F9FC5]" />
+                    <span>Call Now</span>
+                  </a>
+                  <button
+                    onClick={() => onNavigate('pricing')}
+                    className="px-5 py-3 text-xs sm:text-sm font-medium text-[#182638] dark:text-[#F1F5F9] hover:bg-slate-100 dark:hover:bg-[#17263A] bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] rounded-xl transition-colors cursor-pointer"
+                  >
+                    {language === 'ta' ? 'விலை வழிகாட்டி' : 'View Pricing Guidance'}
+                  </button>
+                </div>
               </div>
 
-              <h1 className="text-3xl sm:text-5xl font-bold font-display text-[#182638] dark:text-[#F1F5F9] tracking-tight leading-tight">
-                {localized.title}
-              </h1>
-
-              <p className="text-base sm:text-lg text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
-                {localized.tagline}
-              </p>
-
-              <div className="pt-4 flex flex-wrap items-center gap-3">
-                <a
-                  href="#enquiry-form"
-                  className="px-6 py-3 bg-[#315D82] dark:bg-[#416F98] text-white hover:opacity-95 text-xs sm:text-sm font-semibold rounded-xl transition-all shadow-xs inline-block cursor-pointer"
-                >
-                  {language === 'ta' ? 'இச்சேவைக்கான விலை மதிப்பீடு பெறுக' : `Request Quotation for ${localized.title}`}
-                </a>
-                <a
-                  href="tel:+918220550829"
-                  className="px-5 py-3 text-xs sm:text-sm font-semibold text-[#182638] dark:text-[#F1F5F9] hover:text-[#315D82] dark:hover:text-[#6F9FC5] bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] rounded-xl transition-colors cursor-pointer flex items-center gap-2 shadow-2xs"
-                >
-                  <Phone className="w-4 h-4 text-[#315D82] dark:text-[#6F9FC5]" />
-                  <span>Call Now</span>
-                </a>
-                <button
-                  onClick={() => onNavigate('pricing')}
-                  className="px-5 py-3 text-xs sm:text-sm font-medium text-[#182638] dark:text-[#F1F5F9] hover:bg-slate-100 dark:hover:bg-[#17263A] bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] rounded-xl transition-colors cursor-pointer"
-                >
-                  {language === 'ta' ? 'விலை வழிகாட்டி' : 'View Pricing Guidance'}
-                </button>
+              {/* Right Column: Prominent Reference Image */}
+              <div className="lg:col-span-5 w-full">
+                <div className="shadow-lg rounded-2xl overflow-hidden border border-[#D5DEE8] dark:border-[#30445B]">
+                  <ServiceReferenceImage
+                    serviceId={service.id}
+                    serviceTitle={service.title}
+                    customImages={customImages}
+                    aspectRatioClass="aspect-16/10 sm:aspect-16/9 lg:aspect-4/3"
+                    showCaption={true}
+                    priority={true}
+                  />
+                </div>
               </div>
             </div>
           </div>

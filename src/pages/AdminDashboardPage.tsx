@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { PageRoute } from '../types';
 import { StoredLead, LeadStatus, AuditLogEntry, PaymentRecord } from '../types/crm';
+import { ServiceDetail } from '../types';
+import { SERVICES_DATA } from '../config/agencyConfig';
+import {
+  ServiceReferenceImage,
+  DEFAULT_SERVICE_IMAGES,
+  FALLBACK_SERVICE_IMAGE
+} from '../config/serviceImages';
 import { formatINR } from '../utils/pricing';
 import {
   ShieldCheck,
@@ -35,7 +42,11 @@ import {
   HelpCircle,
   ArrowUpDown,
   Building2,
-  Send
+  Send,
+  Image as ImageIcon,
+  Upload,
+  RotateCcw,
+  Camera
 } from 'lucide-react';
 
 interface AdminDashboardPageProps {
@@ -69,8 +80,17 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('All');
   const [dateFilter, setDateFilter] = useState<string>('all');
-  const [activeTab, setActiveTab] = useState<'pipeline' | 'payments' | 'audit'>('pipeline');
+  const [activeTab, setActiveTab] = useState<'pipeline' | 'payments' | 'audit' | 'services'>('pipeline');
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
+
+  // Service Reference Images State
+  const [serviceImages, setServiceImages] = useState<Record<string, string>>({});
+  const [editingServiceImage, setEditingServiceImage] = useState<ServiceDetail | null>(null);
+  const [imageInputUrl, setImageInputUrl] = useState<string>('');
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string>('');
+  const [isSavingImage, setIsSavingImage] = useState<boolean>(false);
+  const [serviceSearch, setServiceSearch] = useState<string>('');
+  const [serviceCategoryFilter, setServiceCategoryFilter] = useState<'all' | 'software' | 'compliance' | 'eservices'>('all');
 
   // Online Payments & Orders State
   const [payments, setPayments] = useState<PaymentRecord[]>([]);
@@ -127,7 +147,118 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
     fetchLeads(storedToken);
     fetchPayments(storedToken);
+    fetchServiceImages();
   }, []);
+
+  const fetchServiceImages = async () => {
+    try {
+      const res = await fetch('/api/services/images');
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.images) {
+          setServiceImages(data.images);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch service images:', err);
+    }
+  };
+
+  const handleOpenImageEditor = (service: ServiceDetail) => {
+    setEditingServiceImage(service);
+    const currentUrl = serviceImages[service.id] || DEFAULT_SERVICE_IMAGES[service.id]?.url || FALLBACK_SERVICE_IMAGE;
+    setImageInputUrl(serviceImages[service.id] || '');
+    setImagePreviewUrl(currentUrl);
+  };
+
+  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2.5 * 1024 * 1024) {
+      showToast('Image file size exceeds 2.5MB limit. Please upload an optimized image.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      if (result) {
+        setImageInputUrl(result);
+        setImagePreviewUrl(result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSaveServiceImage = async () => {
+    if (!editingServiceImage || !imageInputUrl.trim()) {
+      showToast('Please provide a valid image URL or choose a file.');
+      return;
+    }
+
+    setIsSavingImage(true);
+    try {
+      const currentToken = token || sessionStorage.getItem('rtp_admin_token') || '';
+      const res = await fetch(`/api/admin/services/${editingServiceImage.id}/image`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${currentToken}`
+        },
+        body: JSON.stringify({ imageUrl: imageInputUrl.trim() })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setServiceImages((prev) => ({
+          ...prev,
+          [editingServiceImage.id]: imageInputUrl.trim()
+        }));
+        showToast(`Reference image for "${editingServiceImage.title}" saved successfully to database!`);
+        setEditingServiceImage(null);
+      } else {
+        showToast(data.message || 'Failed to save reference image.');
+      }
+    } catch (err: any) {
+      showToast('Network error while saving reference image.');
+    } finally {
+      setIsSavingImage(false);
+    }
+  };
+
+  const handleResetServiceImage = async (service: ServiceDetail) => {
+    if (!confirm(`Reset reference image for "${service.title}" back to standard professional default?`)) {
+      return;
+    }
+
+    try {
+      const currentToken = token || sessionStorage.getItem('rtp_admin_token') || '';
+      const res = await fetch(`/api/admin/services/${service.id}/image`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${currentToken}`
+        }
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setServiceImages((prev) => {
+          const copy = { ...prev };
+          delete copy[service.id];
+          return copy;
+        });
+        showToast(`Reference image for "${service.title}" reset to standard default.`);
+        if (editingServiceImage?.id === service.id) {
+          setEditingServiceImage(null);
+        }
+      } else {
+        showToast(data.message || 'Failed to reset reference image.');
+      }
+    } catch (err) {
+      showToast('Network error while resetting reference image.');
+    }
+  };
 
   const fetchPayments = async (authToken?: string) => {
     const currentToken = authToken || token;
@@ -715,6 +846,20 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
           >
             Security & Audit Logs
           </button>
+          <button
+            onClick={() => {
+              setActiveTab('services');
+              fetchServiceImages();
+            }}
+            className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+              activeTab === 'services'
+                ? 'bg-[#6654E8] text-white shadow-sm'
+                : 'text-[#647087] dark:text-slate-400 hover:text-[#172033] dark:hover:text-white'
+            }`}
+          >
+            <ImageIcon className="w-3.5 h-3.5" />
+            <span>Service Images ({SERVICES_DATA.length})</span>
+          </button>
         </div>
 
         {activeTab === 'pipeline' ? (
@@ -1212,7 +1357,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
               </div>
             </div>
           </div>
-        ) : (
+        ) : activeTab === 'audit' ? (
           /* Audit Logs View */
           <div className="bg-white dark:bg-[#0D1527] border border-[#E5E9F2] dark:border-white/10 rounded-2xl p-6 space-y-4 shadow-sm">
             <div className="flex items-center justify-between pb-4 border-b border-[#E5E9F2] dark:border-slate-800">
@@ -1253,6 +1398,215 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                   </div>
                 ))
               )}
+            </div>
+          </div>
+        ) : (
+          /* Service Reference Images Management View (activeTab === 'services') */
+          <div className="space-y-6">
+            {/* Header & Controls Banner */}
+            <div className="bg-white dark:bg-[#0D1527] border border-[#E5E9F2] dark:border-white/10 rounded-2xl p-6 shadow-sm space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5E9F2] dark:border-slate-800 pb-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-[#6654E8]/10 text-[#6654E8] flex items-center justify-center">
+                      <ImageIcon className="w-4 h-4" />
+                    </div>
+                    <h2 className="text-lg font-bold font-display text-[#172033] dark:text-white">
+                      Service Reference Images & Visual Media
+                    </h2>
+                  </div>
+                  <p className="text-xs text-[#647087] dark:text-slate-400 mt-1 max-w-2xl">
+                    Every service in the RUBI LEADS catalog has a dedicated reference image. Administrators can upload local photos or update image URLs. Image customizations are saved directly to Cloud Firestore.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={fetchServiceImages}
+                    className="px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[#172033] dark:text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    <span>Sync Images</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Filters & Search */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                {/* Category Pills */}
+                <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
+                  <button
+                    type="button"
+                    onClick={() => setServiceCategoryFilter('all')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer transition-all ${
+                      serviceCategoryFilter === 'all'
+                        ? 'bg-[#6654E8] text-white shadow-xs'
+                        : 'bg-slate-100 dark:bg-slate-800 text-[#647087] dark:text-slate-300 hover:bg-slate-200'
+                    }`}
+                  >
+                    All Services (38)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setServiceCategoryFilter('software')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer transition-all ${
+                      serviceCategoryFilter === 'software'
+                        ? 'bg-[#6654E8] text-white shadow-xs'
+                        : 'bg-slate-100 dark:bg-slate-800 text-[#647087] dark:text-slate-300 hover:bg-slate-200'
+                    }`}
+                  >
+                    Software & Digital (12)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setServiceCategoryFilter('compliance')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer transition-all ${
+                      serviceCategoryFilter === 'compliance'
+                        ? 'bg-[#6654E8] text-white shadow-xs'
+                        : 'bg-slate-100 dark:bg-slate-800 text-[#647087] dark:text-slate-300 hover:bg-slate-200'
+                    }`}
+                  >
+                    Statutory & Compliance (15)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setServiceCategoryFilter('eservices')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer transition-all ${
+                      serviceCategoryFilter === 'eservices'
+                        ? 'bg-[#6654E8] text-white shadow-xs'
+                        : 'bg-slate-100 dark:bg-slate-800 text-[#647087] dark:text-slate-300 hover:bg-slate-200'
+                    }`}
+                  >
+                    Citizen E-Services (11)
+                  </button>
+                </div>
+
+                {/* Search Bar */}
+                <div className="relative w-full sm:w-72">
+                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={serviceSearch}
+                    onChange={(e) => setServiceSearch(e.target.value)}
+                    placeholder="Search by title or service ID..."
+                    className="w-full bg-slate-50 dark:bg-[#070B14] border border-[#E5E9F2] dark:border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-[#172033] dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#6654E8]"
+                  />
+                  {serviceSearch && (
+                    <button
+                      type="button"
+                      onClick={() => setServiceSearch('')}
+                      className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Service Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {SERVICES_DATA.filter((svc) => {
+                const matchesCategory =
+                  serviceCategoryFilter === 'all'
+                    ? true
+                    : serviceCategoryFilter === 'software'
+                    ? svc.category === 'software'
+                    : serviceCategoryFilter === 'compliance'
+                    ? svc.category === 'compliance'
+                    : svc.category === 'eservices';
+                const matchesSearch =
+                  !serviceSearch.trim() ||
+                  svc.title.toLowerCase().includes(serviceSearch.toLowerCase()) ||
+                  svc.id.toLowerCase().includes(serviceSearch.toLowerCase());
+                return matchesCategory && matchesSearch;
+              }).map((svc) => {
+                const hasCustomImage = Boolean(serviceImages[svc.id]);
+                return (
+                  <div
+                    key={svc.id}
+                    className="bg-white dark:bg-[#0D1527] border border-[#E5E9F2] dark:border-white/10 rounded-2xl p-4 shadow-sm space-y-3.5 flex flex-col justify-between hover:border-[#6654E8]/50 transition-colors"
+                  >
+                    <div className="space-y-3">
+                      {/* Image Thumbnail with Overlay */}
+                      <div className="relative overflow-hidden rounded-xl">
+                        <ServiceReferenceImage
+                          serviceId={svc.id}
+                          serviceTitle={svc.title}
+                          customImages={serviceImages}
+                          aspectRatioClass="aspect-16/10"
+                          showCaption={true}
+                        />
+                      </div>
+
+                      {/* Header with Category & Custom Status */}
+                      <div className="flex items-center justify-between gap-2">
+                        <span
+                          className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full border ${
+                            svc.category === 'eservices'
+                              ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800'
+                              : svc.category === 'compliance'
+                              ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800'
+                              : 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-800 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800'
+                          }`}
+                        >
+                          {svc.categoryTitle || svc.category}
+                        </span>
+
+                        {hasCustomImage ? (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 flex items-center gap-1">
+                            <Check className="w-2.5 h-2.5" />
+                            <span>Custom Firestore</span>
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-mono text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                            Default Curated
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Title & Service ID */}
+                      <div>
+                        <h4 className="font-bold text-sm text-[#172033] dark:text-white leading-snug">
+                          {svc.title}
+                        </h4>
+                        <div className="text-[11px] font-mono text-[#647087] dark:text-slate-400 mt-1">
+                          ID: <code className="text-[#6654E8] dark:text-[#9689FF]">{svc.id}</code>
+                        </div>
+                      </div>
+
+                      <p className="text-xs text-[#647087] dark:text-slate-400 line-clamp-2">
+                        {svc.shortDescription}
+                      </p>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="pt-3 border-t border-[#E5E9F2] dark:border-slate-800 flex items-center justify-between gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleOpenImageEditor(svc)}
+                        className="flex-1 py-2 px-3 bg-[#6654E8] hover:bg-[#5343D6] text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                      >
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>{hasCustomImage ? 'Replace Image' : 'Upload Image'}</span>
+                      </button>
+
+                      {hasCustomImage && (
+                        <button
+                          type="button"
+                          onClick={() => handleResetServiceImage(svc)}
+                          className="py-2 px-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[#172033] dark:text-slate-200 text-xs font-semibold rounded-xl flex items-center gap-1 cursor-pointer"
+                          title="Reset back to standard default image"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                          <span className="hidden sm:inline">Reset</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
@@ -1301,6 +1655,172 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                 {isDeleting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
                 <span>{isDeleting ? 'Deleting...' : 'Confirm Delete'}</span>
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Service Reference Image Edit / Upload Modal */}
+      {editingServiceImage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-[#0D1527] border border-[#E5E9F2] dark:border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-5 animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex items-start justify-between">
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-wider text-[#0A66C2] dark:text-[#38BDF8] font-bold">
+                  {editingServiceImage.category.toUpperCase()} • {editingServiceImage.id}
+                </span>
+                <h3 className="text-base sm:text-lg font-bold font-display text-[#172033] dark:text-white mt-0.5">
+                  Manage Service Reference Image
+                </h3>
+                <p className="text-xs text-[#647087] dark:text-slate-400">
+                  {editingServiceImage.title}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingServiceImage(null)}
+                className="p-1.5 rounded-lg text-[#647087] dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Live Image Preview */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-[#172033] dark:text-slate-200 flex items-center justify-between">
+                <span>Live Image Preview</span>
+                {serviceImages[editingServiceImage.id] ? (
+                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono">
+                    Custom Database Image Active
+                  </span>
+                ) : (
+                  <span className="text-[10px] text-slate-500 font-mono">
+                    Default Curated Image Active
+                  </span>
+                )}
+              </label>
+              <div className="relative aspect-16/9 rounded-xl overflow-hidden bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-inner group">
+                <img
+                  src={imagePreviewUrl || FALLBACK_SERVICE_IMAGE}
+                  alt={editingServiceImage.title}
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = FALLBACK_SERVICE_IMAGE;
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+                <div className="absolute bottom-3 left-3 right-3 text-white pointer-events-none">
+                  <div className="text-xs font-semibold drop-shadow">{editingServiceImage.title}</div>
+                  <div className="text-[10px] text-slate-300 truncate font-mono mt-0.5">
+                    {imagePreviewUrl}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Image Source Controls */}
+            <div className="space-y-3">
+              {/* Option 1: File Upload */}
+              <div className="p-3.5 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 hover:border-[#0A66C2] transition-colors">
+                <input
+                  type="file"
+                  id="admin-service-image-upload"
+                  accept="image/png, image/jpeg, image/webp"
+                  onChange={handleImageFileChange}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="admin-service-image-upload"
+                  className="flex items-center justify-center gap-2.5 py-2 px-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold text-[#172033] dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700/80 cursor-pointer transition-all shadow-sm"
+                >
+                  <Upload className="w-4 h-4 text-[#0A66C2] dark:text-[#38BDF8]" />
+                  <span>Upload Image File from Device (Max 2.5MB)</span>
+                </label>
+                <p className="text-[10px] text-center text-[#647087] dark:text-slate-400 mt-1.5">
+                  Converts to optimized base64 for persistent Firestore storage
+                </p>
+              </div>
+
+              {/* Option 2: Image URL */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-[#172033] dark:text-slate-200">
+                  Or Direct Image URL (HTTPS / Unsplash / CDN)
+                </label>
+                <div className="relative">
+                  <input
+                    type="url"
+                    value={imageInputUrl}
+                    onChange={(e) => {
+                      setImageInputUrl(e.target.value);
+                      setImagePreviewUrl(e.target.value);
+                    }}
+                    placeholder="https://images.unsplash.com/... or data:image/..."
+                    className="w-full px-3 py-2 text-xs rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-[#172033] dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0A66C2] font-mono"
+                  />
+                  {imageInputUrl && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImageInputUrl('');
+                        setImagePreviewUrl(FALLBACK_SERVICE_IMAGE);
+                      }}
+                      className="absolute right-2 top-2 p-1 text-slate-400 hover:text-slate-600"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="pt-2 border-t border-[#E5E9F2] dark:border-slate-800 flex items-center justify-between gap-2">
+              <div>
+                {serviceImages[editingServiceImage.id] ? (
+                  <button
+                    type="button"
+                    onClick={() => handleResetServiceImage(editingServiceImage)}
+                    className="px-3 py-2 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition-colors flex items-center gap-1.5"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Reset to Default</span>
+                  </button>
+                ) : (
+                  <span className="text-[11px] text-slate-400 italic">
+                    Using default curated asset
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingServiceImage(null)}
+                  className="px-4 py-2 text-xs font-semibold text-[#647087] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveServiceImage}
+                  disabled={isSavingImage || !imageInputUrl.trim()}
+                  className="px-4 py-2 text-xs font-semibold text-white bg-[#0A66C2] hover:bg-[#084e96] rounded-xl transition-all shadow-sm hover:shadow flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                >
+                  {isSavingImage ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>Saving to Firestore...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Save Reference Image</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>

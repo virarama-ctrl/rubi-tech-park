@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageRoute, ServiceDetail } from '../types';
 import {
   SOFTWARE_SERVICES,
@@ -7,6 +7,11 @@ import {
   SERVICES_DATA,
   AGENCY_CONFIG
 } from '../config/agencyConfig';
+import {
+  ServiceReferenceImage,
+  getServiceImageMetadata,
+  FALLBACK_SERVICE_IMAGE
+} from '../config/serviceImages';
 import { useLanguage } from '../context/LanguageContext';
 import {
   Code2,
@@ -22,7 +27,10 @@ import {
   ChevronRight,
   Terminal,
   Cpu,
-  Phone
+  Phone,
+  Eye,
+  Maximize2,
+  X
 } from 'lucide-react';
 
 interface ServicesOverviewPageProps {
@@ -38,6 +46,26 @@ export const ServicesOverviewPage: React.FC<ServicesOverviewPageProps> = ({
 }) => {
   const { t, language } = useLanguage();
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('all');
+  const [customImages, setCustomImages] = useState<Record<string, string>>({});
+  const [selectedServiceForDetail, setSelectedServiceForDetail] = useState<ServiceDetail | null>(null);
+
+  // Fetch any admin-configured custom image overrides from the database
+  useEffect(() => {
+    let isMounted = true;
+    fetch('/api/services/images')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (isMounted && data && data.images) {
+          setCustomImages(data.images);
+        }
+      })
+      .catch(() => {
+        // Graceful fallback to default curated images
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const filteredServices =
     activeCategory === 'all'
@@ -145,9 +173,25 @@ export const ServicesOverviewPage: React.FC<ServicesOverviewPageProps> = ({
             return (
               <div
                 key={service.id}
-                className="interactive-card group rounded-2xl p-6 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-sm hover:border-[#315D82] dark:hover:border-[#6F9FC5]"
+                className="interactive-card group rounded-2xl p-5 sm:p-6 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-sm hover:border-[#315D82] dark:hover:border-[#6F9FC5] transition-all"
               >
                 <div className="space-y-4">
+                  {/* Relevant Professional Service Reference Image Thumbnail */}
+                  <div
+                    onClick={() => setSelectedServiceForDetail(service)}
+                    className="cursor-pointer"
+                    title="Click to view large reference image and full service specification"
+                  >
+                    <ServiceReferenceImage
+                      serviceId={service.id}
+                      serviceTitle={service.title}
+                      customImages={customImages}
+                      aspectRatioClass="aspect-16/9 sm:aspect-16/10"
+                      showCaption={false}
+                      onEnlarge={() => setSelectedServiceForDetail(service)}
+                    />
+                  </div>
+
                   {/* Header Tag & Category */}
                   <div className="flex items-center justify-between gap-2">
                     <span
@@ -173,8 +217,11 @@ export const ServicesOverviewPage: React.FC<ServicesOverviewPageProps> = ({
                     )}
                   </div>
 
-                  {/* Title */}
-                  <h3 className="text-lg font-bold font-display text-[#182638] dark:text-[#F1F5F9] leading-snug group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
+                  {/* Title (clickable to open details) */}
+                  <h3
+                    onClick={() => setSelectedServiceForDetail(service)}
+                    className="text-lg font-bold font-display text-[#182638] dark:text-[#F1F5F9] leading-snug group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors cursor-pointer"
+                  >
                     {service.title}
                   </h3>
 
@@ -192,6 +239,19 @@ export const ServicesOverviewPage: React.FC<ServicesOverviewPageProps> = ({
                       </p>
                     </div>
                   )}
+
+                  {/* Quick Detail Link */}
+                  <div className="flex items-center justify-between text-[11px] font-mono text-[#315D82] dark:text-[#6F9FC5] pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedServiceForDetail(service)}
+                      className="hover:underline flex items-center gap-1 cursor-pointer font-semibold"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>View Reference Image & Scope</span>
+                    </button>
+                    <span className="text-[10px] text-[#526477] dark:text-[#B8C5D4]">RUBI Verified</span>
+                  </div>
 
                   {/* Compliance / Booking Notice if any */}
                   {service.complianceNotice && (
@@ -279,6 +339,154 @@ export const ServicesOverviewPage: React.FC<ServicesOverviewPageProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Service Details View Modal with Large Reference Image */}
+      {selectedServiceForDetail && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="relative bg-white dark:bg-[#142033] border border-[#D5DEE8] dark:border-[#30445B] rounded-2xl max-w-3xl w-full p-5 sm:p-7 shadow-2xl max-h-[92vh] overflow-y-auto space-y-5">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-[#D5DEE8] dark:border-[#30445B] pb-3">
+              <div className="flex items-center gap-2">
+                <span
+                  className={`text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full border ${
+                    selectedServiceForDetail.isEService || selectedServiceForDetail.category === 'eservices'
+                      ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800'
+                      : 'bg-[#F2F5F8] dark:bg-[#17263A] text-[#315D82] dark:text-[#6F9FC5] border-[#D5DEE8] dark:border-[#30445B]'
+                  }`}
+                >
+                  {selectedServiceForDetail.categoryTitle || selectedServiceForDetail.category}
+                </span>
+                <span className="text-xs font-mono text-[#526477] dark:text-[#B8C5D4] hidden sm:inline">
+                  RUBI Verified Specification
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedServiceForDetail(null)}
+                className="p-1.5 text-slate-400 hover:text-black dark:hover:text-white rounded-lg cursor-pointer"
+                title="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Large High-Fidelity Reference Image */}
+            <div className="space-y-2">
+              <ServiceReferenceImage
+                serviceId={selectedServiceForDetail.id}
+                serviceTitle={selectedServiceForDetail.title}
+                customImages={customImages}
+                aspectRatioClass="aspect-16/9 sm:aspect-21/9"
+                showCaption={true}
+                priority={true}
+              />
+            </div>
+
+            {/* Title & Pricing Summary */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+              <div>
+                <h3 className="text-xl sm:text-2xl font-bold font-display text-[#182638] dark:text-[#F1F5F9]">
+                  {selectedServiceForDetail.title}
+                </h3>
+                <p className="text-xs text-[#526477] dark:text-[#B8C5D4] mt-1">
+                  RUBI TECH PARK · Coimbatore, Tamil Nadu
+                </p>
+              </div>
+
+              <div className="sm:text-right shrink-0">
+                {selectedServiceForDetail.isEService || selectedServiceForDetail.category === 'eservices' ? (
+                  <div className="inline-block px-3 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-800 text-xs font-mono font-bold text-emerald-800 dark:text-emerald-300">
+                    ₹236 Initial Booking (₹200 + 18% GST)
+                  </div>
+                ) : (
+                  <div className="inline-block px-3 py-1 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] text-xs font-mono font-bold text-[#315D82] dark:text-[#6F9FC5]">
+                    Transparent Work-Based Quote
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Description & Detailed Scope */}
+            <div className="space-y-3 text-xs sm:text-sm text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
+              <p className="text-[#182638] dark:text-slate-200">
+                {selectedServiceForDetail.shortDescription}
+              </p>
+
+              {selectedServiceForDetail.detailedScope && (
+                <div className="p-3.5 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] space-y-1">
+                  <div className="font-semibold text-xs font-mono text-[#315D82] dark:text-[#6F9FC5] uppercase tracking-wider">
+                    Detailed Scope & Implementation
+                  </div>
+                  <p className="text-xs text-[#182638] dark:text-[#F1F5F9]">
+                    {selectedServiceForDetail.detailedScope}
+                  </p>
+                </div>
+              )}
+
+              {selectedServiceForDetail.complianceNotice && (
+                <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800/40 text-[11px] text-amber-900 dark:text-amber-200">
+                  {selectedServiceForDetail.complianceNotice}
+                </div>
+              )}
+            </div>
+
+            {/* Bottom Actions */}
+            <div className="pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <a
+                  href="tel:+918220550829"
+                  className="call-now-button py-2 px-3 rounded-xl bg-[#F2F5F8] hover:bg-[#E9EEF3] dark:bg-[#17263A] dark:hover:bg-[#20324b] border border-[#D5DEE8] dark:border-[#30445B] text-[#182638] dark:text-[#F1F5F9] text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                >
+                  <Phone className="w-3.5 h-3.5 text-[#315D82] dark:text-[#6F9FC5]" />
+                  <span>Call +91 82205 50829</span>
+                </a>
+
+                <a
+                  href={
+                    selectedServiceForDetail.whatsappUrl ||
+                    `https://wa.me/918220550829?text=${encodeURIComponent(
+                      selectedServiceForDetail.whatsappMessage || selectedServiceForDetail.title
+                    )}`
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="whatsapp-button py-2 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 border border-emerald-300 dark:border-emerald-700/50 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                >
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  <span>WhatsApp</span>
+                </a>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedServiceForDetail(null)}
+                  className="py-2 px-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-[#182638] dark:text-slate-200 text-xs font-semibold cursor-pointer"
+                >
+                  Close
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const svc = selectedServiceForDetail;
+                    setSelectedServiceForDetail(null);
+                    handleEnquire(svc);
+                  }}
+                  className="cyber-button-primary py-2 px-4 rounded-xl bg-[#315D82] dark:bg-[#416F98] text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <span>
+                    {selectedServiceForDetail.isEService || selectedServiceForDetail.category === 'eservices'
+                      ? 'Proceed to Book (₹236)'
+                      : 'Request Quotation'}
+                  </span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

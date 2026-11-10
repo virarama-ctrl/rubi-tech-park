@@ -480,6 +480,72 @@ export class FirebaseCRMService {
     const localDeleted = crmStorage.deleteLead(id);
     return firestoreDeleted || localDeleted;
   }
+
+  /**
+   * Fetch all custom service images from Firestore (with local fallback)
+   */
+  public async getServiceImages(): Promise<Record<string, string>> {
+    const localImages = crmStorage.getServiceImages();
+    if (!this.db) return localImages;
+
+    try {
+      const snap = await getDocs(collection(this.db, 'service_images'));
+      const images: Record<string, string> = { ...localImages };
+      snap.forEach((d) => {
+        const data = d.data();
+        if (data && data.imageUrl) {
+          images[d.id] = data.imageUrl;
+        }
+      });
+      return images;
+    } catch (err: any) {
+      console.warn('Error reading service_images from Firestore, using local cache:', err.message);
+      return localImages;
+    }
+  }
+
+  /**
+   * Save or update a custom service image in Firestore and local storage
+   */
+  public async setServiceImage(serviceId: string, imageUrl: string, updatedBy?: string): Promise<boolean> {
+    await this.ensureAdminAuth();
+    crmStorage.setServiceImage(serviceId, imageUrl, updatedBy);
+
+    if (this.db) {
+      try {
+        const docRef = doc(this.db, 'service_images', serviceId);
+        await setDoc(docRef, {
+          serviceId,
+          imageUrl,
+          updatedAt: new Date().toISOString(),
+          updatedBy: updatedBy || 'admin@rubitechpark.com'
+        }, { merge: true });
+        return true;
+      } catch (err: any) {
+        console.warn('Could not save service image to Firestore:', err.message);
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Delete or reset a custom service image back to default
+   */
+  public async deleteServiceImage(serviceId: string, deletedBy?: string): Promise<boolean> {
+    await this.ensureAdminAuth();
+    crmStorage.deleteServiceImage(serviceId, deletedBy);
+
+    if (this.db) {
+      try {
+        const docRef = doc(this.db, 'service_images', serviceId);
+        await deleteDoc(docRef);
+        return true;
+      } catch (err: any) {
+        console.warn('Could not delete service image from Firestore:', err.message);
+      }
+    }
+    return true;
+  }
 }
 
 export const firebaseCRM = new FirebaseCRMService();

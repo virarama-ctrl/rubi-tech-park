@@ -42,6 +42,8 @@ export interface ServiceDetail {
   bookingBase?: number;
   bookingGst?: number;
   complianceNotice?: string;
+  imageUrl?: string;
+  imageAlt?: string;
 }
 
 export type ProjectStatus = 'Live' | 'In Progress' | 'Demo' | 'Development / Enhancement' | 'Published Website' | 'Development / Commercial Preparation';

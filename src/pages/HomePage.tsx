@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageRoute } from '../types';
 import { SERVICES_DATA, PRICING_PACKAGES, WORK_PROCESS_STEPS } from '../config/agencyConfig';
 import { HeroFuturisticVisual } from '../components/HeroFuturisticVisual';
 import { LeadCaptureForm } from '../components/LeadCaptureForm';
 import { useLanguage } from '../context/LanguageContext';
+import { ServiceReferenceImage } from '../config/serviceImages';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -37,6 +38,22 @@ interface HomePageProps {
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const { t, language } = useLanguage();
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [customImages, setCustomImages] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch('/api/services/images')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (isMounted && data && data.images) {
+          setCustomImages(data.images);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const getServiceIcon = (category: string) => {
     switch (category) {
@@ -373,27 +390,41 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 </span>
               </div>
 
-              <h3 className="mt-5 text-xl sm:text-2xl font-bold font-display text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
-                {t.services.items.businessWebsites.title}
-              </h3>
-              <p className="mt-2 text-sm text-[#526477] dark:text-[#B8C5D4] leading-relaxed max-w-xl">
-                {t.services.items.businessWebsites.tagline}
-              </p>
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mt-5 items-center">
+                <div className="md:col-span-7">
+                  <h3 className="text-xl sm:text-2xl font-bold font-display text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
+                    {t.services.items.businessWebsites.title}
+                  </h3>
+                  <p className="mt-2 text-sm text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
+                    {t.services.items.businessWebsites.tagline}
+                  </p>
 
-              {/* Architecture Stack Badges */}
-              <div className="mt-6 flex flex-wrap gap-2">
-                {['React 19', 'TypeScript', 'Tailwind CSS v4', 'Vite 8', 'Express Backend', 'Cloudflare CDN', 'Schema.org SEO'].map((badge) => (
-                  <span
-                    key={badge}
-                    className="text-xs px-2.5 py-1 rounded-md bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] text-[#182638] dark:text-[#F1F5F9] font-mono shadow-xs"
-                  >
-                    {badge}
-                  </span>
-                ))}
+                  {/* Architecture Stack Badges */}
+                  <div className="mt-4 flex flex-wrap gap-1.5">
+                    {['React 19', 'TypeScript', 'Tailwind CSS v4', 'Vite 8', 'Express Backend', 'Cloudflare CDN', 'Schema.org SEO'].map((badge) => (
+                      <span
+                        key={badge}
+                        className="text-[11px] px-2 py-0.5 rounded-md bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] text-[#182638] dark:text-[#F1F5F9] font-mono shadow-xs"
+                      >
+                        {badge}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="md:col-span-5">
+                  <ServiceReferenceImage
+                    serviceId="business-websites"
+                    serviceTitle={t.services.items.businessWebsites.title}
+                    customImages={customImages}
+                    aspectRatioClass="aspect-16/10"
+                    onEnlarge={() => onNavigate('service-business-websites')}
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="mt-8 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-between">
+            <div className="mt-6 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-between">
               <button
                 onClick={() => onNavigate('service-business-websites')}
                 className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1.5 cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
@@ -409,7 +440,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
           {/* Bento Card 2: Custom CRM Software (Spans 4 columns) */}
           <div className="interactive-card group lg:col-span-4 rounded-2xl p-6 sm:p-8 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs relative overflow-hidden hover:border-[#315D82] dark:hover:border-[#6F9FC5]">
-            <div>
+            <div className="space-y-4">
               <div className="flex items-center justify-between pb-4 border-b border-[#D5DEE8] dark:border-[#30445B]">
                 <div className="w-10 h-10 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] border border-[#D5DEE8] dark:border-[#30445B] group-hover:scale-110 group-hover:-translate-y-0.5 transition-transform duration-200">
                   <Database className="w-5 h-5" />
@@ -419,15 +450,23 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 </span>
               </div>
 
-              <h3 className="mt-5 text-xl font-bold font-display text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
+              <ServiceReferenceImage
+                serviceId="custom-software-development"
+                serviceTitle={t.services.items.customCrm.title}
+                customImages={customImages}
+                aspectRatioClass="aspect-16/9"
+                onEnlarge={() => onNavigate('service-custom-crm')}
+              />
+
+              <h3 className="text-xl font-bold font-display text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
                 {t.services.items.customCrm.title}
               </h3>
-              <p className="mt-2 text-xs sm:text-sm text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
                 {t.services.items.customCrm.tagline}
               </p>
 
               {/* Key CRM Highlights */}
-              <div className="mt-5 space-y-2 text-xs text-[#526477] dark:text-[#B8C5D4]">
+              <div className="space-y-1.5 text-xs text-[#526477] dark:text-[#B8C5D4]">
                 <div className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#315D82] dark:text-[#6F9FC5] shrink-0 mt-0.5" />
                   <span>Zero per-user monthly SaaS subscription fees</span>
@@ -436,14 +475,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                   <CheckCircle2 className="w-4 h-4 text-[#315D82] dark:text-[#6F9FC5] shrink-0 mt-0.5" />
                   <span>Role-based access control (Admin, Sales, Dispatch)</span>
                 </div>
-                <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#315D82] dark:text-[#6F9FC5] shrink-0 mt-0.5" />
-                  <span>PostgreSQL / Cloud SQL server-enforced security</span>
-                </div>
               </div>
             </div>
 
-            <div className="mt-8 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-between">
+            <div className="mt-6 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-between">
               <button
                 onClick={() => onNavigate('service-custom-crm')}
                 className="text-xs font-semibold text-[#315D82] dark:text-[#6F9FC5] hover:underline flex items-center gap-1.5 cursor-pointer active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
@@ -456,7 +491,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
           {/* Bento Card 3: E-Commerce Store with WhatsApp & UPI (Spans 4 columns) */}
           <div className="interactive-card group lg:col-span-4 rounded-2xl p-6 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs hover:border-[#315D82] dark:hover:border-[#6F9FC5]">
-            <div>
+            <div className="space-y-3">
               <div className="flex items-center justify-between pb-4 border-b border-[#D5DEE8] dark:border-[#30445B]">
                 <div className="w-10 h-10 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] border border-[#D5DEE8] dark:border-[#30445B] group-hover:scale-110 group-hover:-translate-y-0.5 transition-transform duration-200">
                   <ShoppingBag className="w-5 h-5" />
@@ -466,10 +501,18 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 </span>
               </div>
 
-              <h3 className="mt-4 text-lg font-bold font-display text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
+              <ServiceReferenceImage
+                serviceId="ecommerce-website-development"
+                serviceTitle={t.services.items.ecommerce.title}
+                customImages={customImages}
+                aspectRatioClass="aspect-16/9"
+                onEnlarge={() => onNavigate('service-ecommerce')}
+              />
+
+              <h3 className="text-lg font-bold font-display text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
                 {t.services.items.ecommerce.title}
               </h3>
-              <p className="mt-2 text-xs sm:text-sm text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
                 {t.services.items.ecommerce.tagline}
               </p>
             </div>
@@ -487,7 +530,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
           {/* Bento Card 4: AI & Automated Workflows (Spans 4 columns) */}
           <div className="interactive-card group lg:col-span-4 rounded-2xl p-6 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs hover:border-[#315D82] dark:hover:border-[#6F9FC5]">
-            <div>
+            <div className="space-y-3">
               <div className="flex items-center justify-between pb-4 border-b border-[#D5DEE8] dark:border-[#30445B]">
                 <div className="w-10 h-10 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] border border-[#D5DEE8] dark:border-[#30445B] group-hover:scale-110 group-hover:-translate-y-0.5 transition-transform duration-200">
                   <Cpu className="w-5 h-5" />
@@ -497,10 +540,18 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 </span>
               </div>
 
-              <h3 className="mt-4 text-lg font-bold font-display text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
+              <ServiceReferenceImage
+                serviceId="business-automation"
+                serviceTitle={t.services.items.aiAutomation.title}
+                customImages={customImages}
+                aspectRatioClass="aspect-16/9"
+                onEnlarge={() => onNavigate('service-ai-automation')}
+              />
+
+              <h3 className="text-lg font-bold font-display text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
                 {t.services.items.aiAutomation.title}
               </h3>
-              <p className="mt-2 text-xs sm:text-sm text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
                 {t.services.items.aiAutomation.tagline}
               </p>
             </div>
@@ -518,7 +569,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
           {/* Bento Card 5: CRM Integration & Payments (Spans 4 columns) */}
           <div className="interactive-card group lg:col-span-4 rounded-2xl p-6 flex flex-col justify-between bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs hover:border-[#315D82] dark:hover:border-[#6F9FC5]">
-            <div>
+            <div className="space-y-3">
               <div className="flex items-center justify-between pb-4 border-b border-[#D5DEE8] dark:border-[#30445B]">
                 <div className="w-10 h-10 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] border border-[#D5DEE8] dark:border-[#30445B] group-hover:scale-110 group-hover:-translate-y-0.5 transition-transform duration-200">
                   <CreditCard className="w-5 h-5" />
@@ -528,10 +579,18 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 </span>
               </div>
 
-              <h3 className="mt-4 text-lg font-bold font-display text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
+              <ServiceReferenceImage
+                serviceId="billing-business-management-software"
+                serviceTitle={t.services.items.crmIntegration.title}
+                customImages={customImages}
+                aspectRatioClass="aspect-16/9"
+                onEnlarge={() => onNavigate('service-crm-integration')}
+              />
+
+              <h3 className="text-lg font-bold font-display text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
                 {t.services.items.crmIntegration.title}
               </h3>
-              <p className="mt-2 text-xs sm:text-sm text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
                 {t.services.items.crmIntegration.tagline}
               </p>
             </div>

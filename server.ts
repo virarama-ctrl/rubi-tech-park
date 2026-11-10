@@ -1102,9 +1102,86 @@ app.post('/api/admin/payments/:id/reject', requireAdminAuth, (req: Authenticated
   res.status(200).json({ success: true, payment: result.payment, message: result.message });
 });
 
-
-
 // -------------------------------------------------------------
+// Service Reference Images Management Endpoints
+// -------------------------------------------------------------
+
+/**
+ * Get Service Reference Images
+ * GET /api/services/images
+ */
+app.get('/api/services/images', async (_req: Request, res: Response) => {
+  try {
+    const images = await firebaseCRM.getServiceImages();
+    res.status(200).json({
+      success: true,
+      images
+    });
+  } catch (err: any) {
+    res.status(200).json({
+      success: true,
+      images: crmStorage.getServiceImages()
+    });
+  }
+});
+
+/**
+ * Update / Upload Reference Image for a Specific Service
+ * POST /api/admin/services/:id/image
+ */
+app.post('/api/admin/services/:id/image', requireAdminAuth, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const serviceId = req.params.id;
+    const { imageUrl } = req.body;
+
+    if (!imageUrl || typeof imageUrl !== 'string' || !imageUrl.trim()) {
+      res.status(400).json({
+        error: 'Validation Failed',
+        message: 'A valid imageUrl string or data URL is required.'
+      });
+      return;
+    }
+
+    const updatedBy = req.adminSession?.userEmail || 'admin@rubitechpark.com';
+    await firebaseCRM.setServiceImage(serviceId, imageUrl.trim(), updatedBy);
+
+    res.status(200).json({
+      success: true,
+      serviceId,
+      imageUrl: imageUrl.trim(),
+      message: 'Service reference image successfully updated and persisted.'
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      error: 'Failed to update service image',
+      message: err.message
+    });
+  }
+});
+
+/**
+ * Reset / Delete Custom Reference Image for a Specific Service
+ * DELETE /api/admin/services/:id/image
+ */
+app.delete('/api/admin/services/:id/image', requireAdminAuth, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const serviceId = req.params.id;
+    const deletedBy = req.adminSession?.userEmail || 'admin@rubitechpark.com';
+    await firebaseCRM.deleteServiceImage(serviceId, deletedBy);
+
+    res.status(200).json({
+      success: true,
+      serviceId,
+      message: 'Service reference image successfully reset to standard professional default.'
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      error: 'Failed to reset service image',
+      message: err.message
+    });
+  }
+});
+
 // Vite Frontend Middleware / Static Serve
 // -------------------------------------------------------------
 async function startServer() {

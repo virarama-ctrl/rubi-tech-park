@@ -18,6 +18,7 @@ const BACKUPS_DIR = path.join(DATA_DIR, 'backups');
 const LEADS_FILE = path.join(DATA_DIR, 'crm_leads.json');
 const USERS_FILE = path.join(DATA_DIR, 'crm_users.json');
 const AUDIT_FILE = path.join(DATA_DIR, 'crm_audit.json');
+const SERVICE_IMAGES_FILE = path.join(DATA_DIR, 'service_images.json');
 
 // Ensure data directories exist
 function ensureDirectories() {
@@ -485,6 +486,45 @@ export class CRMStorage {
 
     fs.writeFileSync(targetPath, JSON.stringify(snapshot, null, 2), 'utf-8');
     return { success: true, filename, timestamp };
+  }
+
+  // --- Service Reference Images Management ---
+  public getServiceImages(): Record<string, string> {
+    return readJson<Record<string, string>>(SERVICE_IMAGES_FILE, {});
+  }
+
+  public setServiceImage(serviceId: string, imageUrl: string, updatedBy?: string): void {
+    const current = this.getServiceImages();
+    current[serviceId] = imageUrl;
+    atomicWriteJson(SERVICE_IMAGES_FILE, current);
+
+    this.addAuditLog({
+      userId: updatedBy || 'admin',
+      userEmail: updatedBy || 'admin@rubitechpark.com',
+      userRole: 'super_admin',
+      action: 'UPDATE_SERVICE_IMAGE',
+      ipAddress: '127.0.0.1',
+      resource: `service_images/${serviceId}`,
+      success: true
+    });
+  }
+
+  public deleteServiceImage(serviceId: string, deletedBy?: string): void {
+    const current = this.getServiceImages();
+    if (current[serviceId]) {
+      delete current[serviceId];
+      atomicWriteJson(SERVICE_IMAGES_FILE, current);
+
+      this.addAuditLog({
+        userId: deletedBy || 'admin',
+        userEmail: deletedBy || 'admin@rubitechpark.com',
+        userRole: 'super_admin',
+        action: 'DELETE_SERVICE_IMAGE',
+        ipAddress: '127.0.0.1',
+        resource: `service_images/${serviceId}`,
+        success: true
+      });
+    }
   }
 }
 

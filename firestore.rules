@@ -33,6 +33,12 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Service Reference Images Collection
+    match /service_images/{serviceId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     // Default fallback deny
     match /{document=**} {
       allow read, write: if false;

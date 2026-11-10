@@ -101,6 +101,30 @@
         }
       },
       "required": ["email", "role"]
+    },
+    "ServiceImage": {
+      "title": "ServiceImage",
+      "description": "Custom reference image override for a specific service in the catalog",
+      "type": "object",
+      "properties": {
+        "serviceId": {
+          "type": "string",
+          "description": "Unique identifier of the service (e.g. website-design-development)"
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL or data URL of the reference image"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last image update"
+        },
+        "updatedBy": {
+          "type": "string",
+          "description": "Email or ID of admin who updated the image"
+        }
+      },
+      "required": ["serviceId", "imageUrl"]
     }
   },
   "firestore": {
@@ -111,6 +135,11 @@
     "/admin_roles/{email}": {
       "schema": "AdminRole",
       "description": "Authorized administrative accounts permitted to access CRM data"
+    },
+    "/service_images/{serviceId}": {
+      "schema": "ServiceImage",
+      "description": "Custom reference image configuration per service"
     }
   }
 }
+
