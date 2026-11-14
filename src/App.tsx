@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PageRoute, RequiredService, CaseStudy } from './types';
+import { BillingCycle } from './types/crm';
 import { SERVICES_DATA } from './config/agencyConfig';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
@@ -12,12 +13,16 @@ import { HomePage } from './pages/HomePage';
 import { ServicesOverviewPage } from './pages/ServicesOverviewPage';
 import { ServiceDetailPage } from './pages/ServiceDetailPage';
 import { PricingPage } from './pages/PricingPage';
+import { SubscriptionsPage } from './pages/SubscriptionsPage';
 import { PortfolioPage } from './pages/PortfolioPage';
 import { AboutPage } from './pages/AboutPage';
 import { ContactPage } from './pages/ContactPage';
 import { CheckoutPage } from './pages/CheckoutPage';
 import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
 import { TermsPage } from './pages/TermsPage';
+import { RefundPolicyPage } from './pages/RefundPolicyPage';
+import { ServiceDeliveryPolicyPage } from './pages/ServiceDeliveryPolicyPage';
+import { SubscriptionPolicyPage } from './pages/SubscriptionPolicyPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 import { AdminLoginPage } from './pages/AdminLoginPage';
@@ -26,7 +31,16 @@ import { AdminDashboardPage } from './pages/AdminDashboardPage';
 function AppContent() {
   const [currentRoute, setCurrentRoute] = useState<PageRoute>('home');
   const [selectedServiceForQuote, setSelectedServiceForQuote] = useState<RequiredService>('business-website');
-  const { language, t } = useLanguage();
+  const [checkoutConfig, setCheckoutConfig] = useState<{
+    planId: string;
+    mode: 'one_time' | 'subscription';
+    billingCycle: BillingCycle;
+  }>({
+    planId: 'starter-web',
+    mode: 'one_time',
+    billingCycle: 'monthly'
+  });
+  const { language } = useLanguage();
 
   // Sync route with window.location.hash and window.location.pathname for deep linking
   useEffect(() => {
@@ -65,11 +79,15 @@ function AppContent() {
         'service-crm-integration',
         'service-ai-automation',
         'pricing',
+        'subscriptions',
         'portfolio',
         'about',
         'contact',
         'privacy-policy',
         'terms',
+        'refund-policy',
+        'service-delivery-policy',
+        'subscription-policy',
         'checkout',
         'admin-login',
         'admin-dashboard'
@@ -146,6 +164,11 @@ function AppContent() {
           ? 'வெளிப்படையான தொடக்க விலை & திட்ட கால்குலேட்டர் | ரூபி டெக் பார்க்'
           : 'Transparent Starting Pricing & Cost Estimator | RUBI TECH PARK';
         break;
+      case 'subscriptions':
+        pageTitle = language === 'ta'
+          ? 'மென்பொருள் சந்தா திட்டங்கள் & மேலாண்மை | ரூபி டெக் பார்க்'
+          : 'Software Subscriptions & Billing Portal | RUBI TECH PARK';
+        break;
       case 'portfolio':
         pageTitle = language === 'ta'
           ? 'திட்டங்கள் & வழக்கு ஆய்வுகள் | ரூபி டெக் பார்க்'
@@ -167,11 +190,20 @@ function AppContent() {
       case 'terms':
         pageTitle = language === 'ta' ? 'விதிமுறைகள் மற்றும் நிபந்தனைகள் | ரூபி டெக் பார்க்' : 'Terms & Conditions of Service | RUBI TECH PARK';
         break;
+      case 'refund-policy':
+        pageTitle = language === 'ta' ? 'ரத்து & பணத்தைத் திரும்பப் பெறும் கொள்கை | ரூபி டெக் பார்க்' : 'Cancellation & Refund Policy | RUBI TECH PARK';
+        break;
+      case 'service-delivery-policy':
+        pageTitle = language === 'ta' ? 'சேவை விநியோகக் கொள்கை | ரூபி டெக் பார்க்' : 'Service Delivery & Activation Policy | RUBI TECH PARK';
+        break;
+      case 'subscription-policy':
+        pageTitle = language === 'ta' ? 'சந்தா & தானியங்கி புதுப்பித்தல் கொள்கை | ரூபி டெக் பார்க்' : 'Subscription & Auto-Renewal Policy | RUBI TECH PARK';
+        break;
       case 'checkout':
         pageTitle = language === 'ta' ? 'கட்டணம் செலுத்துங்கள் – ஆன்லைன் கட்டண தளம் | ரூபி டெக் பார்க்' : 'Checkout & Online Payments – RUBI TECH PARK';
         metaDescription = language === 'ta'
-          ? 'ரூபி டெக் பார்க் மென்பொருள் சேவைகளுக்கான UPI, கார்டுகள் மற்றும் நெட் பேங்கிங் மூலம் பாதுகாப்பான ஆன்லைன் கட்டணம்.'
-          : 'Secure encrypted online payments for RUBI TECH PARK software development and consultancy services via UPI, Cards, and Net Banking.';
+          ? 'ரூபி டெக் பார்க் மென்பொருள் சேவைகளுக்கான UPI மற்றும் Razorpay பாதுகாப்பான ஆன்லைன் கட்டணம்.'
+          : 'Secure encrypted online payments for RUBI TECH PARK software development, subscriptions, and e-services booking via UPI and Razorpay.';
         break;
       case 'admin-login':
         pageTitle = 'Admin CRM Login | RUBI TECH PARK';
@@ -205,14 +237,32 @@ function AppContent() {
   };
 
   const handleSelectCaseStudyForQuote = (study: CaseStudy) => {
-    if (study.id === 'rubi-gold-silver') {
-      setSelectedServiceForQuote('ecommerce-store');
-    } else if (study.id === 'apex-distribution-crm') {
+    if (study.id === 'kuralvaani') {
+      setSelectedServiceForQuote('ai-workflow-automation');
+    } else if (study.id === 'apex-distribution-crm' || study.id === 'rubi-leads-crm') {
       setSelectedServiceForQuote('custom-crm');
     } else {
       setSelectedServiceForQuote('website-crm-integration');
     }
     navigateTo('contact');
+  };
+
+  const handleSelectOneTimeCheckout = (planId: string) => {
+    setCheckoutConfig({
+      planId,
+      mode: 'one_time',
+      billingCycle: 'monthly'
+    });
+    navigateTo('checkout');
+  };
+
+  const handleSelectSubscriptionCheckout = (planId: string, billingCycle: BillingCycle) => {
+    setCheckoutConfig({
+      planId,
+      mode: 'subscription',
+      billingCycle
+    });
+    navigateTo('checkout');
   };
 
   // Render current page component
@@ -234,7 +284,19 @@ function AppContent() {
         return <NotFoundPage onNavigate={navigateTo} />;
       }
       case 'pricing':
-        return <PricingPage onNavigate={navigateTo} />;
+        return (
+          <PricingPage
+            onNavigate={navigateTo}
+            onSelectPlanForCheckout={handleSelectOneTimeCheckout}
+          />
+        );
+      case 'subscriptions':
+        return (
+          <SubscriptionsPage
+            onNavigate={navigateTo}
+            onSelectSubscriptionCheckout={handleSelectSubscriptionCheckout}
+          />
+        );
       case 'portfolio':
         return (
           <PortfolioPage
@@ -255,8 +317,21 @@ function AppContent() {
         return <PrivacyPolicyPage onNavigate={navigateTo} />;
       case 'terms':
         return <TermsPage onNavigate={navigateTo} />;
+      case 'refund-policy':
+        return <RefundPolicyPage onNavigate={navigateTo} />;
+      case 'service-delivery-policy':
+        return <ServiceDeliveryPolicyPage onNavigate={navigateTo} />;
+      case 'subscription-policy':
+        return <SubscriptionPolicyPage onNavigate={navigateTo} />;
       case 'checkout':
-        return <CheckoutPage onNavigate={navigateTo} />;
+        return (
+          <CheckoutPage
+            onNavigate={navigateTo}
+            preselectedPlanId={checkoutConfig.planId}
+            initialMode={checkoutConfig.mode}
+            initialBillingCycle={checkoutConfig.billingCycle}
+          />
+        );
       case 'admin-login':
         return (
           <AdminLoginPage

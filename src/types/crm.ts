@@ -124,19 +124,33 @@ export type PaymentStatus =
   | 'paid'
   | 'failed'
   | 'cancelled'
+  | 'refund_pending'
+  | 'partial_refund'
   | 'refunded';
+
+export type RefundStatus = 'none' | 'requested' | 'processing' | 'processed' | 'rejected';
 
 export type PaymentMethodType =
   | 'upi_qr'
   | 'upi_intent'
   | 'upi_manual'
+  | 'upi_mandate'
   | 'card'
   | 'netbanking'
-  | 'wallet';
+  | 'wallet'
+  | 'razorpay_checkout';
+
+export type BillingCycle = 'monthly' | 'yearly';
+
+export type SubscriptionStatus = 'pending' | 'active' | 'paused' | 'cancelled' | 'failed';
 
 export interface PaymentRecord {
   id: string;
   orderRef: string; // e.g. RTP-ORD-2026-1049
+  orderType?: 'one_time' | 'subscription_initial' | 'subscription_renewal';
+  subscriptionId?: string;
+  subscriptionRef?: string;
+  billingCycle?: BillingCycle;
   leadId?: string;
   customerName: string;
   customerEmail: string;
@@ -150,14 +164,73 @@ export interface PaymentRecord {
   totalAmountINR: number;
   paymentMethod: PaymentMethodType;
   status: PaymentStatus;
+  gatewayProvider?: 'razorpay' | 'upi_direct';
+  gatewayMode?: 'razorpay_live' | 'razorpay_test' | 'upi_direct';
   gatewayOrderId?: string;
   gatewayPaymentId?: string;
   gatewaySignature?: string;
+  signatureVerified?: boolean;
   upiTransactionRef?: string; // 12-digit UTR
   verifiedBy?: string;
   verifiedAt?: string;
+  refundStatus?: RefundStatus;
+  refundAmountINR?: number;
+  refundId?: string;
+  refundNotes?: string;
+  refundReason?: string;
+  refundUpdatedAt?: string;
+  mandateConsentAccepted?: boolean;
+  mandateConsentAt?: string;
   createdAt: string;
   updatedAt: string;
   receiptNumber?: string;
   notes?: string;
 }
+
+export interface CustomerSubscription {
+  id: string;
+  subscriptionRef: string; // e.g. RTP-SUB-2026-A1B2
+  planId: string;
+  planName: string;
+  billingCycle: BillingCycle;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  customerBusiness?: string;
+  baseAmountINR: number;
+  taxAmountINR: number;
+  totalAmountINR: number;
+  status: SubscriptionStatus;
+  autoRenew: boolean;
+  autoRenewConsent: boolean;
+  consentTimestamp: string;
+  gatewaySubscriptionId?: string;
+  latestOrderRef?: string;
+  mandateAuthorizedAt?: string;
+  lastPaymentAt?: string;
+  nextBillingAt?: string;
+  cancelledAt?: string;
+  cancellationReason?: string;
+  pendingPlanChange?: {
+    newPlanId: string;
+    newPlanName: string;
+    newBillingCycle: BillingCycle;
+    requestedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WebhookEventRecord {
+  eventId: string;
+  eventType: string;
+  orderId?: string;
+  paymentId?: string;
+  subscriptionId?: string;
+  processedAt: string;
+  status: 'processed' | 'ignored_duplicate' | 'failed';
+  summary?: string;
+  notes?: string;
+}
+
+

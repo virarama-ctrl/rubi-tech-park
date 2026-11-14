@@ -5,7 +5,6 @@ import {
   CheckCircle,
   ExternalLink,
   Sparkles,
-  Calculator,
   Mic,
   Volume2,
   Send,
@@ -57,63 +56,6 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({
 
   // Render project-specific visual mockup screenshots
   const renderProjectScreenshotMockup = () => {
-    if (study.id === 'tamil-gold-buyer') {
-      return (
-        <div className="mt-6 rounded-2xl overflow-hidden border border-[#D5DEE8] dark:border-[#30445B] bg-[#F2F5F8] dark:bg-[#17263A] p-4 sm:p-5 shadow-xs relative transition-transform duration-300 group-hover:scale-[1.015]">
-          <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#D5DEE8] dark:border-[#30445B]">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#315D82] dark:bg-[#6F9FC5]" />
-              <span className="text-xs font-mono font-bold text-[#182638] dark:text-[#F1F5F9]">
-                Tamil Gold Buyer · Valuation Engine & Rates
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] font-mono text-[#315D82] dark:text-[#6F9FC5] bg-white dark:bg-[#1C2B40] px-2 py-0.5 rounded-md border border-[#D5DEE8] dark:border-[#30445B]">
-                https://goldandsilverbuyer.live
-              </span>
-            </div>
-          </div>
-
-          {/* Live Rate Ticker */}
-          <div className="mt-3.5 grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center text-xs">
-            <div className="bg-white dark:bg-[#1C2B40] p-2.5 rounded-xl border border-[#D5DEE8] dark:border-[#30445B]">
-              <span className="text-[10px] text-[#526477] dark:text-[#B8C5D4] font-mono block">24K Pure Gold</span>
-              <span className="text-sm font-bold font-mono text-[#182638] dark:text-[#F1F5F9]">₹8,150 / g</span>
-            </div>
-            <div className="bg-white dark:bg-[#1C2B40] p-2.5 rounded-xl border border-[#D5DEE8] dark:border-[#30445B]">
-              <span className="text-[10px] text-[#526477] dark:text-[#B8C5D4] font-mono block">22K 916 Hallmark</span>
-              <span className="text-sm font-bold font-mono text-[#182638] dark:text-[#F1F5F9]">₹7,470 / g</span>
-            </div>
-            <div className="bg-white dark:bg-[#1C2B40] p-2.5 rounded-xl border border-[#D5DEE8] dark:border-[#30445B]">
-              <span className="text-[10px] text-[#526477] dark:text-[#B8C5D4] font-mono block">18K Jewellery</span>
-              <span className="text-sm font-bold font-mono text-[#182638] dark:text-[#F1F5F9]">₹6,115 / g</span>
-            </div>
-            <div className="bg-white dark:bg-[#1C2B40] p-2.5 rounded-xl border border-[#D5DEE8] dark:border-[#30445B]">
-              <span className="text-[10px] text-[#526477] dark:text-[#B8C5D4] font-mono block">Fine Silver 999</span>
-              <span className="text-sm font-bold font-mono text-[#315D82] dark:text-[#6F9FC5]">₹105 / g</span>
-            </div>
-          </div>
-
-          {/* Valuation Calculator Mockup */}
-          <div className="mt-3 bg-white dark:bg-[#1C2B40] p-3.5 rounded-xl border border-[#D5DEE8] dark:border-[#30445B] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] shrink-0">
-                <Calculator className="w-5 h-5" />
-              </div>
-              <div>
-                <span className="font-bold text-[#182638] dark:text-[#F1F5F9] block">Precious Metal Valuation Engine</span>
-                <span className="text-[#526477] dark:text-[#B8C5D4] text-[11px]">Item: 22K Hallmarked Gold · 42.50g</span>
-              </div>
-            </div>
-            <div className="text-right">
-              <span className="text-[10px] text-[#526477] dark:text-[#B8C5D4] font-mono uppercase tracking-wider block">Estimated Payout</span>
-              <span className="text-base font-bold font-mono text-[#315D82] dark:text-[#6F9FC5]">₹3,17,475</span>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
     if (study.id === 'kuralvaani') {
       return (
         <div className="mt-6 rounded-2xl overflow-hidden border border-[#D5DEE8] dark:border-[#30445B] bg-[#F2F5F8] dark:bg-[#17263A] p-4 sm:p-5 shadow-xs transition-transform duration-300 group-hover:scale-[1.015]">

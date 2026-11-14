@@ -28,6 +28,8 @@ export function getLocalizedService(service: ServiceDetail, language: Language):
     whoItIsFor: tamilData.whoItIsFor || service.whoItIsFor,
     problemsItSolves: tamilData.problemsItSolves || service.problemsItSolves,
     deliverables: tamilData.deliverables || service.deliverables,
+    requiredDocuments: tamilData.requiredDocuments || service.requiredDocuments,
+    eligibility: tamilData.eligibility || service.eligibility,
     processSteps: tamilData.processSteps || service.processSteps,
     whatsappMessage: tamilData.whatsappMessage || service.whatsappMessage,
     startingPriceLabel: tamilData.pricingLabel || service.startingPriceLabel

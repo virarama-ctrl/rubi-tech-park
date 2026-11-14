@@ -207,7 +207,7 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
         email: 'மின்னஞ்சல்'
       },
       businessTypes: {
-        retailJewellery: 'நகைக்கடை & சொகுசு சில்லறை விற்பனை',
+        retailJewellery: 'சில்லறை & டி2சி (D2C) வணிகம்',
         manufacturing: 'உற்பத்தி & தொழிற்துறை ஆலைகள்',
         wholesale: 'மொத்த விற்பனை & விநியோகம்',
         professional: 'கார்ப்பரேட் / தொழில்முறை சேவைகள்',
@@ -234,6 +234,10 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       legalHeading: 'சட்டம் & ஆளுகை',
       privacy: 'தனியுரிமைக் கொள்கை',
       terms: 'விதிமுறைகள் மற்றும் நிபந்தனைகள்',
+      refundPolicy: 'ரத்து & பணத்தைத் திரும்பப் பெறும் கொள்கை',
+      deliveryPolicy: 'சேவை வழங்கல் கொள்கை',
+      subscriptionPolicy: 'சந்தா & தானியங்கி புதுப்பித்தல் கொள்கை',
+      subscriptions: 'மென்பொருள் சந்தா திட்டங்கள்',
       adminCrm: 'நிர்வாகி CRM உள்நுழைவு',
       copyright: 'அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை. இந்திய வணிகங்களுக்கான தொழில்நுட்பத் தீர்வுகள்.',
       pricingNote: 'குறிப்பு: ₹5,000+ (வலைத்தளம்), ₹15,000+ (இ-காமர்ஸ்), ₹20,000+ (CRM) ஆகியவை ஆரம்பநிலை உத்தேச விலைகளாகும்.',
@@ -453,7 +457,7 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
         directEngineeringDesc: 'Speak directly with the engineers building your software, ensuring accurate translation of business logic into working code.'
       },
       coimbatoreHubTitle: 'Our Coimbatore Technology Hub',
-      coimbatoreHubDesc: 'Located at Gandhipuram, Coimbatore, Tamil Nadu, India. Serving industrial manufacturers, jewelers, distributors, and professional firms with local accessibility and global engineering standards.',
+      coimbatoreHubDesc: 'Located at Gandhipuram, Coimbatore, Tamil Nadu, India. Serving industrial manufacturers, digital enterprises, distributors, and professional firms with local accessibility and global engineering standards.',
       contactCta: 'Contact Our Engineering Team'
     },
     contact: {
@@ -517,7 +521,7 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
         email: 'Email'
       },
       businessTypes: {
-        retailJewellery: 'Fine Jewellery & Luxury Retail',
+        retailJewellery: 'Retail & D2C E-Commerce',
         manufacturing: 'Manufacturing & Industrial OEM',
         wholesale: 'Wholesale & B2B Distribution',
         professional: 'Professional Services / Corporate',
@@ -544,6 +548,10 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       legalHeading: 'Governance & Legal',
       privacy: 'Privacy Policy',
       terms: 'Terms & Conditions',
+      refundPolicy: 'Cancellation & Refund Policy',
+      deliveryPolicy: 'Service Delivery Policy',
+      subscriptionPolicy: 'Subscription & Auto-Renewal Policy',
+      subscriptions: 'Software Subscriptions',
       adminCrm: 'Admin CRM Console',
       copyright: 'All rights reserved. Commercial solutions for Indian enterprises.',
       pricingNote: 'Indicative starting prices: ₹5,000+ (Websites), ₹15,000+ (E-com), ₹20,000+ (CRM). Scope, hosting, and API fees apply.',

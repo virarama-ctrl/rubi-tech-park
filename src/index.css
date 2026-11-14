@@ -269,7 +269,7 @@ html.light .ambient-mesh-light {
    PROFESSIONAL CARD SURFACES (EXECUTIVE NAVY & SOFT PROFESSIONAL)
    =================================================================== */
 
-.saas-card, .gold-card {
+.saas-card {
   background-color: #1C2B40;
   border: 1px solid #30445B;
   border-radius: 0.875rem;
@@ -277,7 +277,7 @@ html.light .ambient-mesh-light {
   transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-html.light .saas-card, html.light .gold-card {
+html.light .saas-card {
   background-color: #FFFFFF;
   border: 1px solid #D5DEE8;
   box-shadow: 0 2px 8px -2px rgba(24, 38, 56, 0.06), 0 1px 2px rgba(24, 38, 56, 0.04);
@@ -299,13 +299,13 @@ html.light .saas-card-glass {
   box-shadow: 0 2px 8px rgba(24, 38, 56, 0.06);
 }
 
-.saas-card-hover:hover, .gold-card-hover:hover {
+.saas-card-hover:hover {
   transform: translateY(-2px);
   border-color: #6F9FC5;
   box-shadow: 0 8px 24px -4px rgba(10, 16, 28, 0.6);
 }
 
-html.light .saas-card-hover:hover, html.light .gold-card-hover:hover {
+html.light .saas-card-hover:hover {
   transform: translateY(-2px);
   border-color: #315D82;
   box-shadow: 0 6px 18px -3px rgba(24, 38, 56, 0.1);
@@ -328,13 +328,13 @@ html.light .brand-gradient-text {
   -webkit-text-fill-color: transparent;
 }
 
-.cyan-gradient-text, .gold-gradient-text {
+.cyan-gradient-text {
   background: linear-gradient(135deg, #F1F5F9 0%, #6F9FC5 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-html.light .cyan-gradient-text, html.light .gold-gradient-text {
+html.light .cyan-gradient-text {
   background: linear-gradient(135deg, #182638 0%, #315D82 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

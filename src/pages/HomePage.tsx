@@ -26,8 +26,8 @@ import {
   Terminal,
   Activity,
   Workflow,
-  ExternalLink,
-  Calculator,
+  Mic,
+  Volume2,
   Phone
 } from 'lucide-react';
 
@@ -176,7 +176,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               </div>
 
               {/* Quantitative Trust Markers (Fixed for Tamil Natural Wrap & Mobile Responsiveness) */}
-              <div className="pt-8 border-t border-[#D5DEE8] dark:border-[#30445B] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+              <div className="pt-8 border-t border-[#D5DEE8] dark:border-[#30445B] grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
                 {/* Stat 1 */}
                 <div className="interactive-card group p-4 sm:p-5 rounded-xl bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs flex flex-col justify-between min-h-[96px] h-auto hover:border-[#315D82] dark:hover:border-[#6F9FC5]">
                   <div className="text-lg sm:text-xl lg:text-2xl font-bold font-mono text-[#315D82] dark:text-[#6F9FC5] tabular-nums leading-tight group-hover:scale-105 transition-transform origin-left word-keep">
@@ -199,7 +199,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
                 {/* Stat 3 (Tamil & English City Value: Coimbatore / கோயம்புத்தூர் kept whole) */}
                 <div className="interactive-card group p-4 sm:p-5 rounded-xl bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs flex flex-col justify-between min-h-[96px] h-auto hover:border-[#315D82] dark:hover:border-[#6F9FC5]">
-                  <div className="text-lg sm:text-xl lg:text-2xl font-bold font-sans text-[#315D82] dark:text-[#6F9FC5] leading-tight group-hover:scale-105 transition-transform origin-left word-keep">
+                  <div className="text-lg sm:text-xl font-bold font-sans text-[#315D82] dark:text-[#6F9FC5] leading-relaxed group-hover:scale-105 transition-transform origin-left word-keep">
                     <span className="city-wordmark">{t.home.quickStats.deployment}</span>
                   </div>
                   <div className="text-xs text-[#526477] dark:text-[#B8C5D4] mt-2 font-normal leading-relaxed text-pretty word-keep">
@@ -609,7 +609,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         </div>
       </section>
 
-      {/* 4. Selected Client Platforms Showcase — Tamil Gold Buyer First */}
+      {/* 4. Selected Client Platforms Showcase — Software Solutions Only */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
           <div>
@@ -635,69 +635,67 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
           
-          {/* Showcase 1: Tamil Gold Buyer (Primary Featured) */}
+          {/* Showcase 1: Kuralvaani Tamil Voice AI Platform */}
           <div className="interactive-card group rounded-2xl p-6 sm:p-7 bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] flex flex-col justify-between shadow-xs hover:border-[#315D82] dark:hover:border-[#6F9FC5]">
             <div>
               <div className="flex items-center justify-between pb-4 border-b border-[#D5DEE8] dark:border-[#30445B]">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-center text-[#315D82] dark:text-[#6F9FC5] font-bold text-sm tracking-wider group-hover:scale-110 group-hover:-translate-y-0.5 transition-transform duration-200">
-                    <Calculator className="w-5 h-5 text-[#315D82] dark:text-[#6F9FC5]" />
+                    <Mic className="w-5 h-5 text-[#315D82] dark:text-[#6F9FC5]" />
                   </div>
                   <div>
                     <div className="text-sm font-semibold tracking-wide text-[#182638] dark:text-[#F1F5F9] group-hover:text-[#315D82] dark:group-hover:text-[#6F9FC5] transition-colors">
-                      Tamil Gold Buyer
+                      {language === 'ta' ? 'குரல்வாணி (Kuralvaani)' : 'Kuralvaani Voice Studio'}
                     </div>
                     <div className="text-xs text-[#526477] dark:text-[#B8C5D4]">
-                      Gold & Silver Valuation Platform
+                      {language === 'ta' ? 'தமிழ் AI குரல் விவரிப்பு தளம்' : 'Tamil AI Voice Narration Platform'}
                     </div>
                   </div>
                 </div>
                 <div className="text-xs font-mono text-[#315D82] dark:text-[#6F9FC5] bg-[#F2F5F8] dark:bg-[#17263A] px-2.5 py-1 rounded-full border border-[#D5DEE8] dark:border-[#30445B]">
-                  Published Website
+                  {language === 'ta' ? 'SaaS மென்பொருள்' : 'SaaS Platform'}
                 </div>
               </div>
 
-              {/* Live Valuation Mockup Preview */}
+              {/* Speech Synthesis Studio Preview */}
               <div className="mt-4 p-4 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] space-y-3 transition-transform duration-300 group-hover:scale-[1.015] overflow-hidden">
-                <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                  <div className="bg-white dark:bg-[#1C2B40] p-2 rounded-lg border border-[#D5DEE8] dark:border-[#30445B]">
-                    <span className="text-[10px] text-[#526477] dark:text-[#B8C5D4] block">24K Pure Gold</span>
-                    <span className="font-mono font-bold text-[#182638] dark:text-[#F1F5F9] text-xs sm:text-sm">₹8,150/g</span>
-                  </div>
-                  <div className="bg-white dark:bg-[#1C2B40] p-2 rounded-lg border border-[#D5DEE8] dark:border-[#30445B]">
-                    <span className="text-[10px] text-[#526477] dark:text-[#B8C5D4] block">22K 916 Hallmark</span>
-                    <span className="font-mono font-bold text-[#182638] dark:text-[#F1F5F9] text-xs sm:text-sm">₹7,470/g</span>
-                  </div>
-                  <div className="bg-white dark:bg-[#1C2B40] p-2 rounded-lg border border-[#D5DEE8] dark:border-[#30445B]">
-                    <span className="text-[10px] text-[#526477] dark:text-[#B8C5D4] block">Fine Silver 999</span>
-                    <span className="font-mono font-bold text-[#315D82] dark:text-[#6F9FC5] text-xs sm:text-sm">₹105/g</span>
-                  </div>
+                <div className="bg-white dark:bg-[#1C2B40] p-3 rounded-lg border border-[#D5DEE8] dark:border-[#30445B]">
+                  <span className="text-[10px] font-mono text-[#526477] dark:text-[#B8C5D4] block mb-1">
+                    {language === 'ta' ? 'தமிழ் உரை உள்ளீடு:' : 'Tamil Speech Synthesis Input:'}
+                  </span>
+                  <p className="text-xs text-[#182638] dark:text-[#F1F5F9] leading-relaxed">
+                    &ldquo;வணக்கம்! ரூபி டெக் பார்க் வழங்கும் நவீன வணிக மென்பொருள் மற்றும் ஆட்டோமேஷன் தீர்வுகள்.&rdquo;
+                  </p>
                 </div>
 
                 <div className="flex items-center justify-between text-xs pt-1">
-                  <span className="text-[#526477] dark:text-[#B8C5D4]">Valuation Engine Calculator · Multi-item Purity</span>
-                  <span className="font-mono text-[#315D82] dark:text-[#6F9FC5] font-semibold">Active Engine</span>
+                  <span className="flex items-center gap-1.5 text-[#526477] dark:text-[#B8C5D4]">
+                    <Volume2 className="w-3.5 h-3.5 text-[#315D82] dark:text-[#6F9FC5]" />
+                    <span>{language === 'ta' ? '24-பிட் ஸ்டுடியோ ஆடியோ வெளியீடு' : 'Studio Audio Export · Subscription Ready'}</span>
+                  </span>
+                  <span className="font-mono text-[#315D82] dark:text-[#6F9FC5] font-semibold">Active SaaS</span>
                 </div>
               </div>
 
               <p className="mt-4 text-xs sm:text-sm text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
-                A specialised digital platform for gold and silver buyers, featuring valuation tools, real-time precious metal rate calculators, and online product catalog.
+                {language === 'ta'
+                  ? 'தமிழ் மற்றும் ஆங்கில உரைகளை இயல்பான குரலாக மாற்றும் AI மென்பொருள் தளம் — பயனர் உள்நுழைவு, சந்தா திட்டங்கள் மற்றும் ஆடியோ வெளியீட்டு வசதிகளுடன் உருவாக்கப்பட்டது.'
+                  : 'An AI-powered Tamil and multilingual voice narration SaaS platform featuring user authentication, subscription tiers, and studio-grade audio export.'}
               </p>
             </div>
 
             <div className="mt-6 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] flex items-center justify-between">
               <span className="text-[11px] font-mono text-[#526477] dark:text-[#B8C5D4]">
-                Stack: React · TypeScript · Valuation Engine
+                Stack: TypeScript · Speech AI · SaaS Billing
               </span>
-              <a
-                href="https://goldandsilverbuyer.live/"
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                onClick={() => onNavigate('subscriptions')}
                 className="px-4 py-2 rounded-xl cyber-button-primary text-xs font-semibold flex items-center gap-1.5 shadow-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5] focus-visible:ring-offset-2"
               >
-                <span>View Live Platform</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
+                <span>{language === 'ta' ? 'சந்தா திட்டங்களைப் பார்க்க' : 'Explore Subscription Plans'}</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
             </div>
           </div>
 

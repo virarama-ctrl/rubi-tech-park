@@ -11,8 +11,7 @@ import {
   ShieldCheck,
   Smartphone,
   TrendingUp,
-  Zap,
-  ShoppingBag
+  Zap
 } from 'lucide-react';
 
 export const Hero3DDashboardShowcase: React.FC = () => {
@@ -299,104 +298,6 @@ export const Hero3DDashboardShowcase: React.FC = () => {
   );
 };
 
-export const RubiJewelleryShowcase: React.FC = () => {
-  return (
-    <div className="relative w-full rounded-2xl overflow-hidden border border-[#E5E9F2] dark:border-white/10 bg-white dark:bg-[#0D1527] p-6 shadow-xl">
-      <div className="flex items-center justify-between pb-4 border-b border-[#E5E9F2] dark:border-white/10">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[#F3F0FF] dark:bg-[#6654E8]/20 flex items-center justify-center text-[#6654E8] font-bold text-sm tracking-wider border border-[#6654E8]/20">
-            R
-          </div>
-          <div>
-            <div className="text-sm font-semibold tracking-wide text-[#172033] dark:text-white">
-              RUBI Gold & Silver
-            </div>
-            <div className="text-xs text-[#647087] dark:text-slate-400">
-              Digital Catalog & Inquiry Architecture
-            </div>
-          </div>
-        </div>
-        <div className="text-xs font-mono text-[#6654E8] dark:text-[#9689FF] bg-[#F3F0FF] dark:bg-[#6654E8]/20 px-2.5 py-1 rounded-full border border-[#6654E8]/20">
-          Live Client Platform
-        </div>
-      </div>
-
-      <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Item 1 */}
-        <div className="rounded-xl bg-[#FAFBFF] dark:bg-[#121A30] border border-[#E5E9F2] dark:border-white/5 p-4 hover:border-[#6654E8]/40 transition-colors">
-          <div className="h-28 rounded-lg bg-gradient-to-b from-[#FFF0F5] to-[#FAFBFF] dark:from-slate-900 dark:to-[#0D1322] relative flex items-center justify-center overflow-hidden border border-[#E5E9F2] dark:border-white/5">
-            <svg className="w-20 h-20 text-[#B8860B] dark:text-[#D4AF37]" viewBox="0 0 100 100" fill="none" stroke="currentColor">
-              <path d="M20,30 Q50,75 80,30" strokeWidth="2.5" strokeLinecap="round" />
-              <path d="M30,35 Q50,70 70,35" strokeWidth="1.5" strokeDasharray="2 3" />
-              <circle cx="50" cy="72" r="5" fill="#D4AF37" />
-              <circle cx="40" cy="62" r="3" fill="#B8860B" />
-              <circle cx="60" cy="62" r="3" fill="#B8860B" />
-            </svg>
-            <span className="absolute top-2 right-2 text-[10px] font-mono text-[#B8860B] dark:text-[#E5C158] bg-white/80 dark:bg-black/60 px-2 py-0.5 rounded-full border border-[#B8860B]/20">
-              22K Gold
-            </span>
-          </div>
-          <div className="mt-2 text-xs font-semibold text-[#172033] dark:text-slate-200">
-            Heritage Temple Choker
-          </div>
-          <div className="text-[11px] text-[#647087] dark:text-slate-400">
-            Net: 42.6g · Handcrafted
-          </div>
-        </div>
-
-        {/* Item 2 */}
-        <div className="rounded-xl bg-[#FAFBFF] dark:bg-[#121A30] border border-[#E5E9F2] dark:border-white/5 p-4 hover:border-[#6654E8]/40 transition-colors">
-          <div className="h-28 rounded-lg bg-gradient-to-b from-[#EAF3FF] to-[#FAFBFF] dark:from-slate-900 dark:to-[#0D1322] relative flex items-center justify-center overflow-hidden border border-[#E5E9F2] dark:border-white/5">
-            <svg className="w-20 h-20 text-slate-400" viewBox="0 0 100 100" fill="none" stroke="currentColor">
-              <ellipse cx="45" cy="50" rx="26" ry="18" strokeWidth="2" stroke="#94A3B8" />
-              <ellipse cx="55" cy="50" rx="26" ry="18" strokeWidth="2" stroke="#64748B" />
-            </svg>
-            <span className="absolute top-2 right-2 text-[10px] font-mono text-slate-600 dark:text-slate-300 bg-white/80 dark:bg-black/60 px-2 py-0.5 rounded-full border border-slate-300">
-              925 Silver
-            </span>
-          </div>
-          <div className="mt-2 text-xs font-semibold text-[#172033] dark:text-slate-200">
-            Filigree Kada Pair
-          </div>
-          <div className="text-[11px] text-[#647087] dark:text-slate-400">
-            Net: 64.2g · Hallmark Certified
-          </div>
-        </div>
-
-        {/* Item 3 */}
-        <div className="rounded-xl bg-[#FAFBFF] dark:bg-[#121A30] border border-[#E5E9F2] dark:border-white/5 p-4 hover:border-[#6654E8]/40 transition-colors">
-          <div className="h-28 rounded-lg bg-gradient-to-b from-[#E5FAF7] to-[#FAFBFF] dark:from-slate-900 dark:to-[#0D1322] relative flex items-center justify-center overflow-hidden border border-[#E5E9F2] dark:border-white/5">
-            <svg className="w-20 h-20 text-[#35C9B0]" viewBox="0 0 100 100" fill="none" stroke="currentColor">
-              <circle cx="50" cy="55" r="18" strokeWidth="2.5" />
-              <polygon points="50,28 58,40 42,40" fill="#35C9B0" />
-            </svg>
-            <span className="absolute top-2 right-2 text-[10px] font-mono text-[#0F766E] dark:text-[#35C9B0] bg-white/80 dark:bg-black/60 px-2 py-0.5 rounded-full border border-[#35C9B0]/30">
-              18K Solitaire
-            </span>
-          </div>
-          <div className="mt-2 text-xs font-semibold text-[#172033] dark:text-slate-200">
-            Bespoke Diamond Band
-          </div>
-          <div className="text-[11px] text-[#647087] dark:text-slate-400">
-            VVS-EF · Certified Mount
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-4 pt-3 border-t border-[#E5E9F2] dark:border-white/10 flex flex-wrap items-center justify-between text-xs text-[#647087] dark:text-slate-400 gap-2">
-        <div className="flex items-center gap-2">
-          <ShoppingBag className="w-3.5 h-3.5 text-[#6654E8]" />
-          <span>Real-time SKU prefilled WhatsApp inquiry</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Smartphone className="w-3.5 h-3.5 text-[#35C9B0]" />
-          <span>99.2% mobile traffic performance</span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 export const CustomCRMDashboardShowcase: React.FC = () => {
   return (
     <div className="relative w-full rounded-2xl overflow-hidden border border-[#E5E9F2] dark:border-white/10 bg-white dark:bg-[#0D1527] p-6 shadow-xl">
@@ -464,7 +365,7 @@ export const CustomCRMDashboardShowcase: React.FC = () => {
             <span className="font-mono text-[#35C9B0] bg-[#E5FAF7] dark:bg-emerald-950/60 px-2 py-0.5 rounded-full font-bold">5</span>
           </div>
           <div className="bg-white dark:bg-[#0D1527] p-2.5 rounded-lg border border-[#35C9B0]/40 mb-2 shadow-xs">
-            <div className="font-medium text-[#172033] dark:text-slate-200">RUBI Gold & Silver</div>
+            <div className="font-medium text-[#172033] dark:text-slate-200">Kuralvaani Voice Studio</div>
             <div className="text-[10px] text-[#35C9B0] font-medium">Phase 1 Handed Over</div>
           </div>
         </div>

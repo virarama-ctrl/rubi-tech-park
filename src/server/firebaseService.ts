@@ -546,6 +546,74 @@ export class FirebaseCRMService {
     }
     return true;
   }
+
+  private stripUndefined<T extends Record<string, any>>(payload: T): Record<string, any> {
+    return JSON.parse(JSON.stringify(payload));
+  }
+
+  /**
+   * Persist or update a Payment Order in Firestore `orders` collection
+   */
+  public async upsertOrder(order: Record<string, any>): Promise<boolean> {
+    if (!this.db || !order?.orderRef) return false;
+    try {
+      await this.ensureAdminAuth();
+      const docRef = doc(this.db, 'orders', order.orderRef);
+      await setDoc(docRef, this.stripUndefined(order), { merge: true });
+      return true;
+    } catch (err: any) {
+      console.warn('Non-blocking Firestore upsertOrder error:', err.message);
+      return false;
+    }
+  }
+
+  /**
+   * Persist or update a Subscription in Firestore `subscriptions` collection
+   */
+  public async upsertSubscription(subscription: Record<string, any>): Promise<boolean> {
+    if (!this.db || !subscription?.subscriptionRef) return false;
+    try {
+      await this.ensureAdminAuth();
+      const docRef = doc(this.db, 'subscriptions', subscription.subscriptionRef);
+      await setDoc(docRef, this.stripUndefined(subscription), { merge: true });
+      return true;
+    } catch (err: any) {
+      console.warn('Non-blocking Firestore upsertSubscription error:', err.message);
+      return false;
+    }
+  }
+
+  /**
+   * Check whether a webhook eventId was already processed in Firestore
+   */
+  public async hasProcessedWebhookEvent(eventId: string): Promise<boolean> {
+    if (!this.db || !eventId) return false;
+    try {
+      await this.ensureAdminAuth();
+      const safeId = eventId.replace(/[^a-zA-Z0-9_-]/g, '_');
+      const snap = await getDoc(doc(this.db, 'webhook_events', safeId));
+      return snap.exists();
+    } catch (err: any) {
+      console.warn('Non-blocking Firestore hasProcessedWebhookEvent error:', err.message);
+      return false;
+    }
+  }
+
+  /**
+   * Record a processed webhook event in Firestore for cross-restart idempotency
+   */
+  public async recordWebhookEvent(event: Record<string, any>): Promise<boolean> {
+    if (!this.db || !event?.eventId) return false;
+    try {
+      await this.ensureAdminAuth();
+      const safeId = String(event.eventId).replace(/[^a-zA-Z0-9_-]/g, '_');
+      await setDoc(doc(this.db, 'webhook_events', safeId), this.stripUndefined(event), { merge: true });
+      return true;
+    } catch (err: any) {
+      console.warn('Non-blocking Firestore recordWebhookEvent error:', err.message);
+      return false;
+    }
+  }
 }
 
 export const firebaseCRM = new FirebaseCRMService();

@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { PageRoute } from '../types';
-import { StoredLead, LeadStatus, AuditLogEntry, PaymentRecord } from '../types/crm';
+import {
+  StoredLead,
+  LeadStatus,
+  AuditLogEntry,
+  PaymentRecord,
+  CustomerSubscription,
+  RefundStatus,
+  SubscriptionStatus
+} from '../types/crm';
 import { ServiceDetail } from '../types';
 import { SERVICES_DATA } from '../config/agencyConfig';
 import {
@@ -46,7 +54,8 @@ import {
   Image as ImageIcon,
   Upload,
   RotateCcw,
-  Camera
+  Camera,
+  Repeat
 } from 'lucide-react';
 
 interface AdminDashboardPageProps {
@@ -80,12 +89,15 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('All');
   const [dateFilter, setDateFilter] = useState<string>('all');
-  const [activeTab, setActiveTab] = useState<'pipeline' | 'payments' | 'audit' | 'services'>('pipeline');
+  const [activeTab, setActiveTab] = useState<
+    'pipeline' | 'payments' | 'subscriptions' | 'audit' | 'services'
+  >('pipeline');
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
 
   // Service Reference Images State
   const [serviceImages, setServiceImages] = useState<Record<string, string>>({});
   const [editingServiceImage, setEditingServiceImage] = useState<ServiceDetail | null>(null);
+  const [resettingImageService, setResettingImageService] = useState<ServiceDetail | null>(null);
   const [imageInputUrl, setImageInputUrl] = useState<string>('');
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string>('');
   const [isSavingImage, setIsSavingImage] = useState<boolean>(false);
@@ -102,7 +114,33 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
     totalRevenueINR: 0
   });
   const [paymentStatusFilter, setPaymentStatusFilter] = useState<string>('all');
+  const [paymentSearchTerm, setPaymentSearchTerm] = useState<string>('');
   const [copiedUtr, setCopiedUtr] = useState<string | null>(null);
+
+  // Payment Reject & Refund Inline Modal State
+  const [rejectingPayment, setRejectingPayment] = useState<PaymentRecord | null>(null);
+  const [rejectReasonText, setRejectReasonText] = useState<string>(
+    'Bank statement shows no credit for submitted UTR'
+  );
+  const [editingRefundPayment, setEditingRefundPayment] = useState<PaymentRecord | null>(null);
+  const [refundStatusInput, setRefundStatusInput] = useState<RefundStatus>('requested');
+  const [refundAmountInput, setRefundAmountInput] = useState<string>('');
+  const [refundIdInput, setRefundIdInput] = useState<string>('');
+  const [refundNotesInput, setRefundNotesInput] = useState<string>('');
+  const [isSavingRefund, setIsSavingRefund] = useState<boolean>(false);
+
+  // Subscriptions Management State
+  const [subscriptions, setSubscriptions] = useState<CustomerSubscription[]>([]);
+  const [subscriptionStats, setSubscriptionStats] = useState({
+    total: 0,
+    active: 0,
+    pending: 0,
+    paused: 0,
+    cancelled: 0,
+    failed: 0
+  });
+  const [subscriptionStatusFilter, setSubscriptionStatusFilter] = useState<string>('all');
+  const [subscriptionSearchTerm, setSubscriptionSearchTerm] = useState<string>('');
 
   // Selected Lead Drawer / Detail Modal
   const [selectedLead, setSelectedLead] = useState<any | null>(null);
@@ -147,6 +185,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
     fetchLeads(storedToken);
     fetchPayments(storedToken);
+    fetchSubscriptions(storedToken);
     fetchServiceImages();
   }, []);
 
@@ -228,10 +267,6 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
   };
 
   const handleResetServiceImage = async (service: ServiceDetail) => {
-    if (!confirm(`Reset reference image for "${service.title}" back to standard professional default?`)) {
-      return;
-    }
-
     try {
       const currentToken = token || sessionStorage.getItem('rtp_admin_token') || '';
       const res = await fetch(`/api/admin/services/${service.id}/image`, {
@@ -249,23 +284,34 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
           return copy;
         });
         showToast(`Reference image for "${service.title}" reset to standard default.`);
+        setResettingImageService(null);
         if (editingServiceImage?.id === service.id) {
           setEditingServiceImage(null);
         }
       } else {
         showToast(data.message || 'Failed to reset reference image.');
       }
-    } catch (err) {
+    } catch {
       showToast('Network error while resetting reference image.');
     }
   };
 
-  const fetchPayments = async (authToken?: string) => {
+  const fetchPayments = async (
+    authToken?: string,
+    overrideStatus?: string,
+    overrideSearch?: string
+  ) => {
     const currentToken = authToken || token;
     if (!currentToken) return;
 
+    const statusToUse = overrideStatus !== undefined ? overrideStatus : paymentStatusFilter;
+    const searchToUse = overrideSearch !== undefined ? overrideSearch : paymentSearchTerm;
+
     try {
-      const q = paymentStatusFilter !== 'all' ? `?status=${paymentStatusFilter}` : '';
+      const qs = new URLSearchParams();
+      if (statusToUse && statusToUse !== 'all') qs.set('status', statusToUse);
+      if (searchToUse.trim()) qs.set('searchTerm', searchToUse.trim());
+      const q = qs.toString() ? `?${qs.toString()}` : '';
       const res = await fetch(`/api/admin/payments${q}`, {
         headers: { Authorization: `Bearer ${currentToken}` }
       });
@@ -276,6 +322,35 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
       }
     } catch (err) {
       console.error('Error fetching payments:', err);
+    }
+  };
+
+  const fetchSubscriptions = async (
+    authToken?: string,
+    overrideStatus?: string,
+    overrideSearch?: string
+  ) => {
+    const currentToken = authToken || token;
+    if (!currentToken) return;
+
+    const statusToUse = overrideStatus !== undefined ? overrideStatus : subscriptionStatusFilter;
+    const searchToUse = overrideSearch !== undefined ? overrideSearch : subscriptionSearchTerm;
+
+    try {
+      const qs = new URLSearchParams();
+      if (statusToUse && statusToUse !== 'all') qs.set('status', statusToUse);
+      if (searchToUse.trim()) qs.set('searchTerm', searchToUse.trim());
+      const q = qs.toString() ? `?${qs.toString()}` : '';
+      const res = await fetch(`/api/admin/subscriptions${q}`, {
+        headers: { Authorization: `Bearer ${currentToken}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSubscriptions(data.subscriptions || []);
+        if (data.stats) setSubscriptionStats(data.stats);
+      }
+    } catch (err) {
+      console.error('Error fetching subscriptions:', err);
     }
   };
 
@@ -290,24 +365,23 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
       if (res.ok && data.success) {
         showToast('Payment confirmed and verified Paid.');
         fetchPayments(token);
+        fetchSubscriptions(token);
       } else {
-        alert(data.message || 'Verification failed');
+        showToast(data.message || 'Verification failed.');
       }
     } catch (err) {
       console.error(err);
+      showToast('Network error verifying payment.');
     }
   };
 
-  const handleRejectPayment = async (paymentId: string) => {
-    if (!token) return;
-    const reason = prompt(
-      'Reason for rejection (e.g. UTR not matched in bank statement):',
-      'Bank statement shows no credit for submitted UTR'
-    );
-    if (!reason) return;
+  const confirmRejectPayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!token || !rejectingPayment) return;
+    const reason = rejectReasonText.trim() || 'Bank statement shows no credit for submitted UTR';
 
     try {
-      const res = await fetch(`/api/admin/payments/${paymentId}/reject`, {
+      const res = await fetch(`/api/admin/payments/${rejectingPayment.id}/reject`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -318,12 +392,85 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
       const data = await res.json();
       if (res.ok && data.success) {
         showToast('Payment marked as Failed/Rejected.');
+        setRejectingPayment(null);
         fetchPayments(token);
+        fetchSubscriptions(token);
       } else {
-        alert(data.message || 'Action failed');
+        showToast(data.message || 'Rejection action failed.');
       }
     } catch (err) {
       console.error(err);
+      showToast('Network error rejecting payment.');
+    }
+  };
+
+  const openRefundModal = (p: PaymentRecord) => {
+    setEditingRefundPayment(p);
+    setRefundStatusInput(p.refundStatus && p.refundStatus !== 'none' ? p.refundStatus : 'requested');
+    setRefundAmountInput(String(p.refundAmountINR ?? p.totalAmountINR));
+    setRefundIdInput(p.refundId || '');
+    setRefundNotesInput(p.refundNotes || '');
+  };
+
+  const handleSaveRefundStatus = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!token || !editingRefundPayment) return;
+    setIsSavingRefund(true);
+    try {
+      const res = await fetch(`/api/admin/payments/${editingRefundPayment.id}/refund-status`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          refundStatus: refundStatusInput,
+          refundAmountINR: refundAmountInput ? Number(refundAmountInput) : undefined,
+          refundId: refundIdInput.trim() || undefined,
+          refundNotes: refundNotesInput.trim() || undefined
+        })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast(`Refund status updated to ${refundStatusInput}.`);
+        setEditingRefundPayment(null);
+        fetchPayments(token);
+      } else {
+        showToast(data.message || 'Failed to update refund status.');
+      }
+    } catch {
+      showToast('Network error updating refund status.');
+    } finally {
+      setIsSavingRefund(false);
+    }
+  };
+
+  const handleUpdateSubscriptionStatus = async (
+    subscriptionRef: string,
+    newStatus: SubscriptionStatus
+  ) => {
+    if (!token) return;
+    try {
+      const res = await fetch(
+        `/api/admin/subscriptions/${encodeURIComponent(subscriptionRef)}/status`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({ status: newStatus })
+        }
+      );
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast(`Subscription ${subscriptionRef} updated to ${newStatus}.`);
+        fetchSubscriptions(token);
+      } else {
+        showToast(data.message || 'Could not update subscription status.');
+      }
+    } catch {
+      showToast('Network error updating subscription.');
     }
   };
 
@@ -826,12 +973,26 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
             }`}
           >
             <CreditCard className="w-3.5 h-3.5" />
-            <span>Orders & UPI ({payments.length})</span>
+            <span>Orders & Refunds ({payments.length})</span>
             {paymentStats.pendingVerificationCount > 0 && (
               <span className="ml-1 bg-amber-500 text-white font-bold px-1.5 py-0.2 rounded-full text-[10px]">
                 {paymentStats.pendingVerificationCount} Pending
               </span>
             )}
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab('subscriptions');
+              fetchSubscriptions();
+            }}
+            className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+              activeTab === 'subscriptions'
+                ? 'bg-[#6654E8] text-white shadow-sm'
+                : 'text-[#647087] dark:text-slate-400 hover:text-[#172033] dark:hover:text-white'
+            }`}
+          >
+            <Repeat className="w-3.5 h-3.5" />
+            <span>Subscriptions ({subscriptionStats.total})</span>
           </button>
           <button
             onClick={() => {
@@ -1170,41 +1331,69 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
               </div>
             </div>
 
-            {/* Filter Bar */}
-            <div className="bg-white dark:bg-[#0D1527] border border-[#E5E9F2] dark:border-white/10 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-sm">
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-[#647087] dark:text-slate-400">Filter Status:</span>
-                <div className="flex gap-1.5 text-xs">
-                  {['all', 'pending_verification', 'paid', 'failed'].map((st) => (
+            {/* Filter & Search Bar */}
+            <div className="bg-white dark:bg-[#0D1527] border border-[#E5E9F2] dark:border-white/10 rounded-2xl p-4 space-y-3 shadow-sm">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                  {[
+                    'all',
+                    'pending_verification',
+                    'paid',
+                    'refund_pending',
+                    'refunded',
+                    'failed'
+                  ].map((st) => (
                     <button
                       key={st}
                       type="button"
                       onClick={() => {
                         setPaymentStatusFilter(st);
-                        setTimeout(() => fetchPayments(token || undefined), 50);
+                        fetchPayments(token || undefined, st, paymentSearchTerm);
                       }}
-                      className={`px-3 py-1 rounded-xl border transition-all cursor-pointer ${
+                      className={`px-3 py-1.5 rounded-xl border transition-all cursor-pointer ${
                         paymentStatusFilter === st
                           ? 'border-[#6654E8] bg-[#6654E8] text-white font-semibold'
-                          : 'border-slate-200 dark:border-slate-800 text-[#647087] dark:text-slate-400 hover:text-[#172033]'
+                          : 'border-slate-200 dark:border-slate-800 text-[#647087] dark:text-slate-400 hover:text-[#172033] dark:hover:text-white'
                       }`}
                     >
-                      {st === 'pending_verification'
-                        ? 'Pending Verification'
-                        : st.charAt(0).toUpperCase() + st.slice(1)}
+                      {st.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
                     </button>
                   ))}
                 </div>
-              </div>
 
-              <button
-                type="button"
-                onClick={() => fetchPayments(token || undefined)}
-                className="px-3 py-1.5 text-xs text-[#172033] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center gap-1.5 cursor-pointer"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-                <span>Refresh Orders</span>
-              </button>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    fetchPayments(token || undefined, paymentStatusFilter, paymentSearchTerm);
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <div className="relative flex-1 sm:w-64">
+                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
+                    <input
+                      type="text"
+                      value={paymentSearchTerm}
+                      onChange={(e) => setPaymentSearchTerm(e.target.value)}
+                      placeholder="Order Ref, UTR, email, phone..."
+                      className="w-full bg-[#F3F0FF]/40 dark:bg-[#070B14] border border-[#E5E9F2] dark:border-slate-700 rounded-xl pl-8 pr-3 py-1.5 text-xs text-[#172033] dark:text-white"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="px-3 py-1.5 text-xs font-semibold text-white bg-[#6654E8] rounded-xl cursor-pointer"
+                  >
+                    Search
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => fetchPayments(token || undefined)}
+                    className="px-3 py-1.5 text-xs text-[#172033] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Refresh</span>
+                  </button>
+                </form>
+              </div>
             </div>
 
             {/* Orders Table */}
@@ -1215,11 +1404,11 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                     <tr>
                       <th className="px-4 py-3">Order Ref / Date</th>
                       <th className="px-4 py-3">Customer Details</th>
-                      <th className="px-4 py-3">Service / Package</th>
+                      <th className="px-4 py-3">Service / Plan</th>
                       <th className="px-4 py-3">Amount (INR)</th>
-                      <th className="px-4 py-3">Method & UTR</th>
-                      <th className="px-4 py-3">Status</th>
-                      <th className="px-4 py-3 text-right">Verification Action</th>
+                      <th className="px-4 py-3">Method & Payment / UTR ID</th>
+                      <th className="px-4 py-3">Status & Refund</th>
+                      <th className="px-4 py-3 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#E5E9F2] dark:divide-slate-800">
@@ -1244,12 +1433,19 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                                 minute: '2-digit'
                               })}
                             </div>
+                            {p.subscriptionRef && (
+                              <span className="inline-block mt-1 px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-mono text-[10px]">
+                                {p.subscriptionRef}
+                              </span>
+                            )}
                           </td>
 
                           <td className="px-4 py-3.5">
                             <div className="font-semibold text-[#172033] dark:text-white">{p.customerName}</div>
                             {p.customerBusiness && (
-                              <div className="text-[11px] text-[#6654E8] dark:text-[#9689FF] font-medium">{p.customerBusiness}</div>
+                              <div className="text-[11px] text-[#6654E8] dark:text-[#9689FF] font-medium">
+                                {p.customerBusiness}
+                              </div>
                             )}
                             <div className="text-[11px] text-slate-500 font-mono mt-0.5">
                               {p.customerEmail} · {p.customerPhone}
@@ -1258,7 +1454,10 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
                           <td className="px-4 py-3.5">
                             <div className="font-medium text-[#172033] dark:text-white">{p.serviceTitle}</div>
-                            <div className="text-[11px] text-slate-500 uppercase">{p.serviceId}</div>
+                            <div className="text-[11px] text-slate-500 uppercase">
+                              {p.serviceId}
+                              {p.orderType ? ` · ${p.orderType.replace(/_/g, ' ')}` : ''}
+                            </div>
                           </td>
 
                           <td className="px-4 py-3.5">
@@ -1272,15 +1471,20 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
                           <td className="px-4 py-3.5">
                             <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 uppercase">
-                              {p.paymentMethod.replace('_', ' ')}
+                              {p.paymentMethod.replace(/_/g, ' ')}
                             </span>
+                            {p.gatewayPaymentId && (
+                              <div className="mt-1 font-mono text-[11px] text-[#6654E8] dark:text-[#9689FF]">
+                                PayID: {p.gatewayPaymentId}
+                              </div>
+                            )}
                             {p.upiTransactionRef && (
                               <div className="mt-1 flex items-center gap-1 font-mono text-[11px] text-amber-600 dark:text-amber-300">
                                 <span>UTR: {p.upiTransactionRef}</span>
                                 <button
                                   type="button"
                                   onClick={() => copyToClipboard(p.upiTransactionRef!, p.id)}
-                                  className="text-slate-400 hover:text-black dark:hover:text-white"
+                                  className="text-slate-400 hover:text-black dark:hover:text-white cursor-pointer"
                                   title="Copy UTR"
                                 >
                                   {copiedUtr === p.id ? (
@@ -1293,7 +1497,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                             )}
                           </td>
 
-                          <td className="px-4 py-3.5">
+                          <td className="px-4 py-3.5 space-y-1">
                             {p.status === 'paid' && (
                               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/40">
                                 <CheckCircle2 className="w-3 h-3" />
@@ -1301,7 +1505,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                               </span>
                             )}
                             {p.status === 'pending_verification' && (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/40 animate-pulse">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/40">
                                 <Clock className="w-3 h-3" />
                                 <span>Pending Verification</span>
                               </span>
@@ -1311,43 +1515,273 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                                 <span>Initiated</span>
                               </span>
                             )}
+                            {(p.status === 'refund_pending' ||
+                              p.status === 'partial_refund' ||
+                              p.status === 'refunded') && (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/40 capitalize">
+                                <span>{p.status.replace(/_/g, ' ')}</span>
+                              </span>
+                            )}
                             {p.status === 'failed' && (
                               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-500/40">
                                 <AlertCircle className="w-3 h-3" />
                                 <span>Failed</span>
                               </span>
                             )}
+                            {p.refundStatus && p.refundStatus !== 'none' && (
+                              <div className="text-[10px] font-mono text-purple-600 dark:text-purple-300">
+                                Refund: {p.refundStatus}
+                                {p.refundAmountINR ? ` (₹${p.refundAmountINR.toLocaleString('en-IN')})` : ''}
+                              </div>
+                            )}
                           </td>
 
                           <td className="px-4 py-3.5 text-right">
-                            {p.status === 'pending_verification' && (
-                              <div className="flex items-center justify-end gap-1.5">
+                            <div className="flex flex-col items-end gap-1.5">
+                              {p.status === 'pending_verification' && (
+                                <div className="flex items-center justify-end gap-1.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleVerifyPayment(p.id)}
+                                    className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-1 cursor-pointer"
+                                  >
+                                    <Check className="w-3 h-3" />
+                                    <span>Verify Paid</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setRejectingPayment(p);
+                                      setRejectReasonText('Bank statement shows no credit for submitted UTR');
+                                    }}
+                                    className="px-2 py-1 rounded-lg bg-rose-50 dark:bg-rose-950 text-rose-700 dark:text-rose-400 hover:bg-rose-100 border border-rose-200 dark:border-rose-800 text-xs flex items-center gap-1 cursor-pointer"
+                                  >
+                                    <Ban className="w-3 h-3" />
+                                    <span>Reject</span>
+                                  </button>
+                                </div>
+                              )}
+                              {p.receiptNumber && (
+                                <div className="text-[11px] text-slate-500">
+                                  Receipt:{' '}
+                                  <span className="font-mono text-[#6654E8] dark:text-[#9689FF] font-semibold">
+                                    {p.receiptNumber}
+                                  </span>
+                                </div>
+                              )}
+                              {(p.status === 'paid' ||
+                                p.status === 'refund_pending' ||
+                                p.status === 'partial_refund' ||
+                                p.status === 'refunded') && (
                                 <button
                                   type="button"
-                                  onClick={() => handleVerifyPayment(p.id)}
-                                  className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-1 cursor-pointer"
-                                  title="Confirm funds credited in current account"
+                                  onClick={() => openRefundModal(p)}
+                                  className="px-2.5 py-1 rounded-lg border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-[11px] font-semibold hover:bg-purple-100 cursor-pointer"
                                 >
-                                  <Check className="w-3 h-3" />
-                                  <span>Verify Paid</span>
+                                  Manage Refund
                                 </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleRejectPayment(p.id)}
-                                  className="px-2 py-1 rounded-lg bg-rose-50 dark:bg-rose-950 text-rose-700 dark:text-rose-400 hover:bg-rose-100 border border-rose-200 dark:border-rose-800 text-xs flex items-center gap-1 cursor-pointer"
-                                  title="Reject if no bank record matches"
-                                >
-                                  <Ban className="w-3 h-3" />
-                                  <span>Reject</span>
-                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        ) : activeTab === 'subscriptions' ? (
+          /* Customer Subscriptions Management View */
+          <div className="space-y-6">
+            {/* Subscription KPI Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="bg-white dark:bg-[#0D1527] border border-emerald-200 dark:border-emerald-900/40 rounded-2xl p-4 shadow-sm">
+                <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">
+                  Active Subscriptions
+                </span>
+                <div className="mt-1 text-2xl font-bold font-display text-emerald-700 dark:text-emerald-300 font-mono">
+                  {subscriptionStats.active}
+                </div>
+                <div className="text-[11px] text-[#647087] dark:text-slate-500 mt-0.5">Auto-Renew Authorized</div>
+              </div>
+
+              <div className="bg-white dark:bg-[#0D1527] border border-amber-200 dark:border-amber-900/40 rounded-2xl p-4 shadow-sm">
+                <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider block">
+                  Pending Mandate / UPI
+                </span>
+                <div className="mt-1 text-2xl font-bold font-display text-amber-700 dark:text-amber-300 font-mono">
+                  {subscriptionStats.pending}
+                </div>
+                <div className="text-[11px] text-[#647087] dark:text-slate-500 mt-0.5">Awaiting Initial Settlement</div>
+              </div>
+
+              <div className="bg-white dark:bg-[#0D1527] border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
+                <span className="text-[11px] font-semibold text-[#647087] dark:text-slate-400 uppercase tracking-wider block">
+                  Paused / Cancelled
+                </span>
+                <div className="mt-1 text-2xl font-bold font-display text-[#172033] dark:text-white font-mono">
+                  {subscriptionStats.paused + subscriptionStats.cancelled}
+                </div>
+                <div className="text-[11px] text-[#647087] dark:text-slate-500 mt-0.5">Stopped Renewals</div>
+              </div>
+
+              <div className="bg-white dark:bg-[#0D1527] border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
+                <span className="text-[11px] font-semibold text-[#647087] dark:text-slate-400 uppercase tracking-wider block">
+                  Total Subscriptions
+                </span>
+                <div className="mt-1 text-2xl font-bold font-display text-[#172033] dark:text-white font-mono">
+                  {subscriptionStats.total}
+                </div>
+                <div className="text-[11px] text-[#647087] dark:text-slate-500 mt-0.5">All Plans & Cycles</div>
+              </div>
+            </div>
+
+            {/* Subscription Filter & Search */}
+            <div className="bg-white dark:bg-[#0D1527] border border-[#E5E9F2] dark:border-white/10 rounded-2xl p-4 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                {['all', 'active', 'pending', 'paused', 'cancelled', 'failed'].map((st) => (
+                  <button
+                    key={st}
+                    type="button"
+                    onClick={() => {
+                      setSubscriptionStatusFilter(st);
+                      fetchSubscriptions(token || undefined, st, subscriptionSearchTerm);
+                    }}
+                    className={`px-3 py-1.5 rounded-xl border transition-all cursor-pointer capitalize ${
+                      subscriptionStatusFilter === st
+                        ? 'border-[#6654E8] bg-[#6654E8] text-white font-semibold'
+                        : 'border-slate-200 dark:border-slate-800 text-[#647087] dark:text-slate-400'
+                    }`}
+                  >
+                    {st}
+                  </button>
+                ))}
+              </div>
+
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  fetchSubscriptions(token || undefined, subscriptionStatusFilter, subscriptionSearchTerm);
+                }}
+                className="flex items-center gap-2"
+              >
+                <div className="relative flex-1 sm:w-64">
+                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={subscriptionSearchTerm}
+                    onChange={(e) => setSubscriptionSearchTerm(e.target.value)}
+                    placeholder="RTP-SUB-..., customer, plan..."
+                    className="w-full bg-[#F3F0FF]/40 dark:bg-[#070B14] border border-[#E5E9F2] dark:border-slate-700 rounded-xl pl-8 pr-3 py-1.5 text-xs text-[#172033] dark:text-white"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="px-3 py-1.5 text-xs font-semibold text-white bg-[#6654E8] rounded-xl cursor-pointer"
+                >
+                  Search
+                </button>
+                <button
+                  type="button"
+                  onClick={() => fetchSubscriptions(token || undefined)}
+                  className="px-3 py-1.5 text-xs text-[#172033] dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center gap-1.5 cursor-pointer"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Refresh</span>
+                </button>
+              </form>
+            </div>
+
+            {/* Subscriptions Table */}
+            <div className="bg-white dark:bg-[#0D1527] border border-[#E5E9F2] dark:border-white/10 rounded-2xl overflow-hidden shadow-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs text-[#172033] dark:text-slate-300">
+                  <thead className="bg-[#FAFBFF] dark:bg-[#070B14] text-[#647087] dark:text-slate-400 uppercase text-[10px] tracking-wider border-b border-[#E5E9F2] dark:border-slate-800">
+                    <tr>
+                      <th className="px-4 py-3">Subscription Ref</th>
+                      <th className="px-4 py-3">Customer</th>
+                      <th className="px-4 py-3">Plan & Billing Cycle</th>
+                      <th className="px-4 py-3">Recurring Amount</th>
+                      <th className="px-4 py-3">Next Renewal & Auto-Renew</th>
+                      <th className="px-4 py-3 text-right">Status Control</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#E5E9F2] dark:divide-slate-800">
+                    {subscriptions.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="px-4 py-8 text-center text-[#647087]">
+                          No subscriptions recorded yet matching your filter criteria.
+                        </td>
+                      </tr>
+                    ) : (
+                      subscriptions.map((sub) => (
+                        <tr key={sub.id} className="hover:bg-slate-50 dark:hover:bg-slate-900/40">
+                          <td className="px-4 py-3.5">
+                            <div className="font-mono font-bold text-[#6654E8] dark:text-[#9689FF]">
+                              {sub.subscriptionRef}
+                            </div>
+                            <div className="text-[11px] text-slate-500 mt-0.5">
+                              {new Date(sub.createdAt).toLocaleDateString('en-IN')}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3.5">
+                            <div className="font-semibold text-[#172033] dark:text-white">{sub.customerName}</div>
+                            <div className="text-[11px] text-slate-500 font-mono">
+                              {sub.customerEmail} · {sub.customerPhone}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3.5">
+                            <div className="font-medium text-[#172033] dark:text-white">{sub.planName}</div>
+                            <div className="text-[11px] text-slate-500 uppercase font-mono">
+                              {sub.billingCycle}
+                            </div>
+                            {sub.pendingPlanChange && (
+                              <div className="text-[10px] text-indigo-600 dark:text-indigo-300 mt-0.5">
+                                Requested switch: {sub.pendingPlanChange.newPlanName} (
+                                {sub.pendingPlanChange.newBillingCycle})
                               </div>
                             )}
-                            {p.status === 'paid' && (
-                              <div className="text-[11px] text-slate-500">
-                                <span>Receipt: </span>
-                                <span className="font-mono text-[#6654E8] dark:text-[#9689FF] font-semibold">{p.receiptNumber}</span>
-                              </div>
-                            )}
+                          </td>
+                          <td className="px-4 py-3.5">
+                            <div className="font-mono font-bold text-[#172033] dark:text-white">
+                              ₹{sub.totalAmountINR.toLocaleString('en-IN')}
+                            </div>
+                            <div className="text-[10px] text-slate-500">
+                              Base ₹{sub.baseAmountINR.toLocaleString('en-IN')} + 18% GST
+                            </div>
+                          </td>
+                          <td className="px-4 py-3.5">
+                            <div className="text-xs font-medium">
+                              {sub.nextBillingAt
+                                ? new Date(sub.nextBillingAt).toLocaleDateString('en-IN', {
+                                    day: 'numeric',
+                                    month: 'short',
+                                    year: 'numeric'
+                                  })
+                                : 'Awaiting activation'}
+                            </div>
+                            <div className="text-[10px] font-mono text-slate-500 mt-0.5">
+                              Auto-Renew: {sub.autoRenew ? 'ON' : 'OFF'}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3.5 text-right">
+                            <select
+                              value={sub.status}
+                              onChange={(e) =>
+                                handleUpdateSubscriptionStatus(
+                                  sub.subscriptionRef,
+                                  e.target.value as SubscriptionStatus
+                                )
+                              }
+                              className="bg-[#F3F0FF]/40 dark:bg-[#070B14] border border-[#E5E9F2] dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-[#172033] dark:text-white cursor-pointer"
+                            >
+                              <option value="pending">Pending</option>
+                              <option value="active">Active</option>
+                              <option value="paused">Paused</option>
+                              <option value="cancelled">Cancelled</option>
+                              <option value="failed">Failed</option>
+                            </select>
                           </td>
                         </tr>
                       ))
@@ -1595,7 +2029,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                       {hasCustomImage && (
                         <button
                           type="button"
-                          onClick={() => handleResetServiceImage(svc)}
+                          onClick={() => setResettingImageService(svc)}
                           className="py-2 px-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[#172033] dark:text-slate-200 text-xs font-semibold rounded-xl flex items-center gap-1 cursor-pointer"
                           title="Reset back to standard default image"
                         >
@@ -1781,8 +2215,8 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                 {serviceImages[editingServiceImage.id] ? (
                   <button
                     type="button"
-                    onClick={() => handleResetServiceImage(editingServiceImage)}
-                    className="px-3 py-2 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition-colors flex items-center gap-1.5"
+                    onClick={() => setResettingImageService(editingServiceImage)}
+                    className="px-3 py-2 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                     <span>Reset to Default</span>
@@ -2013,6 +2447,196 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
           </div>
         </div>
       )}
+
+      {/* Reject Manual UPI Payment Modal */}
+      {rejectingPayment && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <form
+            onSubmit={confirmRejectPayment}
+            className="bg-white dark:bg-[#0D1527] border border-rose-200 dark:border-rose-900/60 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4"
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-bold font-display text-[#172033] dark:text-white">
+                Reject Payment Verification
+              </h3>
+              <button
+                type="button"
+                onClick={() => setRejectingPayment(null)}
+                className="p-1 text-slate-400 hover:text-slate-600 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <p className="text-xs text-[#647087] dark:text-slate-300">
+              Order <strong className="font-mono text-[#172033] dark:text-white">{rejectingPayment.orderRef}</strong>{' '}
+              (UTR: <span className="font-mono">{rejectingPayment.upiTransactionRef || 'n/a'}</span>)
+            </p>
+            <div>
+              <label className="block text-xs font-semibold text-[#172033] dark:text-slate-200 mb-1">
+                Rejection Reason
+              </label>
+              <input
+                type="text"
+                required
+                value={rejectReasonText}
+                onChange={(e) => setRejectReasonText(e.target.value)}
+                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-[#172033] dark:text-white"
+              />
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setRejectingPayment(null)}
+                className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold cursor-pointer"
+              >
+                Confirm Reject
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Manage Refund Modal */}
+      {editingRefundPayment && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <form
+            onSubmit={handleSaveRefundStatus}
+            className="bg-white dark:bg-[#0D1527] border border-purple-200 dark:border-purple-900/60 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-bold font-display text-[#172033] dark:text-white">
+                  Manage Payment Refund
+                </h3>
+                <div className="text-xs font-mono text-[#6654E8] dark:text-[#9689FF]">
+                  {editingRefundPayment.orderRef} · ₹{editingRefundPayment.totalAmountINR.toLocaleString('en-IN')}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingRefundPayment(null)}
+                className="p-1 text-slate-400 hover:text-slate-600 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div>
+                <label className="block font-semibold text-[#172033] dark:text-slate-200 mb-1">
+                  Refund Status
+                </label>
+                <select
+                  value={refundStatusInput}
+                  onChange={(e) => setRefundStatusInput(e.target.value as RefundStatus)}
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-[#172033] dark:text-white"
+                >
+                  <option value="none">None</option>
+                  <option value="requested">Requested</option>
+                  <option value="processing">Processing</option>
+                  <option value="processed">Processed (Reconciles Partial / Full Refund)</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-[#172033] dark:text-slate-200 mb-1">
+                  Refund Amount (INR)
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  max={editingRefundPayment.totalAmountINR}
+                  value={refundAmountInput}
+                  onChange={(e) => setRefundAmountInput(e.target.value)}
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-[#172033] dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-[#172033] dark:text-slate-200 mb-1">
+                  Razorpay Refund ID / Bank Reversal Ref
+                </label>
+                <input
+                  type="text"
+                  value={refundIdInput}
+                  onChange={(e) => setRefundIdInput(e.target.value)}
+                  placeholder="rfnd_... or UTR reversal ref"
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-[#172033] dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-[#172033] dark:text-slate-200 mb-1">
+                  Internal Refund Notes
+                </label>
+                <textarea
+                  rows={2}
+                  value={refundNotesInput}
+                  onChange={(e) => setRefundNotesInput(e.target.value)}
+                  placeholder="Reason, timeline (5-7 working days), or customer communication..."
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-[#172033] dark:text-white"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setEditingRefundPayment(null)}
+                className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isSavingRefund}
+                className="px-4 py-2 rounded-xl bg-[#6654E8] hover:bg-[#5343D6] text-white text-xs font-semibold cursor-pointer disabled:opacity-50"
+              >
+                {isSavingRefund ? 'Saving...' : 'Update Refund Status'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Reset Service Image Confirmation Modal */}
+      {resettingImageService && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-[#0D1527] border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <h3 className="text-base font-bold font-display text-[#172033] dark:text-white">
+              Reset Service Reference Image?
+            </h3>
+            <p className="text-xs text-[#647087] dark:text-slate-300">
+              Restore the default curated reference image for{' '}
+              <strong className="text-[#172033] dark:text-white">{resettingImageService.title}</strong>?
+            </p>
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setResettingImageService(null)}
+                className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleResetServiceImage(resettingImageService)}
+                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold cursor-pointer"
+              >
+                Confirm Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+

@@ -233,6 +233,10 @@ export interface TranslationDictionary {
     legalHeading: string;
     privacy: string;
     terms: string;
+    refundPolicy: string;
+    deliveryPolicy: string;
+    subscriptionPolicy: string;
+    subscriptions: string;
     adminCrm: string;
     copyright: string;
     pricingNote: string;

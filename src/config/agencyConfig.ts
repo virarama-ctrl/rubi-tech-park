@@ -600,46 +600,7 @@ export const SERVICES_DATA: ServiceDetail[] = [
 // PORTFOLIO / CASE STUDIES: PRESERVE REAL PROJECTS & ADD 3 SHOWCASES
 // -------------------------------------------------------------------
 export const CASE_STUDIES: CaseStudy[] = [
-  // 1. Primary Featured Project: Tamil Gold Buyer
-  {
-    id: 'tamil-gold-buyer',
-    projectName: 'Tamil Gold Buyer',
-    title: 'Tamil Gold Buyer – Gold & Silver Valuation Platform',
-    clientName: 'Developed by RUBI TECH PARK',
-    industry: 'Precious Metals & FinTech',
-    categoryTag: 'E-Commerce / FinTech Solutions',
-    location: 'Tamil Nadu, India',
-    status: 'Published Website',
-    isFeatured: true,
-    featured: true,
-    summary: 'A specialised digital platform for gold and silver buyers, featuring valuation tools, gold and silver rate information, and online precious metal product sales.',
-    challenge: 'Retail and scrap gold and silver sellers needed transparent, real-time rate calculators accounting for various karat purities (24K, 22K, 18K) and live precious metal market prices.',
-    solution: 'Built a comprehensive valuation web portal with real-time rate APIs, multi-item calculation breakdown, purity estimation tools, and coin/bar e-commerce catalog.',
-    keyDeliverables: [
-      'Gold valuation calculator',
-      'Silver valuation calculator',
-      'Multiple gold and silver item entries',
-      'Custom weight and purity calculation options',
-      'Gold and silver rate integration',
-      'Gold and silver coin and bar product showcase',
-      'Online purchase workflow',
-      'Customer-friendly interface'
-    ],
-    keyFeatures: [
-      'Gold valuation calculator',
-      'Silver valuation calculator',
-      'Multiple gold and silver item entries',
-      'Custom weight and purity calculation options',
-      'Gold and silver rate integration',
-      'Gold and silver coin and bar product showcase',
-      'Online purchase workflow',
-      'Customer-friendly interface'
-    ],
-    technologies: ['React', 'TypeScript', 'Valuation Engine', 'Indian Precious Metal APIs', 'Tailwind CSS'],
-    liveUrl: 'https://goldandsilverbuyer.live/',
-    isVerifiedReal: true
-  },
-  // 2. Kuralvaani
+  // 1. Primary Featured Project: Kuralvaani
   {
     id: 'kuralvaani',
     projectName: 'Kuralvaani',
@@ -649,6 +610,8 @@ export const CASE_STUDIES: CaseStudy[] = [
     categoryTag: 'AI & Voice Technology',
     location: 'Tamil Nadu, India',
     status: 'Development / Enhancement',
+    isFeatured: true,
+    featured: true,
     summary: 'A Tamil-focused AI-powered voice narration platform designed to convert written text into natural audio. The platform includes user authentication, voice generation workflows and premium subscription functionality.',
     challenge: 'High-quality, emotionally natural Tamil text-to-speech models have historically been underserved by global providers, making content creation in Tamil slow and cost-prohibitive.',
     solution: 'Engineered an intuitive narration studio featuring speech synthesis pipelines, personal voice sample uploads, subscription tiers, and audio asset export.',
@@ -703,30 +666,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     technologies: ['TypeScript', 'Node.js', 'Messaging Queue Architecture', 'Campaign Scheduler', 'Tailwind UI'],
     isVerifiedReal: true
   },
-  // Existing Project 4: RUBI Gold & Silver
-  {
-    id: 'rubi-gold-silver',
-    projectName: 'RUBI Gold & Silver',
-    title: 'RUBI Gold & Silver: Luxury Digital Catalog & B2B Inquiry Platform',
-    clientName: 'RUBI Gold & Silver',
-    industry: 'Fine Jewellery & Precious Metals',
-    categoryTag: 'E-Commerce / FinTech Solutions',
-    location: 'Coimbatore, India',
-    status: 'Live',
-    summary: 'A bespoke high-end digital catalog and client inquiry portal engineered for an Indian jewellery enterprise, showcasing handcrafted ornaments with real-time purity attributes and direct customer inquiry routing.',
-    challenge: 'Showroom depended on scattered WhatsApp photo albums that degraded image clarity and caused untracked lead leakages.',
-    solution: 'Constructed an ultra-sharp mobile-first catalog with 22K/18K purity filters, high-resolution zoom, and direct SKU-linked WhatsApp triggers.',
-    keyDeliverables: [
-      'Mobile-optimized luxury jewelry digital catalog',
-      'Direct SKU prefilled WhatsApp inquiry button',
-      'Purity and weight specification tables',
-      'Fast CDN image delivery'
-    ],
-    technologies: ['React', 'Tailwind CSS', 'WhatsApp Business Deep-link Engine', 'Cloudflare CDN'],
-    liveUrlPlaceholder: 'Verified client deployment active',
-    isVerifiedReal: true
-  },
-  // Existing Project 5: Apex Industrial Fasteners CRM
+  // 3. Apex Distribution CRM
   {
     id: 'apex-distribution-crm',
     projectName: 'Apex Distribution CRM',
@@ -798,7 +738,7 @@ export const PRICING_PACKAGES: PricingPlan[] = [
     startingPrice: AGENCY_CONFIG.startingPrices.ecommerceWebsite,
     startingPriceDisplay: '₹15,000+',
     summary: 'Full-featured online shop with Indian payment gateways and mobile-friendly shopping cart.',
-    targetAudience: 'D2C brands, jewellery sellers, apparel boutiques, and specialty retailers.',
+    targetAudience: 'D2C brands, wholesale suppliers, apparel boutiques, and specialty retailers.',
     highlightedDeliverables: [
       'Custom product catalog & category navigation',
       'Indian payment gateway integration (Razorpay/UPI)',

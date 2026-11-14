@@ -38,10 +38,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               {t.footer.description}
             </p>
 
-            {/* System Status Banner */}
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] text-xs font-mono text-[#315D82] dark:text-[#6F9FC5] shadow-xs">
-              <span className="w-2 h-2 rounded-full bg-[#315D82] dark:bg-[#6F9FC5]" />
-              <span>Production Mesh: Active · 99.99% Uptime</span>
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>{language === 'ta' ? 'மென்பொருள் மேம்பாடு & டிஜிட்டல் சேவைகள்' : 'Software Development & Digital Services'}</span>
             </div>
 
             <div className="pt-2 space-y-2.5 text-xs text-[#526477] dark:text-[#B8C5D4]">
@@ -187,6 +186,14 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               </li>
               <li>
                 <button
+                  onClick={() => onNavigate('subscriptions')}
+                  className="hover:text-[#315D82] dark:hover:text-[#6F9FC5] transition-colors cursor-pointer"
+                >
+                  {t.footer.subscriptions}
+                </button>
+              </li>
+              <li>
+                <button
                   onClick={() => onNavigate('portfolio')}
                   className="hover:text-[#315D82] dark:hover:text-[#6F9FC5] transition-colors cursor-pointer"
                 >
@@ -253,11 +260,35 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   {t.footer.terms}
                 </button>
               </li>
+              <li>
+                <button
+                  onClick={() => onNavigate('refund-policy')}
+                  className="hover:text-[#315D82] dark:hover:text-[#6F9FC5] transition-colors cursor-pointer text-left"
+                >
+                  {t.footer.refundPolicy}
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onNavigate('service-delivery-policy')}
+                  className="hover:text-[#315D82] dark:hover:text-[#6F9FC5] transition-colors cursor-pointer text-left"
+                >
+                  {t.footer.deliveryPolicy}
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onNavigate('subscription-policy')}
+                  className="hover:text-[#315D82] dark:hover:text-[#6F9FC5] transition-colors cursor-pointer text-left"
+                >
+                  {t.footer.subscriptionPolicy}
+                </button>
+              </li>
               <li className="pt-2 text-[11px] text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
-                <span>{language === 'ta' ? 'அனைத்து வணிக விலைப்பட்டியல்களுக்கும் 18% ஜிஎஸ்டி மற்றும் வரி ரசீது பொருந்தும்.' : 'All commercial invoices are subject to 18% GST with official tax credit receipts.'}</span>
+                <span>{language === 'ta' ? 'அனைத்து வணிக விலைப்பட்டியல்களுக்கும் 18% ஜிஎஸ்டி மற்றும் வரி ரசீது பொருந்தும்.' : 'All commercial invoices include 18% GST calculation with digital payment receipts.'}</span>
               </li>
               <li className="text-[11px] text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
-                <span>{language === 'ta' ? 'அங்கீகரிக்கப்பட்ட HDFC வணிகக் கணக்கு அல்லது அதிகாரப்பூர்வ UPI மூலம் மட்டுமே கொடுப்பனவுகள் ஏற்றுக்கொள்ளப்படும்.' : 'Settlements accepted strictly through authorized HDFC Bank corporate banking or verified UPI gateway.'}</span>
+                <span>{language === 'ta' ? 'அங்கீகரிக்கப்பட்ட Razorpay கேட்வே அல்லது அதிகாரப்பூர்வ HDFC வணிக UPI மூலம் மட்டுமே கொடுப்பனவுகள் ஏற்றுக்கொள்ளப்படும்.' : 'Payments accepted strictly via authorized Razorpay gateway or verified HDFC corporate UPI.'}</span>
               </li>
             </ul>
           </div>

@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import http from 'node:http';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import dotenv from 'dotenv';
 import { crmStorage } from './src/server/storage';
 import {
@@ -25,7 +26,10 @@ import {
   paymentManager,
   BUSINESS_UPI_ID,
   BUSINESS_NAME,
-  TRUSTED_PRICING_CATALOG
+  TRUSTED_PRICING_CATALOG,
+  SUBSCRIPTION_CATALOG,
+  getRazorpayConfigStatus,
+  verifyRazorpayWebhookSignature
 } from './src/server/payments';
 import {
   formatBusinessWhatsAppNotification,
@@ -39,10 +43,52 @@ import { firebaseCRM } from './src/server/firebaseService';
 
 dotenv.config();
 
-const app = express();
-const PORT = parseInt(process.env.PORT || '3000', 10);
+function resolveServerPort(): number {
+  const args = process.argv.slice(2);
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--port' && args[i + 1]) {
+      const parsed = parseInt(args[i + 1], 10);
+      if (!Number.isNaN(parsed) && parsed > 0) return parsed;
+    }
+    if (args[i].startsWith('--port=')) {
+      const parsed = parseInt(args[i].split('=')[1], 10);
+      if (!Number.isNaN(parsed) && parsed > 0) return parsed;
+    }
+  }
+  const envPort = process.env.PORT;
+  const nginxPort = process.env.NGINX_PORT;
+  const defaultAppPort = process.env.DEFAULT_APP_PORT || '3000';
+  if (envPort && nginxPort && envPort === nginxPort) {
+    return parseInt(defaultAppPort, 10) || 3000;
+  }
+  return parseInt(envPort || defaultAppPort || '3000', 10) || 3000;
+}
 
-app.use(express.json({ limit: '1mb' }));
+function resolveServerHost(): string {
+  const args = process.argv.slice(2);
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--host' && args[i + 1]) {
+      return args[i + 1];
+    }
+    if (args[i].startsWith('--host=')) {
+      return args[i].split('=')[1];
+    }
+  }
+  return '0.0.0.0';
+}
+
+const app = express();
+const PORT = resolveServerPort();
+const HOST = resolveServerHost();
+
+app.use(
+  express.json({
+    limit: '1mb',
+    verify: (req: any, _res, buf) => {
+      req.rawBody = buf;
+    }
+  })
+);
 
 // Helper to get real client IP behind proxies
 function getClientIp(req: Request): string {
@@ -368,8 +414,24 @@ app.post('/api/chat', async (req: Request, res: Response) => {
 });
 
 // -------------------------------------------------------------
-// Online Payment Endpoints (UPI, Cards, Net Banking)
+// Online Payment & Subscription Endpoints (Razorpay + UPI)
 // -------------------------------------------------------------
+
+/**
+ * Public Gateway Readiness Config (Never exposes secrets)
+ * GET /api/payments/config
+ */
+app.get('/api/payments/config', (_req: Request, res: Response) => {
+  const status = getRazorpayConfigStatus();
+  res.status(200).json({
+    success: true,
+    gatewayConfigured: status.gatewayConfigured,
+    mode: status.mode,
+    razorpayKeyId: status.keyId,
+    businessUpiId: BUSINESS_UPI_ID,
+    businessName: BUSINESS_NAME
+  });
+});
 
 /**
  * Get Pricing Catalog & Payment Configuration
@@ -379,16 +441,28 @@ app.get('/api/payments/catalog', (_req: Request, res: Response) => {
   res.status(200).json({
     success: true,
     catalog: TRUSTED_PRICING_CATALOG,
+    subscriptionCatalog: SUBSCRIPTION_CATALOG,
     businessUpiId: BUSINESS_UPI_ID,
     businessName: BUSINESS_NAME
   });
 });
 
 /**
- * Create Payment Order (Server calculates trusted amount)
+ * Get Subscription Plans Catalog
+ * GET /api/subscriptions/catalog
+ */
+app.get('/api/subscriptions/catalog', (_req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    catalog: SUBSCRIPTION_CATALOG
+  });
+});
+
+/**
+ * Create Payment Order (Server calculates trusted amount + 18% GST)
  * POST /api/payments/create-order
  */
-app.post('/api/payments/create-order', (req: Request, res: Response) => {
+app.post('/api/payments/create-order', async (req: Request, res: Response) => {
   const ip = getClientIp(req);
   const { planId, customerName, customerEmail, customerPhone, customerBusiness, paymentMethod } = req.body;
 
@@ -404,9 +478,10 @@ app.post('/api/payments/create-order', (req: Request, res: Response) => {
   const sanitizedPhone = sanitizePhone(customerPhone);
   const sanitizedName = sanitizeText(customerName);
   const sanitizedBusiness = customerBusiness ? sanitizeText(customerBusiness) : undefined;
+  const config = getRazorpayConfigStatus();
 
   try {
-    const order = paymentManager.createOrder({
+    const order = await paymentManager.createOrder({
       planId,
       customerName: sanitizedName,
       customerEmail: sanitizedEmail,
@@ -424,13 +499,98 @@ app.post('/api/payments/create-order', (req: Request, res: Response) => {
       upiIntentUri,
       businessUpiId: BUSINESS_UPI_ID,
       businessName: BUSINESS_NAME,
+      gatewayConfigured: config.gatewayConfigured,
+      razorpayKeyId: config.keyId,
+      mode: config.mode,
       message: 'Order created successfully with verified pricing.'
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error('Error creating payment order:', err);
     res.status(500).json({
       error: 'Order Creation Failed',
-      message: 'Unable to initiate order at this time. Please try again.'
+      message: err?.message || 'Unable to initiate order at this time. Please try again.'
+    });
+  }
+});
+
+/**
+ * Create Software Subscription + Initial Mandate Order
+ * POST /api/subscriptions/create
+ */
+app.post('/api/subscriptions/create', async (req: Request, res: Response) => {
+  const ip = getClientIp(req);
+  const {
+    planId,
+    billingCycle,
+    customerName,
+    customerEmail,
+    customerPhone,
+    customerBusiness,
+    paymentMethod,
+    autoRenewConsent
+  } = req.body;
+
+  if (!planId || !billingCycle || !customerName || !customerEmail || !customerPhone) {
+    res.status(400).json({
+      error: 'Validation Failed',
+      message: 'Plan ID, billing cycle, customer name, email, and phone number are required.'
+    });
+    return;
+  }
+
+  if (billingCycle !== 'monthly' && billingCycle !== 'yearly') {
+    res.status(400).json({
+      error: 'Validation Failed',
+      message: 'Billing cycle must be monthly or yearly.'
+    });
+    return;
+  }
+
+  if (autoRenewConsent !== true) {
+    res.status(400).json({
+      error: 'Consent Required',
+      message: 'You must explicitly agree to recurring auto-renewal terms before starting a subscription.'
+    });
+    return;
+  }
+
+  const config = getRazorpayConfigStatus();
+
+  try {
+    const { subscription, initialOrder } = await paymentManager.createSubscription({
+      planId,
+      billingCycle,
+      customerName: sanitizeText(customerName),
+      customerEmail: sanitizeEmail(customerEmail),
+      customerPhone: sanitizePhone(customerPhone),
+      customerBusiness: customerBusiness ? sanitizeText(customerBusiness) : undefined,
+      paymentMethod: paymentMethod || 'upi_mandate',
+      autoRenewConsent: true,
+      ipAddress: ip
+    });
+
+    const upiIntentUri = paymentManager.generateUpiIntentUri(
+      initialOrder.orderRef,
+      initialOrder.totalAmountINR
+    );
+
+    res.status(201).json({
+      success: true,
+      subscription,
+      order: initialOrder,
+      upiIntentUri,
+      businessUpiId: BUSINESS_UPI_ID,
+      businessName: BUSINESS_NAME,
+      gatewayConfigured: config.gatewayConfigured,
+      razorpayKeyId: config.keyId,
+      mode: config.mode,
+      message: 'Subscription order created. Complete payment/mandate verification to activate.'
+    });
+  } catch (err: any) {
+    console.error('Error creating subscription:', err);
+    res.status(400).json({
+      error: 'Subscription Creation Failed',
+      message: err?.message || 'Unable to create subscription right now.'
     });
   }
 });
@@ -466,7 +626,7 @@ app.post('/api/payments/submit-manual-upi', (req: Request, res: Response) => {
 });
 
 /**
- * Verify Gateway Payment (Razorpay / Cashfree HMAC verification)
+ * Verify Gateway Payment (Strict Razorpay HMAC-SHA256 verification)
  * POST /api/payments/verify-gateway
  */
 app.post('/api/payments/verify-gateway', (req: Request, res: Response) => {
@@ -502,6 +662,144 @@ app.post('/api/payments/verify-gateway', (req: Request, res: Response) => {
 });
 
 /**
+ * Verify Razorpay Subscription Mandate Signature
+ * POST /api/subscriptions/verify-mandate
+ */
+app.post('/api/subscriptions/verify-mandate', (req: Request, res: Response) => {
+  const ip = getClientIp(req);
+  const {
+    subscriptionRef,
+    orderRef,
+    gatewayPaymentId,
+    gatewaySubscriptionId,
+    gatewayOrderId,
+    gatewaySignature
+  } = req.body;
+
+  if (!subscriptionRef || !gatewayPaymentId || !gatewaySignature) {
+    res.status(400).json({
+      error: 'Bad Request',
+      message: 'subscriptionRef, gatewayPaymentId, and gatewaySignature are required.'
+    });
+    return;
+  }
+
+  const result = paymentManager.verifySubscriptionMandate({
+    subscriptionRef,
+    orderRef,
+    gatewayPaymentId,
+    gatewaySubscriptionId,
+    gatewayOrderId,
+    gatewaySignature,
+    ipAddress: ip
+  });
+
+  if (!result.success) {
+    res.status(400).json({ error: 'Mandate Verification Failed', message: result.message });
+    return;
+  }
+
+  res.status(200).json({
+    success: true,
+    subscription: result.subscription,
+    payment: result.payment,
+    message: result.message
+  });
+});
+
+/**
+ * Customer Subscription Lookup (Subscription Ref + Email Verification)
+ * GET /api/subscriptions/lookup?subscriptionRef=...&email=...
+ */
+app.get('/api/subscriptions/lookup', (req: Request, res: Response) => {
+  const subscriptionRef = typeof req.query.subscriptionRef === 'string' ? req.query.subscriptionRef : '';
+  const email = typeof req.query.email === 'string' ? req.query.email : '';
+
+  if (!subscriptionRef.trim() || !email.trim()) {
+    res.status(400).json({
+      success: false,
+      message: 'Subscription reference ID and registered email are required.'
+    });
+    return;
+  }
+
+  const found = paymentManager.lookupSubscription(subscriptionRef, email);
+  if (!found) {
+    res.status(404).json({
+      success: false,
+      message: 'No matching subscription found for that Reference ID and email.'
+    });
+    return;
+  }
+
+  res.status(200).json({
+    success: true,
+    subscription: found.subscription,
+    payments: found.payments
+  });
+});
+
+/**
+ * Self-Serve Customer Subscription Cancellation
+ * POST /api/subscriptions/:id/cancel
+ */
+app.post('/api/subscriptions/:id/cancel', async (req: Request, res: Response) => {
+  const ip = getClientIp(req);
+  const { email, reason } = req.body;
+
+  if (!email) {
+    res.status(400).json({ success: false, message: 'Registered email address is required.' });
+    return;
+  }
+
+  const result = await paymentManager.cancelSubscription({
+    subscriptionRef: req.params.id,
+    email: sanitizeEmail(email),
+    reason: reason ? sanitizeText(reason) : undefined,
+    ipAddress: ip
+  });
+
+  if (!result.success) {
+    res.status(404).json({ success: false, message: result.message });
+    return;
+  }
+
+  res.status(200).json(result);
+});
+
+/**
+ * Customer Upgrade / Switch Subscription Plan Request
+ * POST /api/subscriptions/:id/change-plan
+ */
+app.post('/api/subscriptions/:id/change-plan', (req: Request, res: Response) => {
+  const ip = getClientIp(req);
+  const { email, newPlanId, newBillingCycle } = req.body;
+
+  if (!email || !newPlanId || (newBillingCycle !== 'monthly' && newBillingCycle !== 'yearly')) {
+    res.status(400).json({
+      success: false,
+      message: 'Registered email, new plan ID, and valid billing cycle (monthly/yearly) are required.'
+    });
+    return;
+  }
+
+  const result = paymentManager.requestSubscriptionPlanChange({
+    subscriptionRef: req.params.id,
+    email: sanitizeEmail(email),
+    newPlanId,
+    newBillingCycle,
+    ipAddress: ip
+  });
+
+  if (!result.success) {
+    res.status(400).json(result);
+    return;
+  }
+
+  res.status(200).json(result);
+});
+
+/**
  * Public Order Status & Printable Receipt Details
  * GET /api/payments/order/:orderRef
  */
@@ -515,17 +813,26 @@ app.get('/api/payments/order/:orderRef', (req: Request, res: Response) => {
   res.status(200).json({
     success: true,
     order: {
+      id: order.id,
       orderRef: order.orderRef,
       customerName: order.customerName,
       customerEmail: order.customerEmail,
       customerPhone: order.customerPhone,
       customerBusiness: order.customerBusiness,
+      serviceId: order.serviceId,
       serviceTitle: order.serviceTitle,
+      orderType: order.orderType,
+      subscriptionRef: order.subscriptionRef,
+      billingCycle: order.billingCycle,
       baseAmountINR: order.baseAmountINR,
       taxAmountINR: order.taxAmountINR,
       totalAmountINR: order.totalAmountINR,
       paymentMethod: order.paymentMethod,
       status: order.status,
+      refundStatus: order.refundStatus || 'none',
+      gatewayProvider: order.gatewayProvider,
+      gatewayOrderId: order.gatewayOrderId,
+      gatewayPaymentId: order.gatewayPaymentId,
       receiptNumber: order.receiptNumber,
       upiTransactionRef: order.upiTransactionRef,
       createdAt: order.createdAt,
@@ -535,42 +842,57 @@ app.get('/api/payments/order/:orderRef', (req: Request, res: Response) => {
 });
 
 /**
- * Payment Gateway Webhook Receiver (HMAC & Idempotency Protected)
+ * Payment Gateway Webhook Receiver (Timing-Safe HMAC & Idempotency Protected)
  * POST /api/payments/webhook
  */
-app.post('/api/payments/webhook', (req: Request, res: Response) => {
+app.post('/api/payments/webhook', async (req: any, res: Response) => {
   const ip = getClientIp(req);
-  const signature = req.headers['x-razorpay-signature'] || req.headers['x-webhook-signature'];
-  const webhookSecret = process.env.PAYMENT_WEBHOOK_SECRET;
+  const signatureHeader = (req.headers['x-razorpay-signature'] ||
+    req.headers['x-webhook-signature']) as string | undefined;
+  const webhookSecret = (
+    process.env.RAZORPAY_WEBHOOK_SECRET ||
+    process.env.PAYMENT_WEBHOOK_SECRET ||
+    ''
+  ).trim();
 
-  if (webhookSecret && signature) {
-    const crypto = require('node:crypto');
-    const expected = crypto
-      .createHmac('sha256', webhookSecret)
-      .update(JSON.stringify(req.body))
-      .digest('hex');
-
-    if (expected !== signature) {
-      res.status(400).json({ error: 'Invalid Webhook Signature' });
-      return;
-    }
+  if (!webhookSecret) {
+    res.status(503).json({
+      error: 'Webhook Not Configured',
+      message: 'RAZORPAY_WEBHOOK_SECRET is not configured on the server.'
+    });
+    return;
   }
 
-  // Handle asynchronous event
-  const event = req.body.event;
-  const payload = req.body.payload;
+  const rawBody: Buffer | string = req.rawBody || JSON.stringify(req.body);
+  const isSignatureValid = verifyRazorpayWebhookSignature(rawBody, signatureHeader, webhookSecret);
 
-  crmStorage.addAuditLog({
-    userId: 'payment_webhook',
-    userEmail: 'system@rubitechpark.com',
-    userRole: 'developer',
-    action: `WEBHOOK_EVENT_${event || 'UNKNOWN'}`,
-    ipAddress: ip,
-    resource: 'PAYMENT_GATEWAY',
-    success: true
-  });
+  if (!isSignatureValid) {
+    res.status(400).json({ error: 'Invalid Webhook Signature' });
+    return;
+  }
 
-  res.status(200).json({ status: 'ok', received: true });
+  const eventType = String(req.body?.event || 'unknown');
+  const payload = req.body?.payload || {};
+  const headerEventId = req.headers['x-razorpay-event-id'] as string | undefined;
+  const fallbackEventId = crypto
+    .createHash('sha256')
+    .update(rawBody)
+    .digest('hex')
+    .slice(0, 24);
+  const eventId = headerEventId || `${eventType}_${fallbackEventId}`;
+
+  try {
+    const result = await paymentManager.processWebhookEvent({
+      eventId,
+      eventType,
+      payload,
+      ipAddress: ip
+    });
+    res.status(200).json({ status: 'ok', received: true, ...result });
+  } catch (err: any) {
+    console.error('Webhook processing error:', err);
+    res.status(500).json({ error: 'Webhook Processing Failed', message: err?.message });
+  }
 });
 
 // -------------------------------------------------------------
@@ -1102,6 +1424,97 @@ app.post('/api/admin/payments/:id/reject', requireAdminAuth, (req: Authenticated
   res.status(200).json({ success: true, payment: result.payment, message: result.message });
 });
 
+/**
+ * Admin Update Refund Status
+ * POST /api/admin/payments/:id/refund-status
+ */
+app.post('/api/admin/payments/:id/refund-status', requireAdminAuth, (req: AuthenticatedRequest, res: Response) => {
+  const ip = getClientIp(req);
+  const { refundStatus, refundAmountINR, refundId, refundNotes } = req.body;
+  const validRefundStatuses = ['none', 'requested', 'processing', 'processed', 'rejected'];
+
+  if (!refundStatus || !validRefundStatuses.includes(refundStatus)) {
+    res.status(400).json({
+      error: 'Validation Failed',
+      message: `refundStatus must be one of: ${validRefundStatuses.join(', ')}`
+    });
+    return;
+  }
+
+  const result = paymentManager.adminUpdateRefundStatus({
+    paymentId: req.params.id,
+    refundStatus,
+    refundAmountINR: refundAmountINR !== undefined ? Number(refundAmountINR) : undefined,
+    refundId: refundId ? sanitizeText(refundId) : undefined,
+    refundNotes: refundNotes ? sanitizeText(refundNotes) : undefined,
+    adminName: req.adminSession!.userName,
+    ipAddress: ip
+  });
+
+  if (!result.success) {
+    res.status(404).json({ error: 'Error', message: result.message });
+    return;
+  }
+
+  res.status(200).json(result);
+});
+
+/**
+ * Get All Customer Subscriptions (Admin Only)
+ * GET /api/admin/subscriptions
+ */
+app.get('/api/admin/subscriptions', requireAdminAuth, (req: AuthenticatedRequest, res: Response) => {
+  const { status, searchTerm } = req.query;
+  const subscriptions = paymentManager.getAllSubscriptions({
+    status: typeof status === 'string' ? (status as any) : undefined,
+    searchTerm: typeof searchTerm === 'string' ? searchTerm : undefined
+  });
+
+  const allSubs = paymentManager.getAllSubscriptions();
+  const stats = {
+    total: allSubs.length,
+    active: allSubs.filter((s) => s.status === 'active').length,
+    pending: allSubs.filter((s) => s.status === 'pending').length,
+    paused: allSubs.filter((s) => s.status === 'paused').length,
+    cancelled: allSubs.filter((s) => s.status === 'cancelled').length,
+    failed: allSubs.filter((s) => s.status === 'failed').length
+  };
+
+  res.status(200).json({ success: true, subscriptions, stats });
+});
+
+/**
+ * Admin Update Subscription Status
+ * PATCH /api/admin/subscriptions/:id/status
+ */
+app.patch('/api/admin/subscriptions/:id/status', requireAdminAuth, (req: AuthenticatedRequest, res: Response) => {
+  const ip = getClientIp(req);
+  const { status } = req.body;
+  const validStatuses = ['pending', 'active', 'paused', 'cancelled', 'failed'];
+
+  if (!status || !validStatuses.includes(status)) {
+    res.status(400).json({
+      error: 'Validation Failed',
+      message: `status must be one of: ${validStatuses.join(', ')}`
+    });
+    return;
+  }
+
+  const result = paymentManager.adminUpdateSubscriptionStatus({
+    subscriptionRef: req.params.id,
+    status,
+    adminName: req.adminSession!.userName,
+    ipAddress: ip
+  });
+
+  if (!result.success) {
+    res.status(404).json({ error: 'Not Found', message: result.message });
+    return;
+  }
+
+  res.status(200).json(result);
+});
+
 // -------------------------------------------------------------
 // Service Reference Images Management Endpoints
 // -------------------------------------------------------------
@@ -1194,11 +1607,8 @@ async function startServer() {
     const vite = await createServer({
       server: {
         middlewareMode: true,
-        hmr: isHmrDisabled
-          ? false
-          : {
-              server: httpServer
-            }
+        hmr: !isHmrDisabled,
+        ...(isHmrDisabled ? {} : { ws: { server: httpServer } })
       },
       appType: 'spa'
     });
@@ -1210,9 +1620,17 @@ async function startServer() {
     });
   }
 
-  httpServer.listen(PORT, '0.0.0.0', () => {
-    console.log(`RUBI TECH PARK Full-Stack CRM Server listening on http://0.0.0.0:${PORT}`);
+  httpServer.on('error', (err) => {
+    console.error(`RUBI TECH PARK Server failed to bind ${HOST}:${PORT}:`, err);
+    process.exit(1);
+  });
+
+  httpServer.listen(PORT, HOST, () => {
+    console.log(`RUBI TECH PARK Full-Stack CRM Server listening on http://${HOST}:${PORT}`);
   });
 }
 
-startServer();
+startServer().catch((err) => {
+  console.error('Fatal error during server startup:', err);
+  process.exit(1);
+});

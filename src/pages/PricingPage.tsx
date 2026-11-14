@@ -9,14 +9,19 @@ import {
   ArrowRight,
   Calculator,
   CreditCard,
-  Sparkles
+  Sparkles,
+  Repeat
 } from 'lucide-react';
 
 interface PricingPageProps {
   onNavigate: (route: PageRoute) => void;
+  onSelectPlanForCheckout?: (planId: string) => void;
 }
 
-export const PricingPage: React.FC<PricingPageProps> = ({ onNavigate }) => {
+export const PricingPage: React.FC<PricingPageProps> = ({
+  onNavigate,
+  onSelectPlanForCheckout
+}) => {
   const { t, language } = useLanguage();
 
   const [selectedService, setSelectedService] = useState<RequiredService>('business-website');
@@ -106,7 +111,9 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onNavigate }) => {
 
               <div className="mt-6 pt-4 border-t border-[#D5DEE8] dark:border-[#30445B] space-y-2">
                 <button
-                  onClick={() => onNavigate('checkout')}
+                  onClick={() =>
+                    onSelectPlanForCheckout ? onSelectPlanForCheckout(pkg.id) : onNavigate('checkout')
+                  }
                   className="w-full py-2.5 px-3 text-xs font-semibold cyber-button-primary rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-xs active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#315D82] dark:focus-visible:ring-[#6F9FC5]"
                 >
                   <CreditCard className="w-3.5 h-3.5" />
@@ -222,6 +229,65 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onNavigate }) => {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Software Subscriptions & E-Service Booking Callout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="rounded-2xl p-6 sm:p-8 bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs flex flex-col justify-between gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-xs font-mono font-semibold text-[#315D82] dark:text-[#6F9FC5] uppercase">
+                <Repeat className="w-4 h-4" />
+                <span>{language === 'ta' ? 'SaaS மென்பொருள் சந்தாக்கள்' : 'SaaS Software Subscriptions'}</span>
+              </div>
+              <h3 className="text-xl font-bold font-display text-[#182638] dark:text-[#F1F5F9]">
+                {language === 'ta'
+                  ? 'மாதாந்திர & வருடாந்திர சந்தா திட்டங்கள்'
+                  : 'Monthly & Yearly Software Plans'}
+              </h3>
+              <p className="text-xs text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
+                {language === 'ta'
+                  ? 'Kuralvaani Voice Studio (₹499/மாதம்), BulkMate (₹999/மாதம்) மற்றும் RUBI CRM Cloud (₹1,499/மாதம்) ஆகியவற்றிற்கு வெளிப்படையான AutoPay சந்தாக்கள்.'
+                  : 'Subscribe to Kuralvaani Voice Studio Pro (from ₹499/mo), BulkMate (from ₹999/mo), or RUBI CRM Cloud (from ₹1,499/mo) + 18% GST with anytime self-serve cancellation.'}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => onNavigate('subscriptions')}
+              className="px-4 py-2.5 rounded-xl cyber-button-primary text-xs font-semibold inline-flex items-center justify-center gap-2 self-start cursor-pointer"
+            >
+              <span>{language === 'ta' ? 'சந்தா திட்டங்களைப் பார்க்க' : 'View Subscription Plans'}</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="rounded-2xl p-6 sm:p-8 bg-white dark:bg-[#1C2B40] border border-[#D5DEE8] dark:border-[#30445B] shadow-xs flex flex-col justify-between gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-xs font-mono font-semibold text-[#315D82] dark:text-[#6F9FC5] uppercase">
+                <CreditCard className="w-4 h-4" />
+                <span>{language === 'ta' ? 'குடிமக்கள் இ-சேவைகள் முன்பதிவு' : 'Citizen E-Services Deposit'}</span>
+              </div>
+              <h3 className="text-xl font-bold font-display text-[#182638] dark:text-[#F1F5F9]">
+                {language === 'ta'
+                  ? 'இ-சேவை ஆரம்ப முன்பதிவு: ₹236 (₹200 + 18% GST)'
+                  : 'E-Service Initial Booking: ₹236 (₹200 + 18% GST)'}
+              </h3>
+              <p className="text-xs text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
+                {language === 'ta'
+                  ? '₹236 செலுத்தி உங்கள் இ-சேவையை முன்பதிவு செய்யுங்கள். மீதமுள்ள சேவைக் கட்டணங்கள் தேவைகளை மதிப்பாய்வு செய்த பின் தெரிவிக்கப்பட்டு பணி நிறைவடைந்த பின் வசூலிக்கப்படும். அரசுக் கட்டணங்கள் தனித்தனியாகத் தெரிவிக்கப்படும்.'
+                  : 'Book your e-service by paying ₹236 (₹200 + 18% GST). Remaining service charges are communicated after requirement review and collected after completion. Applicable government fees are informed separately.'}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() =>
+                onSelectPlanForCheckout ? onSelectPlanForCheckout('eservice-booking') : onNavigate('checkout')
+              }
+              className="px-4 py-2.5 rounded-xl border border-[#315D82] dark:border-[#6F9FC5] text-[#315D82] dark:text-[#6F9FC5] hover:bg-[#315D82]/10 text-xs font-semibold inline-flex items-center justify-center gap-2 self-start cursor-pointer"
+            >
+              <span>{language === 'ta' ? '₹236 முன்பதிவு செய்க' : 'Book E-Service (₹236)'}</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
 

@@ -7,11 +7,15 @@ export type PageRoute =
   | 'service-crm-integration'
   | 'service-ai-automation'
   | 'pricing'
+  | 'subscriptions'
   | 'portfolio'
   | 'about'
   | 'contact'
   | 'privacy-policy'
   | 'terms'
+  | 'refund-policy'
+  | 'service-delivery-policy'
+  | 'subscription-policy'
   | 'checkout'
   | 'admin-login'
   | 'admin-dashboard'
@@ -30,6 +34,8 @@ export interface ServiceDetail {
   whoItIsFor?: string[];
   problemsItSolves?: string[];
   deliverables?: string[];
+  requiredDocuments?: string[];
+  eligibility?: string;
   processSteps?: { title: string; description: string }[];
   startingPrice?: number;
   startingPriceLabel?: string;

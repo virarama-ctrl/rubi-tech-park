@@ -39,6 +39,21 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Payment Orders Collection (Admin/Server managed only)
+    match /orders/{orderRef} {
+      allow read, write: if isAdmin();
+    }
+
+    // Subscriptions Collection (Admin/Server managed only)
+    match /subscriptions/{subscriptionRef} {
+      allow read, write: if isAdmin();
+    }
+
+    // Webhook Idempotency Events Collection (Admin/Server managed only)
+    match /webhook_events/{eventId} {
+      allow read, write: if isAdmin();
+    }
+
     // Default fallback deny
     match /{document=**} {
       allow read, write: if false;

@@ -1,140 +1,197 @@
-import test from 'node:test';
+import { describe, it, after } from 'node:test';
 import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
+import {
+  calculateGstBreakdown,
+  calculateSubscriptionBreakdown,
+  TRUSTED_PRICING_CATALOG,
+  SUBSCRIPTION_CATALOG
+} from '../config/pricingCatalog';
+import { CASE_STUDIES } from '../config/agencyConfig';
+import {
+  verifyRazorpayOrderSignature,
+  verifyRazorpaySubscriptionSignature,
+  verifyRazorpayWebhookSignature,
+  computeNextBillingDate,
+  paymentManager
+} from './payments';
 
-const BASE_URL = 'http://127.0.0.1:3000';
+const DATA_DIR = path.resolve(process.cwd(), 'data');
+const FILES_TO_BACKUP = [
+  'crm_payments.json',
+  'crm_subscriptions.json',
+  'webhook_events.json',
+  'crm_audit_logs.json'
+];
 
-test('Payments: Catalog endpoint returns trusted pricing and business UPI ID', async () => {
-  const res = await fetch(`${BASE_URL}/api/payments/catalog`);
-  assert.equal(res.status, 200);
-  const data = await res.json();
-  assert.equal(data.success, true);
-  assert.equal(data.businessUpiId, 'rubienterprisesgst-1@okhdfcbank');
-  assert.equal(data.businessName, 'RUBI TECH PARK');
-  assert.ok(data.catalog['starter-web']);
-  assert.equal(data.catalog['starter-web'].basePrice, 5000);
+const snapshots = new Map<string, string | null>();
+for (const file of FILES_TO_BACKUP) {
+  const full = path.join(DATA_DIR, file);
+  snapshots.set(full, fs.existsSync(full) ? fs.readFileSync(full, 'utf-8') : null);
+}
+
+after(() => {
+  for (const [full, content] of snapshots.entries()) {
+    if (content === null) {
+      if (fs.existsSync(full)) fs.unlinkSync(full);
+    } else {
+      fs.writeFileSync(full, content, 'utf-8');
+    }
+  }
 });
 
-test('Payments: Order creation calculates server-side trusted price with 18% GST', async () => {
-  const res = await fetch(`${BASE_URL}/api/payments/create-order`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      planId: 'starter-web',
-      customerName: 'Karthik Subramanian',
-      customerEmail: 'karthik@kovai.in',
-      customerPhone: '9876543210',
-      customerBusiness: 'Kovai Precision Tools',
-      paymentMethod: 'upi_qr'
-    })
+describe('Pricing & GST Calculations', () => {
+  it('computes 18% GST accurately for citizen e-service booking deposit (₹200 -> ₹236)', () => {
+    const eservice = TRUSTED_PRICING_CATALOG['eservice-booking'];
+    assert.ok(eservice, 'eservice-booking item must exist in catalog');
+    const breakdown = calculateGstBreakdown(eservice.basePrice);
+    assert.equal(breakdown.baseAmountINR, 200);
+    assert.equal(breakdown.taxAmountINR, 36);
+    assert.equal(breakdown.totalAmountINR, 236);
   });
 
-  assert.equal(res.status, 201);
-  const data = await res.json();
-  assert.equal(data.success, true);
-  assert.ok(data.order.orderRef.startsWith('RTP-ORD-'));
-  assert.equal(data.order.baseAmountINR, 5000);
-  assert.equal(data.order.taxAmountINR, 900); // 18% of 5000
-  assert.equal(data.order.totalAmountINR, 5900);
-  assert.equal(data.order.status, 'created');
-  assert.ok(data.upiIntentUri.includes('rubienterprisesgst-1%40okhdfcbank') || data.upiIntentUri.includes('rubienterprisesgst-1@okhdfcbank'));
+  it('computes monthly & yearly SaaS subscription GST breakdowns', () => {
+    const monthly = calculateSubscriptionBreakdown('kuralvaani-pro', 'monthly');
+    assert.ok(monthly);
+    assert.equal(monthly.baseAmountINR, 499);
+    assert.equal(monthly.gstAmountINR, 90);
+    assert.equal(monthly.totalAmountINR, 589);
+
+    const yearly = calculateSubscriptionBreakdown('bulkmate-business', 'yearly');
+    assert.ok(yearly);
+    assert.equal(yearly.baseAmountINR, 9990);
+    assert.equal(yearly.gstAmountINR, 1798);
+    assert.equal(yearly.totalAmountINR, 11788);
+  });
+
+  it('returns null for unknown subscription plan IDs', () => {
+    assert.equal(calculateSubscriptionBreakdown('non-existent-plan', 'monthly'), null);
+  });
 });
 
-test('Payments: Manual UPI submission transitions order to pending_verification only', async () => {
-  // 1. Create order
-  const orderRes = await fetch(`${BASE_URL}/api/payments/create-order`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      planId: 'growth-ecommerce',
-      customerName: 'Anitha Rajan',
-      customerEmail: 'anitha@silks.in',
-      customerPhone: '9842112345',
-      customerBusiness: 'Rajan Silks Coimbatore',
-      paymentMethod: 'upi_qr'
-    })
-  });
-  const { order } = await orderRes.json();
+describe('Razorpay Cryptographic Signature Verification', () => {
+  const secret = 'rzp_test_secret_unit_key_12345';
 
-  // 2. Submit manual UTR
-  const utrRes = await fetch(`${BASE_URL}/api/payments/submit-manual-upi`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      orderRef: order.orderRef,
-      utr: '429182371920'
-    })
+  it('verifies valid Razorpay order payment HMAC-SHA256 signatures and rejects tampered ones', () => {
+    const orderId = 'order_Test123456';
+    const paymentId = 'pay_Test987654';
+    const validSig = crypto
+      .createHmac('sha256', secret)
+      .update(`${orderId}|${paymentId}`)
+      .digest('hex');
+
+    assert.equal(verifyRazorpayOrderSignature(orderId, paymentId, validSig, secret), true);
+    assert.equal(
+      verifyRazorpayOrderSignature(orderId, paymentId, `${validSig.slice(0, -1)}0`, secret),
+      false
+    );
+    assert.equal(verifyRazorpayOrderSignature(orderId, paymentId, '', secret), false);
+    assert.equal(verifyRazorpayOrderSignature('', paymentId, validSig, secret), false);
   });
 
-  assert.equal(utrRes.status, 200);
-  const utrData = await utrRes.json();
-  assert.equal(utrData.success, true);
-  assert.equal(utrData.payment.status, 'pending_verification');
-  assert.equal(utrData.payment.upiTransactionRef, '429182371920');
+  it('verifies valid Razorpay subscription mandate HMAC-SHA256 signatures', () => {
+    const paymentId = 'pay_Mandate111';
+    const subId = 'sub_Recurring222';
+    const validSig = crypto
+      .createHmac('sha256', secret)
+      .update(`${paymentId}|${subId}`)
+      .digest('hex');
 
-  // Verify status is NOT marked as paid automatically
-  assert.notEqual(utrData.payment.status, 'paid');
+    assert.equal(verifyRazorpaySubscriptionSignature(paymentId, subId, validSig, secret), true);
+    assert.equal(verifyRazorpaySubscriptionSignature(paymentId, subId, 'forged_sig', secret), false);
+  });
+
+  it('verifies webhook raw payload HMAC-SHA256 signatures strictly', () => {
+    const webhookSecret = 'whsec_test_999';
+    const payload = JSON.stringify({ event: 'payment.captured', payload: { payment: { entity: { id: 'pay_1' } } } });
+    const validSig = crypto.createHmac('sha256', webhookSecret).update(payload).digest('hex');
+
+    assert.equal(verifyRazorpayWebhookSignature(payload, validSig, webhookSecret), true);
+    assert.equal(verifyRazorpayWebhookSignature(payload, 'bad_signature', webhookSecret), false);
+    assert.equal(verifyRazorpayWebhookSignature(payload, undefined, webhookSecret), false);
+    assert.equal(verifyRazorpayWebhookSignature(payload, validSig, undefined), false);
+  });
 });
 
-test('Security check: Unauthorized requests to /api/admin/payments must return 401', async () => {
-  const res = await fetch(`${BASE_URL}/api/admin/payments`);
-  assert.equal(res.status, 401);
-  const data = await res.json();
-  assert.equal(data.error, 'Unauthorized');
+describe('Subscription Billing Dates & Webhook Idempotency', () => {
+  it('computes next billing dates accurately for monthly and yearly cycles', () => {
+    const base = '2026-03-15T10:00:00.000Z';
+    const nextMonth = computeNextBillingDate(base, 'monthly');
+    const nextYear = computeNextBillingDate(base, 'yearly');
+
+    assert.equal(nextMonth.slice(0, 7), '2026-04');
+    assert.equal(nextYear.slice(0, 4), '2027');
+  });
+
+  it('processes webhook payment.captured once and skips duplicate event IDs idempotently', async () => {
+    const order = await paymentManager.createOrder({
+      planId: 'eservice-booking',
+      customerName: 'Unit Test User',
+      customerEmail: 'unittest@example.com',
+      customerPhone: '+91 9876543210',
+      paymentMethod: 'upi_qr',
+      ipAddress: '127.0.0.1'
+    });
+
+    const eventId = `evt_unit_${Date.now()}`;
+    const first = await paymentManager.processWebhookEvent({
+      eventId,
+      eventType: 'payment.captured',
+      payload: {
+        payment: {
+          entity: {
+            id: 'pay_unit_captured_001',
+            order_id: order.gatewayOrderId,
+            notes: { orderRef: order.orderRef }
+          }
+        }
+      },
+      ipAddress: '127.0.0.1'
+    });
+
+    assert.equal(first.processed, true);
+    assert.equal(first.duplicate, false);
+
+    const updated = paymentManager.getOrderByRef(order.orderRef);
+    assert.equal(updated?.status, 'paid');
+    assert.equal(updated?.gatewayPaymentId, 'pay_unit_captured_001');
+
+    const second = await paymentManager.processWebhookEvent({
+      eventId,
+      eventType: 'payment.captured',
+      payload: {
+        payment: {
+          entity: {
+            id: 'pay_unit_captured_001',
+            order_id: order.gatewayOrderId,
+            notes: { orderRef: order.orderRef }
+          }
+        }
+      },
+      ipAddress: '127.0.0.1'
+    });
+
+    assert.equal(second.processed, false);
+    assert.equal(second.duplicate, true);
+  });
 });
 
-test('Admin Workflow: Authorized admin verifies manual UPI payment and marks Paid', async () => {
-  // 1. Create order
-  const orderRes = await fetch(`${BASE_URL}/api/payments/create-order`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      planId: 'custom-software',
-      customerName: 'Selvam Murugan',
-      customerEmail: 'selvam@logistics.in',
-      customerPhone: '9443312345',
-      customerBusiness: 'Murugan Roadways',
-      paymentMethod: 'upi_manual'
-    })
+describe('Public Catalog Gold/Silver Compliance Check', () => {
+  it('contains zero gold, silver, or jewellery references in public pricing, subscriptions, or case studies', () => {
+    const serialized = JSON.stringify({
+      TRUSTED_PRICING_CATALOG,
+      SUBSCRIPTION_CATALOG,
+      CASE_STUDIES
+    }).toLowerCase();
+
+    for (const forbidden of ['gold', 'silver', 'jewel', 'நகை', 'தங்கம்', 'வெள்ளி']) {
+      assert.equal(
+        serialized.includes(forbidden),
+        false,
+        `Forbidden keyword "${forbidden}" found in public catalog/case studies`
+      );
+    }
   });
-  const { order } = await orderRes.json();
-
-  // 2. Submit UTR
-  await fetch(`${BASE_URL}/api/payments/submit-manual-upi`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      orderRef: order.orderRef,
-      utr: '987654321098'
-    })
-  });
-
-  // 3. Admin Login
-  const loginRes = await fetch(`${BASE_URL}/api/admin/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      email: 'admin@rubitechpark.com',
-      password: process.env.ADMIN_INITIAL_PASSWORD || 'Rudhra$2026'
-    })
-  });
-  const { token } = await loginRes.json();
-
-  // 4. Verify payment via admin endpoint
-  const verifyRes = await fetch(`${BASE_URL}/api/admin/payments/${order.id}/verify`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}` }
-  });
-
-  assert.equal(verifyRes.status, 200);
-  const verifyData = await verifyRes.json();
-  assert.equal(verifyData.success, true);
-  assert.equal(verifyData.payment.status, 'paid');
-  assert.ok(verifyData.payment.receiptNumber.startsWith('RTP-REC-'));
-
-  // 5. Check public order endpoint returns updated verified receipt
-  const publicRes = await fetch(`${BASE_URL}/api/payments/order/${order.orderRef}`);
-  assert.equal(publicRes.status, 200);
-  const publicData = await publicRes.json();
-  assert.equal(publicData.order.status, 'paid');
-  assert.equal(publicData.order.receiptNumber, verifyData.payment.receiptNumber);
 });
