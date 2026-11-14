@@ -5,6 +5,9 @@ import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
 import vercelHandler from '../../api/index';
+import createOrderHandler from '../../api/create-order';
+import verifyPaymentHandler from '../../api/verify-payment';
+import paymentConfigHandler from '../../api/payments/config';
 import {
   calculateGstBreakdown,
   calculateSubscriptionBreakdown,
@@ -518,6 +521,123 @@ describe('Vercel Serverless Handler & HTTP Method Routing (/api/create-order, /a
       const preParsedJson = JSON.parse(preParsedResp.body);
       assert.equal(preParsedJson.success, true);
       assert.equal(preParsedJson.orderId, mockedRazorpayOrderId);
+    } finally {
+      globalThis.fetch = origFetch;
+      await new Promise<void>((resolve) => server.close(() => resolve()));
+      if (prevKeyId === undefined) delete process.env.RAZORPAY_KEY_ID;
+      else process.env.RAZORPAY_KEY_ID = prevKeyId;
+      if (prevKeySecret === undefined) delete process.env.RAZORPAY_KEY_SECRET;
+      else process.env.RAZORPAY_KEY_SECRET = prevKeySecret;
+    }
+  });
+
+  it('standalone /api/create-order, /api/verify-payment, and /api/payments/config return valid JSON on all responses', async () => {
+    const prevKeyId = process.env.RAZORPAY_KEY_ID;
+    const prevKeySecret = process.env.RAZORPAY_KEY_SECRET;
+    const origFetch = globalThis.fetch;
+
+    const server = http.createServer((req, res) => {
+      if (req.url?.startsWith('/api/create-order')) return createOrderHandler(req as any, res);
+      if (req.url?.startsWith('/api/verify-payment')) return verifyPaymentHandler(req as any, res);
+      if (req.url?.startsWith('/api/payments/config')) return paymentConfigHandler(req as any, res);
+      res.statusCode = 404;
+      res.end('not found');
+    });
+    await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', () => resolve()));
+    const address = server.address() as { port: number };
+    const baseUrl = `http://127.0.0.1:${address.port}`;
+    const mockedOrderId = `order_Standalone_${Date.now()}`;
+
+    try {
+      // 1. Missing credentials must return 503 valid JSON (not HTML or uncaught throw)
+      delete process.env.RAZORPAY_KEY_ID;
+      delete process.env.RAZORPAY_KEY_SECRET;
+
+      const cfgUnconfigured = await origFetch(`${baseUrl}/api/payments/config`);
+      assert.equal(cfgUnconfigured.status, 200);
+      assert.ok(cfgUnconfigured.headers.get('content-type')?.includes('application/json'));
+      const cfgUnconfiguredJson = (await cfgUnconfigured.json()) as Record<string, any>;
+      assert.equal(cfgUnconfiguredJson.gatewayConfigured, false);
+      assert.equal(cfgUnconfiguredJson.razorpayKeyId, null);
+
+      const unconfRes = await origFetch(`${baseUrl}/api/create-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planId: 'eservice-booking', amount: 23600, currency: 'INR' })
+      });
+      assert.equal(unconfRes.status, 503);
+      assert.ok(unconfRes.headers.get('content-type')?.includes('application/json'));
+      const unconfJson = (await unconfRes.json()) as Record<string, any>;
+      assert.equal(unconfJson.success, false);
+
+      // 2. GET /api/create-order returns 405 JSON with Allow: POST
+      const getOrderRes = await origFetch(`${baseUrl}/api/create-order`);
+      assert.equal(getOrderRes.status, 405);
+      assert.equal(getOrderRes.headers.get('allow'), 'POST');
+      assert.ok(getOrderRes.headers.get('content-type')?.includes('application/json'));
+
+      // 3. Configure keys and create + verify order cleanly
+      process.env.RAZORPAY_KEY_ID = 'rzp_test_standalone';
+      process.env.RAZORPAY_KEY_SECRET = 'rzp_secret_standalone';
+
+      globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url = typeof input === 'string' ? input : input.toString();
+        if (url === 'https://api.razorpay.com/v1/orders') {
+          const parsed = JSON.parse(String(init?.body || '{}'));
+          return new Response(
+            JSON.stringify({
+              id: mockedOrderId,
+              amount: parsed.amount,
+              currency: parsed.currency,
+              receipt: parsed.receipt
+            }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } }
+          );
+        }
+        return origFetch(input, init);
+      }) as typeof fetch;
+
+      const malformedRes = await origFetch(`${baseUrl}/api/create-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: '{invalid-json'
+      });
+      assert.equal(malformedRes.status, 400);
+      assert.ok(malformedRes.headers.get('content-type')?.includes('application/json'));
+
+      const createRes = await origFetch(`${baseUrl}/api/create-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planId: 'eservice-booking', amount: 23600, currency: 'INR' })
+      });
+      assert.equal(createRes.status, 201);
+      assert.ok(createRes.headers.get('content-type')?.includes('application/json'));
+      const createJson = (await createRes.json()) as Record<string, any>;
+      assert.equal(createJson.success, true);
+      assert.equal(createJson.orderId, mockedOrderId);
+      assert.equal(createJson.amount, 23600);
+
+      const paymentId = `pay_Standalone_${Date.now()}`;
+      const sig = crypto
+        .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET!)
+        .update(`${mockedOrderId}|${paymentId}`)
+        .digest('hex');
+
+      const verifyRes = await origFetch(`${baseUrl}/api/verify-payment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderRef: createJson.receipt,
+          razorpay_order_id: mockedOrderId,
+          razorpay_payment_id: paymentId,
+          razorpay_signature: sig
+        })
+      });
+      assert.equal(verifyRes.status, 200);
+      assert.ok(verifyRes.headers.get('content-type')?.includes('application/json'));
+      const verifyJson = (await verifyRes.json()) as Record<string, any>;
+      assert.equal(verifyJson.success, true);
+      assert.equal(verifyJson.verified, true);
     } finally {
       globalThis.fetch = origFetch;
       await new Promise<void>((resolve) => server.close(() => resolve()));

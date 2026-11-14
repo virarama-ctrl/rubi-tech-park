@@ -5,13 +5,19 @@
   "installCommand": "npm install",
   "framework": "vite",
   "functions": {
-    "api/index.ts": {
+    "api/create-order.ts": {
       "includeFiles": "firebase-applet-config.json"
+    },
+    "api/verify-payment.ts": {
+      "includeFiles": "firebase-applet-config.json"
+    },
+    "api/index.ts": {
+      "includeFiles": "{api/_server.cjs,firebase-applet-config.json}"
     }
   },
   "rewrites": [
     {
-      "source": "/api/(.*)",
+      "source": "/api/((?!create-order$|verify-payment$|payments/config$).*)",
       "destination": "/api/index"
     },
     {

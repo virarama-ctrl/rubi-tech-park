@@ -82,14 +82,37 @@ function loadRazorpayCheckoutScript(): Promise<boolean> {
 }
 
 async function parseJsonSafe(res: Response): Promise<Record<string, any>> {
+  const contentType = (res.headers.get('content-type') || '').toLowerCase();
   const text = await res.text();
+
+  if (!res.ok) {
+    if (text && (contentType.includes('application/json') || text.trim().startsWith('{'))) {
+      try {
+        const parsed = JSON.parse(text) as Record<string, any>;
+        return { success: false, ...parsed };
+      } catch {
+        // Fall through to structured HTTP status error below
+      }
+    }
+    return {
+      success: false,
+      message: `Payment server returned HTTP ${res.status}${res.statusText ? ` (${res.statusText})` : ''}. Please try again or use UPI QR.`
+    };
+  }
+
   if (!text) return {};
+  if (!contentType.includes('application/json') && !text.trim().startsWith('{')) {
+    return {
+      success: false,
+      message: `Unexpected non-JSON response from server (HTTP ${res.status}).`
+    };
+  }
   try {
     return JSON.parse(text) as Record<string, any>;
   } catch {
     return {
       success: false,
-      message: `Server returned HTTP ${res.status} (${res.statusText || 'Invalid JSON response'}).`
+      message: `Server returned malformed JSON (HTTP ${res.status}).`
     };
   }
 }
@@ -164,7 +187,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   // Fetch gateway config on mount (keeps public key in sync without ever exposing secrets)
   useEffect(() => {
     fetch('/api/payments/config')
-      .then((res) => (res.ok ? res.json() : null))
+      .then((res) => (res.ok ? parseJsonSafe(res) : null))
       .then((data) => {
         if (data && data.success) {
           setGatewayConfigured(Boolean(data.gatewayConfigured));
@@ -343,7 +366,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 gatewaySignature: resp.razorpay_signature
               })
             });
-            const verifyData = await verifyRes.json();
+            const verifyData = await parseJsonSafe(verifyRes);
             if (!verifyRes.ok || !verifyData.success) {
               throw new Error(verifyData.message || 'Mandate signature verification failed.');
             }
@@ -447,7 +470,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
             autoRenewConsent: true
           })
         });
-        const data = await res.json();
+        const data = await parseJsonSafe(res);
         if (!res.ok || !data.success) {
           throw new Error(data.message || 'Subscription creation failed.');
         }
@@ -510,7 +533,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
               paymentMethod: activeMethod
             })
           });
-          const data = await response.json();
+          const data = await parseJsonSafe(response);
           if (!response.ok || !data.success) {
             throw new Error(data.message || 'Order creation failed.');
           }
@@ -566,7 +589,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
         })
       });
 
-      const data = await response.json();
+      const data = await parseJsonSafe(response);
 
       if (!response.ok || !data.success) {
         throw new Error(data.message || 'UTR submission failed.');
@@ -587,7 +610,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
     setErrorMessage(null);
     try {
       const res = await fetch(`/api/payments/order/${encodeURIComponent(currentOrder.orderRef)}`);
-      const data = await res.json();
+      const data = await parseJsonSafe(res);
       if (res.ok && data.success && data.order) {
         setCurrentOrder(data.order);
       } else {
