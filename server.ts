@@ -530,6 +530,15 @@ app.post('/api/create-order', async (req: Request, res: Response) => {
   }
 });
 
+app.all('/api/create-order', (req: Request, res: Response) => {
+  res.setHeader('Allow', 'POST');
+  res.status(405).json({
+    success: false,
+    error: 'Method Not Allowed',
+    message: `Method ${req.method} is not allowed on /api/create-order. Use HTTP POST with a JSON body.`
+  });
+});
+
 /**
  * Create Payment Order (Server calculates trusted amount + 18% GST)
  * POST /api/payments/create-order
@@ -782,6 +791,15 @@ async function handleVerifyRazorpayPayment(req: Request, res: Response) {
 app.post('/api/verify-payment', handleVerifyRazorpayPayment);
 app.post('/api/payments/verify-gateway', handleVerifyRazorpayPayment);
 
+app.all(['/api/verify-payment', '/api/payments/verify-gateway'], (req: Request, res: Response) => {
+  res.setHeader('Allow', 'POST');
+  res.status(405).json({
+    success: false,
+    error: 'Method Not Allowed',
+    message: `Method ${req.method} is not allowed on ${req.path}. Use HTTP POST with a JSON body.`
+  });
+});
+
 /**
  * Verify Razorpay Subscription Mandate Signature
  * POST /api/subscriptions/verify-mandate
@@ -1019,6 +1037,15 @@ async function handleRazorpayWebhook(req: any, res: Response) {
 
 app.post('/api/payments/webhook', handleRazorpayWebhook);
 app.post('/api/webhook', handleRazorpayWebhook);
+
+app.all(['/api/payments/webhook', '/api/webhook'], (req: Request, res: Response) => {
+  res.setHeader('Allow', 'POST');
+  res.status(405).json({
+    success: false,
+    error: 'Method Not Allowed',
+    message: `Method ${req.method} is not allowed on ${req.path}. Webhook deliveries must use HTTP POST.`
+  });
+});
 
 // -------------------------------------------------------------
 // Admin Authentication Endpoints
@@ -1718,6 +1745,28 @@ app.delete('/api/admin/services/:id/image', requireAdminAuth, async (req: Authen
       message: err.message
     });
   }
+});
+
+// JSON API fallback & error handling (never let /api/* fall through to SPA HTML)
+app.all('/api/*', (req: Request, res: Response) => {
+  res.status(404).json({
+    success: false,
+    error: 'Not Found',
+    message: `API endpoint ${req.method} ${req.originalUrl} was not found.`
+  });
+});
+
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  if (req.path.startsWith('/api/')) {
+    const status = typeof err?.status === 'number' ? err.status : 400;
+    res.status(status).json({
+      success: false,
+      error: err?.type === 'entity.parse.failed' ? 'Invalid JSON Payload' : 'API Error',
+      message: err?.message || 'Unable to process API request.'
+    });
+    return;
+  }
+  next(err);
 });
 
 // Vite Frontend Middleware / Static Serve

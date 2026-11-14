@@ -1,5 +1,16 @@
 [
   {
+    "id": "audit_1794679812341_e3cc5d",
+    "userId": "public_customer",
+    "userEmail": "checkout@rubitechpark.com",
+    "userRole": "developer",
+    "action": "RAZORPAY_ORDER_CREATED",
+    "ipAddress": "127.0.0.1",
+    "resource": "RTP-ORD-2026-9BCC05 | order_U09Jj1LtKHpKQB (23600 paise)",
+    "timestamp": "2026-11-14T18:10:12.341Z",
+    "success": true
+  },
+  {
     "id": "audit_1794678236035_5545a7",
     "userId": "public_customer",
     "userEmail": "suresh@example.in",

@@ -81,6 +81,19 @@ function loadRazorpayCheckoutScript(): Promise<boolean> {
   });
 }
 
+async function parseJsonSafe(res: Response): Promise<Record<string, any>> {
+  const text = await res.text();
+  if (!text) return {};
+  try {
+    return JSON.parse(text) as Record<string, any>;
+  } catch {
+    return {
+      success: false,
+      message: `Server returned HTTP ${res.status} (${res.statusText || 'Invalid JSON response'}).`
+    };
+  }
+}
+
 export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   onNavigate,
   preselectedPlanId = 'starter-web',
@@ -349,7 +362,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 leadId: order.leadId || leadId
               })
             });
-            const verifyData = await verifyRes.json();
+            const verifyData = await parseJsonSafe(verifyRes);
             if (!verifyRes.ok || !verifyData.success || verifyData.payment?.status !== 'paid') {
               throw new Error(verifyData.message || 'Payment signature verification failed.');
             }
@@ -473,9 +486,9 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
               paymentMethod: activeMethod
             })
           });
-          const data = await createRes.json();
+          const data = await parseJsonSafe(createRes);
           if (!createRes.ok || !data.success || !data.orderId) {
-            throw new Error(data.message || 'Unable to create Razorpay checkout order.');
+            throw new Error(data.message || `Unable to create Razorpay checkout order (HTTP ${createRes.status}).`);
           }
           setCurrentSubscription(null);
           setCurrentOrder(data.order);

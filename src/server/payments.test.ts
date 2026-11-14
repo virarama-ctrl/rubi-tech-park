@@ -2,7 +2,9 @@ import { describe, it, after } from 'node:test';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
+import http from 'node:http';
 import path from 'node:path';
+import vercelHandler from '../../api/index';
 import {
   calculateGstBreakdown,
   calculateSubscriptionBreakdown,
@@ -351,5 +353,178 @@ describe('Environment & Secret Hygiene', () => {
     assert.equal(envExample.includes('VITE_RAZORPAY_KEY_ID='), true);
     assert.equal(envExample.includes('VITE_RAZORPAY_KEY_SECRET'), false);
     assert.equal(envExample.includes('VITE_RAZORPAY_WEBHOOK_SECRET'), false);
+  });
+});
+
+describe('Vercel Serverless Handler & HTTP Method Routing (/api/create-order, /api/verify-payment)', () => {
+  it('returns 405 JSON on GET /api/create-order and creates + verifies order on POST', async () => {
+    const prevKeyId = process.env.RAZORPAY_KEY_ID;
+    const prevKeySecret = process.env.RAZORPAY_KEY_SECRET;
+    const origFetch = globalThis.fetch;
+
+    process.env.RAZORPAY_KEY_ID = 'rzp_test_unit_handler';
+    process.env.RAZORPAY_KEY_SECRET = 'rzp_secret_unit_handler';
+
+    const server = http.createServer((req, res) => vercelHandler(req as any, res));
+    await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', () => resolve()));
+    const address = server.address() as { port: number };
+    const baseUrl = `http://127.0.0.1:${address.port}`;
+
+    const mockedRazorpayOrderId = `order_MockUnit_${Date.now()}`;
+
+    globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+      const targetUrl = typeof input === 'string' ? input : input.toString();
+      if (targetUrl === 'https://api.razorpay.com/v1/orders') {
+        const parsed = JSON.parse(String(init?.body || '{}'));
+        return new Response(
+          JSON.stringify({
+            id: mockedRazorpayOrderId,
+            entity: 'order',
+            amount: parsed.amount,
+            currency: parsed.currency,
+            receipt: parsed.receipt,
+            status: 'created'
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+      return origFetch(input, init);
+    }) as typeof fetch;
+
+    try {
+      // 1. GET /api/create-order must return 405 Method Not Allowed with Allow: POST JSON
+      const getOrderRes = await origFetch(`${baseUrl}/api/create-order`);
+      assert.equal(getOrderRes.status, 405);
+      assert.equal(getOrderRes.headers.get('allow'), 'POST');
+      const getOrderJson = (await getOrderRes.json()) as Record<string, any>;
+      assert.equal(getOrderJson.success, false);
+      assert.equal(getOrderJson.error, 'Method Not Allowed');
+
+      // 2. GET /api/verify-payment must return 405 Method Not Allowed JSON
+      const getVerifyRes = await origFetch(`${baseUrl}/api/verify-payment`);
+      assert.equal(getVerifyRes.status, 405);
+      assert.equal(getVerifyRes.headers.get('allow'), 'POST');
+      const getVerifyJson = (await getVerifyRes.json()) as Record<string, any>;
+      assert.equal(getVerifyJson.error, 'Method Not Allowed');
+
+      // 3. Unknown /api route must return 404 JSON (never HTML)
+      const notFoundRes = await origFetch(`${baseUrl}/api/does-not-exist`);
+      assert.equal(notFoundRes.status, 404);
+      const notFoundJson = (await notFoundRes.json()) as Record<string, any>;
+      assert.equal(notFoundJson.success, false);
+
+      // 4. POST /api/create-order creates a Razorpay order and returns 201 JSON
+      const createRes = await origFetch(`${baseUrl}/api/create-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          planId: 'eservice-booking',
+          amount: 23600,
+          currency: 'INR',
+          customerName: 'Vercel Route Tester',
+          customerEmail: 'vercel.tester@example.com',
+          customerPhone: '9876543210'
+        })
+      });
+      assert.equal(createRes.status, 201);
+      const createJson = (await createRes.json()) as Record<string, any>;
+      assert.equal(createJson.success, true);
+      assert.equal(createJson.orderId, mockedRazorpayOrderId);
+      assert.equal(createJson.amount, 23600);
+      assert.equal(createJson.currency, 'INR');
+
+      // 5. POST /api/verify-payment rejects bad signature and verifies valid HMAC-SHA256
+      const paymentId = `pay_MockUnit_${Date.now()}`;
+      const badVerifyRes = await origFetch(`${baseUrl}/api/verify-payment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderRef: createJson.receipt,
+          razorpay_order_id: mockedRazorpayOrderId,
+          razorpay_payment_id: paymentId,
+          razorpay_signature: 'invalid_sig'
+        })
+      });
+      assert.equal(badVerifyRes.status, 400);
+
+      const validSig = crypto
+        .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET!)
+        .update(`${mockedRazorpayOrderId}|${paymentId}`)
+        .digest('hex');
+
+      const goodVerifyRes = await origFetch(`${baseUrl}/api/verify-payment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderRef: createJson.receipt,
+          razorpay_order_id: mockedRazorpayOrderId,
+          razorpay_payment_id: paymentId,
+          razorpay_signature: validSig
+        })
+      });
+      assert.equal(goodVerifyRes.status, 200);
+      const goodVerifyJson = (await goodVerifyRes.json()) as Record<string, any>;
+      assert.equal(goodVerifyJson.success, true);
+      assert.equal(goodVerifyJson.verified, true);
+      assert.equal(goodVerifyJson.payment?.status, 'paid');
+
+      // 6. Simulate Vercel pre-parsed req.body (readableEnded: true) without stream stall
+      const preParsedResp = await new Promise<{ statusCode: number; body: string }>((resolve) => {
+        const mockReq: any = {
+          method: 'POST',
+          url: '/api/create-order',
+          originalUrl: '/api/create-order',
+          headers: { 'content-type': 'application/json' },
+          readableEnded: true,
+          socket: { remoteAddress: '127.0.0.1' },
+          body: {
+            planId: 'eservice-booking',
+            amount: 23600,
+            currency: 'INR',
+            customerName: 'PreParsed Tester',
+            customerEmail: 'preparsed@example.com',
+            customerPhone: '9876543210'
+          }
+        };
+        let chunks = '';
+        const headers: Record<string, string> = {};
+        const mockRes: any = {
+          statusCode: 200,
+          setHeader(k: string, v: string) {
+            headers[k.toLowerCase()] = String(v);
+          },
+          getHeader(k: string) {
+            return headers[k.toLowerCase()];
+          },
+          removeHeader(k: string) {
+            delete headers[k.toLowerCase()];
+          },
+          writeHead(code: number) {
+            this.statusCode = code;
+            return this;
+          },
+          write(chunk: any) {
+            chunks += Buffer.isBuffer(chunk) ? chunk.toString('utf-8') : String(chunk);
+            return true;
+          },
+          end(chunk?: any) {
+            if (chunk) chunks += Buffer.isBuffer(chunk) ? chunk.toString('utf-8') : String(chunk);
+            resolve({ statusCode: this.statusCode, body: chunks });
+          }
+        };
+        vercelHandler(mockReq, mockRes);
+      });
+      assert.equal(preParsedResp.statusCode, 201);
+      const preParsedJson = JSON.parse(preParsedResp.body);
+      assert.equal(preParsedJson.success, true);
+      assert.equal(preParsedJson.orderId, mockedRazorpayOrderId);
+    } finally {
+      globalThis.fetch = origFetch;
+      await new Promise<void>((resolve) => server.close(() => resolve()));
+      if (prevKeyId === undefined) delete process.env.RAZORPAY_KEY_ID;
+      else process.env.RAZORPAY_KEY_ID = prevKeyId;
+      if (prevKeySecret === undefined) delete process.env.RAZORPAY_KEY_SECRET;
+      else process.env.RAZORPAY_KEY_SECRET = prevKeySecret;
+    }
   });
 });
