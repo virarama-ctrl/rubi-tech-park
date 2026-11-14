@@ -4,7 +4,9 @@
     "experimentalDecorators": true,
     "useDefineForClassFields": false,
     "module": "ESNext",
-    "types": ["node"],
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
     "lib": [
       "ES2022",
       "DOM",
@@ -24,5 +26,9 @@
     "allowImportingTsExtensions": true,
     "noEmit": true
   },
-  "exclude": ["dist"]
+  "exclude": [
+    "dist",
+    "node_modules",
+    "api/_server.cjs"
+  ]
 }
