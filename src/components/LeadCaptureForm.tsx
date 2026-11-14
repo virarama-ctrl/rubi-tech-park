@@ -288,6 +288,18 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-[#E5E9F2] dark:border-white/10">
+          {activeTab === 'eservice' && referenceId && (
+            <button
+              type="button"
+              onClick={() => {
+                window.location.hash = `#/checkout?plan=eservice-booking&leadId=${encodeURIComponent(referenceId)}`;
+              }}
+              className="flex-1 py-3 px-4 rounded-xl cyber-button-primary text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer"
+            >
+              <span>{language === 'ta' ? '₹236 முன்பதிவு கட்டணம் செலுத்தவும்' : 'Pay ₹236 Booking Deposit'}</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </button>
+          )}
           {whatsappUrl && (
             <a
               href={whatsappUrl}

@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {
@@ -13,7 +14,9 @@ import {
 import { LeadFormData } from '../types';
 import { AdminUser, hashPassword } from './auth';
 
-const DATA_DIR = path.resolve(process.cwd(), 'data');
+const DATA_DIR = process.env.VERCEL
+  ? path.join(os.tmpdir(), 'rubi-crm-data')
+  : path.resolve(process.cwd(), 'data');
 const BACKUPS_DIR = path.join(DATA_DIR, 'backups');
 const LEADS_FILE = path.join(DATA_DIR, 'crm_leads.json');
 const USERS_FILE = path.join(DATA_DIR, 'crm_users.json');
@@ -402,6 +405,64 @@ export class CRMStorage {
     leads.splice(index, 1);
     atomicWriteJson(LEADS_FILE, leads);
     return true;
+  }
+
+  public linkVerifiedPaymentToLead(params: {
+    orderRef: string;
+    leadId?: string;
+    bookingId?: string;
+    customerEmail?: string;
+    customerPhone?: string;
+    gatewayPaymentId?: string;
+    receiptNumber?: string;
+    paidAmountINR: number;
+    verifiedAt: string;
+  }): StoredLead | null {
+    const leads = readJson<StoredLead[]>(LEADS_FILE, []);
+    const cleanLeadId = params.leadId?.trim();
+    const cleanBookingId = params.bookingId?.trim();
+    const cleanEmail = params.customerEmail?.trim().toLowerCase();
+    const cleanPhone = params.customerPhone?.replace(/\D/g, '').slice(-10);
+
+    let lead = leads.find(
+      (l) =>
+        (cleanLeadId && (l.id === cleanLeadId || l.referenceNumber === cleanLeadId || l.enquiryId === cleanLeadId)) ||
+        (cleanBookingId && (l.id === cleanBookingId || l.referenceNumber === cleanBookingId || l.enquiryId === cleanBookingId))
+    );
+
+    if (!lead && (cleanEmail || cleanPhone)) {
+      lead = leads.find((l) => {
+        const emailMatch = cleanEmail && l.email?.trim().toLowerCase() === cleanEmail;
+        const phoneMatch = cleanPhone && l.phone?.replace(/\D/g, '').slice(-10) === cleanPhone;
+        return (emailMatch || phoneMatch) && l.bookingPaymentStatus !== 'Verified Paid';
+      });
+    }
+
+    if (!lead) return null;
+
+    lead.bookingPaymentStatus = 'Verified Paid';
+    lead.linkedOrderRef = params.orderRef;
+    lead.gatewayPaymentId = params.gatewayPaymentId;
+    lead.receiptNumber = params.receiptNumber;
+    lead.paidAt = params.verifiedAt;
+    lead.updatedAt = params.verifiedAt;
+    if (lead.status === 'New' || lead.status === 'Payment Pending' || (lead.status as string) === 'Pending Payments') {
+      lead.status = 'Booking Confirmed';
+    }
+
+    lead.activityHistory.unshift({
+      id: `act_${Date.now()}_${crypto.randomBytes(2).toString('hex')}`,
+      leadId: lead.id,
+      performedBy: 'Payment Gateway Verification',
+      action: 'PAYMENT_VERIFIED',
+      details: `Verified payment ₹${params.paidAmountINR} linked (Order: ${params.orderRef}${
+        params.gatewayPaymentId ? `, Payment: ${params.gatewayPaymentId}` : ''
+      }).`,
+      timestamp: params.verifiedAt
+    });
+
+    atomicWriteJson(LEADS_FILE, leads);
+    return lead;
   }
 
   // --- Audit Logs ---

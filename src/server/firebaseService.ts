@@ -54,6 +54,11 @@ export interface FirestoreLeadRecord {
   consentStatus: boolean;
   bookingAmount?: number;
   paymentStatus: string;
+  linkedOrderRef?: string;
+  gatewayPaymentId?: string;
+  receiptNumber?: string;
+  paidAmountINR?: number;
+  paidAt?: string;
   createdAt: string;
   updatedAt: string;
   internalNotes: string;
@@ -565,6 +570,185 @@ export class FirebaseCRMService {
       console.warn('Non-blocking Firestore upsertOrder error:', err.message);
       return false;
     }
+  }
+
+  /**
+   * Fetch an Order from Firestore by orderRef or Razorpay gatewayOrderId (for serverless verification)
+   */
+  public async getOrderByGatewayOrRef(
+    orderRef?: string,
+    gatewayOrderId?: string
+  ): Promise<Record<string, any> | null> {
+    if (!this.db) return null;
+    try {
+      await this.ensureAdminAuth();
+      if (orderRef) {
+        const snap = await getDoc(doc(this.db, 'orders', orderRef));
+        if (snap.exists()) {
+          return snap.data() as Record<string, any>;
+        }
+      }
+      if (gatewayOrderId) {
+        const q = query(
+          collection(this.db, 'orders'),
+          where('gatewayOrderId', '==', gatewayOrderId)
+        );
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          return snap.docs[0].data() as Record<string, any>;
+        }
+      }
+      return null;
+    } catch (err: any) {
+      console.warn('Non-blocking Firestore getOrderByGatewayOrRef error:', err.message);
+      return null;
+    }
+  }
+
+  /**
+   * Check whether a Razorpay payment_id was already recorded on any order in Firestore
+   */
+  public async findOrderByGatewayPaymentId(
+    gatewayPaymentId: string
+  ): Promise<Record<string, any> | null> {
+    if (!this.db || !gatewayPaymentId) return null;
+    try {
+      await this.ensureAdminAuth();
+      const q = query(
+        collection(this.db, 'orders'),
+        where('gatewayPaymentId', '==', gatewayPaymentId)
+      );
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        return snap.docs[0].data() as Record<string, any>;
+      }
+      return null;
+    } catch (err: any) {
+      console.warn('Non-blocking Firestore findOrderByGatewayPaymentId error:', err.message);
+      return null;
+    }
+  }
+
+  /**
+   * Link a backend-verified payment to a matching customer / service booking / CRM lead.
+   * Only called AFTER cryptographic signature verification succeeds.
+   */
+  public async linkVerifiedPaymentToLead(params: {
+    orderRef: string;
+    leadId?: string;
+    bookingId?: string;
+    customerEmail?: string;
+    customerPhone?: string;
+    gatewayPaymentId?: string;
+    receiptNumber?: string;
+    paidAmountINR: number;
+    verifiedAt: string;
+  }): Promise<{ linkedLeadId: string | null }> {
+    let linkedLeadId: string | null = null;
+
+    // Mirror locally first
+    try {
+      const localLinked = crmStorage.linkVerifiedPaymentToLead(params);
+      if (localLinked) {
+        linkedLeadId = localLinked.enquiryId || localLinked.referenceNumber || localLinked.id;
+      }
+    } catch {
+      // Non-blocking on read-only environments
+    }
+
+    if (!this.db) {
+      return { linkedLeadId };
+    }
+
+    try {
+      await this.ensureAdminAuth();
+      let targetDocId: string | null = null;
+      let existingLead: FirestoreLeadRecord | null = null;
+
+      const candidateId = (params.leadId || params.bookingId || '').trim();
+      if (candidateId) {
+        const directSnap = await getDoc(doc(this.db, 'crm_leads', candidateId));
+        if (directSnap.exists()) {
+          targetDocId = directSnap.id;
+          existingLead = directSnap.data() as FirestoreLeadRecord;
+        }
+      }
+
+      if (!targetDocId && params.customerEmail) {
+        const q = query(
+          collection(this.db, 'crm_leads'),
+          where('email', '==', params.customerEmail.trim().toLowerCase())
+        );
+        const snap = await getDocs(q);
+        const match = snap.docs.find(
+          (d) => (d.data() as FirestoreLeadRecord).paymentStatus !== 'Verified Paid'
+        );
+        if (match) {
+          targetDocId = match.id;
+          existingLead = match.data() as FirestoreLeadRecord;
+        }
+      }
+
+      if (!targetDocId && params.customerPhone) {
+        const cleanDigits = params.customerPhone.replace(/\D/g, '').slice(-10);
+        if (cleanDigits.length === 10) {
+          const snap = await getDocs(collection(this.db, 'crm_leads'));
+          const match = snap.docs.find((d) => {
+            const data = d.data() as FirestoreLeadRecord;
+            const phoneDigits = (data.mobileNumber || '').replace(/\D/g, '').slice(-10);
+            return phoneDigits === cleanDigits && data.paymentStatus !== 'Verified Paid';
+          });
+          if (match) {
+            targetDocId = match.id;
+            existingLead = match.data() as FirestoreLeadRecord;
+          }
+        }
+      }
+
+      if (targetDocId && existingLead) {
+        const history = Array.isArray(existingLead.activityHistory)
+          ? [...existingLead.activityHistory]
+          : [];
+        const alreadyLogged = history.some(
+          (h) => h.action === 'PAYMENT_VERIFIED' && h.details.includes(params.orderRef)
+        );
+        if (!alreadyLogged) {
+          history.unshift({
+            id: `act_${Date.now()}`,
+            action: 'PAYMENT_VERIFIED',
+            details: `Verified payment ₹${params.paidAmountINR} linked (Order: ${params.orderRef}${
+              params.gatewayPaymentId ? `, Payment: ${params.gatewayPaymentId}` : ''
+            }).`,
+            timestamp: params.verifiedAt
+          });
+        }
+
+        const nextStatus =
+          existingLead.status === 'New' ||
+          existingLead.status === 'Pending Payments' ||
+          existingLead.status === 'Payment Pending'
+            ? 'Booking Confirmed'
+            : existingLead.status;
+
+        await updateDoc(doc(this.db, 'crm_leads', targetDocId), {
+          paymentStatus: 'Verified Paid',
+          status: nextStatus,
+          linkedOrderRef: params.orderRef,
+          gatewayPaymentId: params.gatewayPaymentId || null,
+          receiptNumber: params.receiptNumber || null,
+          paidAmountINR: params.paidAmountINR,
+          paidAt: params.verifiedAt,
+          updatedAt: params.verifiedAt,
+          activityHistory: history
+        });
+
+        linkedLeadId = targetDocId;
+      }
+    } catch (err: any) {
+      console.warn('Non-blocking Firestore linkVerifiedPaymentToLead error:', err.message);
+    }
+
+    return { linkedLeadId };
   }
 
   /**

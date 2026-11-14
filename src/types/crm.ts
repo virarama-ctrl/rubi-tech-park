@@ -42,7 +42,7 @@ export interface CRMActivityLog {
   id: string;
   leadId: string;
   performedBy: string;
-  action: 'STATUS_CHANGE' | 'NOTE_ADDED' | 'FOLLOWUP_SCHEDULED' | 'EMAIL_SENT' | 'WHATSAPP_CLICKED';
+  action: 'STATUS_CHANGE' | 'NOTE_ADDED' | 'FOLLOWUP_SCHEDULED' | 'EMAIL_SENT' | 'WHATSAPP_CLICKED' | 'PAYMENT_VERIFIED';
   details: string;
   timestamp: string;
 }
@@ -76,6 +76,10 @@ export interface StoredLead {
   bookingPaymentStatus?: 'None' | 'Pending' | 'Verified Paid' | 'Failed';
   bookingAmount?: number;
   balanceAmount?: number;
+  linkedOrderRef?: string;
+  gatewayPaymentId?: string;
+  receiptNumber?: string;
+  paidAt?: string;
   followUpDate?: string;
   assignedTo?: string;
   internalEstimatedValueINR?: number;
@@ -152,6 +156,7 @@ export interface PaymentRecord {
   subscriptionRef?: string;
   billingCycle?: BillingCycle;
   leadId?: string;
+  bookingId?: string;
   customerName: string;
   customerEmail: string;
   customerPhone: string;
@@ -159,6 +164,8 @@ export interface PaymentRecord {
   serviceId: string;
   serviceTitle: string;
   packageName?: string;
+  currency?: string;
+  amountPaise?: number;
   baseAmountINR: number;
   taxAmountINR: number;
   totalAmountINR: number;

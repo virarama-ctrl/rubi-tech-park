@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {
@@ -34,7 +35,9 @@ export {
 };
 export type { ServicePricingItem, SubscriptionPlanOption };
 
-const DATA_DIR = path.resolve(process.cwd(), 'data');
+const DATA_DIR = process.env.VERCEL
+  ? path.join(os.tmpdir(), 'rubi-crm-data')
+  : path.resolve(process.cwd(), 'data');
 const PAYMENTS_FILE = path.join(DATA_DIR, 'crm_payments.json');
 const SUBSCRIPTIONS_FILE = path.join(DATA_DIR, 'crm_subscriptions.json');
 const WEBHOOK_EVENTS_FILE = path.join(DATA_DIR, 'webhook_events.json');
@@ -121,6 +124,78 @@ export function computeNextBillingDate(fromIso: string, billingCycle: BillingCyc
   return next.toISOString();
 }
 
+export interface CreateOrderValidationResult {
+  valid: boolean;
+  amountPaise?: number;
+  currency?: 'INR';
+  receipt?: string;
+  error?: string;
+}
+
+export function validateCreateOrderInput(input: {
+  amount?: unknown;
+  currency?: unknown;
+  receipt?: unknown;
+}): CreateOrderValidationResult {
+  const rawCurrency =
+    input.currency === undefined || input.currency === null || String(input.currency).trim() === ''
+      ? 'INR'
+      : String(input.currency).trim().toUpperCase();
+
+  if (rawCurrency !== 'INR') {
+    return {
+      valid: false,
+      error: `Unsupported currency "${rawCurrency}". Only INR is supported.`
+    };
+  }
+
+  const parsedAmount = Number(input.amount);
+  if (!Number.isFinite(parsedAmount) || !Number.isInteger(parsedAmount) || parsedAmount < 100) {
+    return {
+      valid: false,
+      error: 'Amount must be an integer in paise of at least 100 paise (₹1.00).'
+    };
+  }
+
+  if (parsedAmount > 500000000) {
+    return {
+      valid: false,
+      error: 'Amount exceeds maximum single transaction limit.'
+    };
+  }
+
+  let normalizedReceipt: string | undefined;
+  if (input.receipt !== undefined && input.receipt !== null) {
+    const trimmed = String(input.receipt).trim();
+    if (!trimmed) {
+      return {
+        valid: false,
+        error: 'Receipt cannot be blank when explicitly provided.'
+      };
+    }
+    if (trimmed.length > 40) {
+      return {
+        valid: false,
+        error: 'Receipt identifier must be 40 characters or fewer (Razorpay limit).'
+      };
+    }
+    if (!/^[a-zA-Z0-9_.-]{1,40}$/.test(trimmed)) {
+      return {
+        valid: false,
+        error: 'Receipt may only contain letters, numbers, underscores, hyphens, and periods.'
+      };
+    }
+    normalizedReceipt = trimmed;
+  }
+
+  return {
+    valid: true,
+    amountPaise: parsedAmount,
+    currency: 'INR',
+    receipt: normalizedReceipt
+  };
+}
+
 export function getRazorpayConfigStatus(): {
   gatewayConfigured: boolean;
   mode: 'test' | 'live';
@@ -129,7 +204,7 @@ export function getRazorpayConfigStatus(): {
 } {
   const keyId = (process.env.RAZORPAY_KEY_ID || '').trim();
   const keySecret = (process.env.RAZORPAY_KEY_SECRET || '').trim();
-  const webhookSecret = (process.env.RAZORPAY_WEBHOOK_SECRET || process.env.PAYMENT_WEBHOOK_SECRET || '').trim();
+  const webhookSecret = (process.env.RAZORPAY_WEBHOOK_SECRET || '').trim();
   const modeRaw = (process.env.RAZORPAY_MODE || '').trim().toLowerCase();
   const mode: 'test' | 'live' =
     modeRaw === 'live' || keyId.startsWith('rzp_live_') ? 'live' : 'test';
@@ -175,13 +250,21 @@ function readJsonArray<T>(filePath: string): T[] {
 }
 
 async function createRemoteRazorpayOrder(params: {
-  amountINR: number;
+  amountINR?: number;
+  amountPaise?: number;
+  currency?: string;
   receipt: string;
   notes: Record<string, string>;
-}): Promise<{ id: string } | null> {
+}): Promise<{ id: string; amount?: number; currency?: string; receipt?: string } | null> {
   const keyId = (process.env.RAZORPAY_KEY_ID || '').trim();
   const keySecret = (process.env.RAZORPAY_KEY_SECRET || '').trim();
   if (!keyId || !keySecret) return null;
+
+  const amountPaise =
+    typeof params.amountPaise === 'number'
+      ? Math.round(params.amountPaise)
+      : Math.round((params.amountINR || 0) * 100);
+  const currency = (params.currency || 'INR').toUpperCase();
 
   const auth = Buffer.from(`${keyId}:${keySecret}`).toString('base64');
   const response = await fetch('https://api.razorpay.com/v1/orders', {
@@ -191,8 +274,8 @@ async function createRemoteRazorpayOrder(params: {
       Authorization: `Basic ${auth}`
     },
     body: JSON.stringify({
-      amount: Math.round(params.amountINR * 100),
-      currency: 'INR',
+      amount: amountPaise,
+      currency,
       receipt: params.receipt,
       notes: params.notes
     })
@@ -203,7 +286,7 @@ async function createRemoteRazorpayOrder(params: {
     throw new Error(`Razorpay Order API error (${response.status}): ${errText}`);
   }
 
-  return (await response.json()) as { id: string };
+  return (await response.json()) as { id: string; amount?: number; currency?: string; receipt?: string };
 }
 
 function getRazorpayPlanEnvName(planId: string, cycle: BillingCycle): string | undefined {
@@ -308,6 +391,18 @@ export class PaymentManager {
     firebaseCRM.upsertOrder(order as Record<string, any>).catch(() => {});
   }
 
+  private async persistOrderDurable(order: PaymentRecord, allPayments?: PaymentRecord[]): Promise<void> {
+    const list = allPayments || readJsonArray<PaymentRecord>(PAYMENTS_FILE);
+    const idx = list.findIndex((p) => p.id === order.id || p.orderRef === order.orderRef);
+    if (idx === -1) {
+      list.unshift(order);
+    } else {
+      list[idx] = order;
+    }
+    atomicWriteJson(PAYMENTS_FILE, list);
+    await firebaseCRM.upsertOrder(order as Record<string, any>);
+  }
+
   private persistSubscription(sub: CustomerSubscription, allSubs?: CustomerSubscription[]): void {
     const list = allSubs || readJsonArray<CustomerSubscription>(SUBSCRIPTIONS_FILE);
     const idx = list.findIndex(
@@ -322,16 +417,155 @@ export class PaymentManager {
     firebaseCRM.upsertSubscription(sub as Record<string, any>).catch(() => {});
   }
 
+  public async createStandardRazorpayOrder(params: {
+    planId?: string;
+    amount?: unknown;
+    currency?: unknown;
+    receipt?: unknown;
+    customerName?: string;
+    customerEmail?: string;
+    customerPhone?: string;
+    customerBusiness?: string;
+    leadId?: string;
+    bookingId?: string;
+    paymentMethod?: PaymentMethodType;
+    ipAddress: string;
+  }): Promise<{
+    id: string;
+    orderId: string;
+    amount: number;
+    currency: 'INR';
+    receipt: string;
+    order: PaymentRecord;
+  }> {
+    const configStatus = getRazorpayConfigStatus();
+    if (!configStatus.gatewayConfigured) {
+      throw new Error('RAZORPAY_NOT_CONFIGURED: Server Razorpay API credentials are not configured.');
+    }
+
+    const year = new Date().getFullYear();
+    const rand = crypto.randomBytes(3).toString('hex').toUpperCase();
+    const defaultReceipt = `RTP-ORD-${year}-${rand}`;
+
+    let service: ServicePricingItem | undefined;
+    let baseAmountINR = 0;
+    let taxAmountINR = 0;
+    let totalAmountINR = 0;
+    let rawAmountPaise: unknown = params.amount;
+
+    if (params.planId) {
+      service = TRUSTED_PRICING_CATALOG[params.planId];
+      if (!service) {
+        throw new Error(`VALIDATION_ERROR: Unknown service planId "${params.planId}".`);
+      }
+      const breakdown = calculateGstBreakdown(service.basePrice);
+      baseAmountINR = breakdown.baseAmountINR;
+      taxAmountINR = breakdown.taxAmountINR;
+      totalAmountINR = breakdown.totalAmountINR;
+      rawAmountPaise = Math.round(totalAmountINR * 100);
+    }
+
+    const validation = validateCreateOrderInput({
+      amount: rawAmountPaise,
+      currency: params.currency,
+      receipt: params.receipt ?? defaultReceipt
+    });
+
+    if (!validation.valid || !validation.amountPaise || !validation.receipt || !validation.currency) {
+      throw new Error(`VALIDATION_ERROR: ${validation.error || 'Invalid order request.'}`);
+    }
+
+    const amountPaise = validation.amountPaise;
+    const receipt = validation.receipt;
+    const currency = validation.currency;
+
+    if (!service) {
+      totalAmountINR = Number((amountPaise / 100).toFixed(2));
+      baseAmountINR = Number((totalAmountINR / 1.18).toFixed(2));
+      taxAmountINR = Number((totalAmountINR - baseAmountINR).toFixed(2));
+    }
+
+    const remoteOrder = await createRemoteRazorpayOrder({
+      amountPaise,
+      currency,
+      receipt,
+      notes: {
+        orderRef: receipt,
+        serviceId: service?.id || 'custom-service',
+        ...(params.leadId ? { leadId: params.leadId } : {}),
+        ...(params.bookingId ? { bookingId: params.bookingId } : {}),
+        ...(params.customerEmail ? { customerEmail: params.customerEmail.toLowerCase().trim() } : {})
+      }
+    });
+
+    if (!remoteOrder?.id) {
+      throw new Error('Failed to create Razorpay order ID.');
+    }
+
+    const now = new Date().toISOString();
+    const newPayment: PaymentRecord = {
+      id: `pay_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`,
+      orderRef: receipt,
+      leadId: params.leadId?.trim() || undefined,
+      bookingId: params.bookingId?.trim() || undefined,
+      customerName: params.customerName?.trim() || 'RUBI TECH PARK Customer',
+      customerEmail: params.customerEmail?.toLowerCase().trim() || '',
+      customerPhone: params.customerPhone?.trim() || '',
+      customerBusiness: params.customerBusiness?.trim(),
+      serviceId: service?.id || 'custom-order',
+      serviceTitle: service?.name || 'RUBI TECH PARK Digital Service',
+      orderType: 'one_time',
+      currency,
+      amountPaise,
+      baseAmountINR,
+      taxAmountINR,
+      totalAmountINR,
+      paymentMethod: params.paymentMethod || 'razorpay_checkout',
+      status: 'created',
+      signatureVerified: false,
+      refundStatus: 'none',
+      gatewayProvider: 'razorpay',
+      gatewayMode: configStatus.mode === 'live' ? 'razorpay_live' : 'razorpay_test',
+      gatewayOrderId: remoteOrder.id,
+      createdAt: now,
+      updatedAt: now
+    };
+
+    await this.persistOrderDurable(newPayment);
+
+    crmStorage.addAuditLog({
+      userId: 'public_customer',
+      userEmail: newPayment.customerEmail || 'checkout@rubitechpark.com',
+      userRole: 'developer',
+      action: 'RAZORPAY_ORDER_CREATED',
+      ipAddress: params.ipAddress,
+      resource: `${receipt} | ${remoteOrder.id} (${amountPaise} paise)`,
+      success: true
+    });
+
+    return {
+      id: remoteOrder.id,
+      orderId: remoteOrder.id,
+      amount: amountPaise,
+      currency,
+      receipt,
+      order: newPayment
+    };
+  }
+
   public async createOrder(params: {
     planId: string;
     customerName: string;
     customerEmail: string;
     customerPhone: string;
     customerBusiness?: string;
+    leadId?: string;
+    bookingId?: string;
     paymentMethod: PaymentMethodType;
     ipAddress: string;
   }): Promise<PaymentRecord> {
     const { service, baseAmountINR, taxAmountINR, totalAmountINR } = this.calculateOrderTotal(params.planId);
+    const amountPaise = Math.round(totalAmountINR * 100);
 
     const year = new Date().getFullYear();
     const rand = crypto.randomBytes(3).toString('hex').toUpperCase();
@@ -342,11 +576,13 @@ export class PaymentManager {
     let gatewayOrderId: string | undefined;
     if (configStatus.gatewayConfigured) {
       const remoteOrder = await createRemoteRazorpayOrder({
-        amountINR: totalAmountINR,
+        amountPaise,
+        currency: 'INR',
         receipt: orderRef,
         notes: {
           orderRef,
           serviceId: service.id,
+          ...(params.leadId ? { leadId: params.leadId } : {}),
           customerEmail: params.customerEmail.toLowerCase().trim()
         }
       });
@@ -359,6 +595,8 @@ export class PaymentManager {
     const newPayment: PaymentRecord = {
       id,
       orderRef,
+      leadId: params.leadId?.trim() || undefined,
+      bookingId: params.bookingId?.trim() || undefined,
       customerName: params.customerName.trim(),
       customerEmail: params.customerEmail.toLowerCase().trim(),
       customerPhone: params.customerPhone.trim(),
@@ -366,19 +604,27 @@ export class PaymentManager {
       serviceId: service.id,
       serviceTitle: service.name,
       orderType: 'one_time',
+      currency: 'INR',
+      amountPaise,
       baseAmountINR,
       taxAmountINR,
       totalAmountINR,
       paymentMethod: params.paymentMethod,
       status: 'created',
+      signatureVerified: false,
       refundStatus: 'none',
       gatewayProvider: configStatus.gatewayConfigured ? 'razorpay' : 'upi_direct',
+      gatewayMode: configStatus.gatewayConfigured
+        ? configStatus.mode === 'live'
+          ? 'razorpay_live'
+          : 'razorpay_test'
+        : 'upi_direct',
       gatewayOrderId,
       createdAt: now,
       updatedAt: now
     };
 
-    this.persistOrder(newPayment);
+    await this.persistOrderDurable(newPayment);
 
     crmStorage.addAuditLog({
       userId: 'public_customer',
@@ -685,38 +931,76 @@ export class PaymentManager {
   }
 
   /**
-   * Strict Razorpay Order Payment Verification (HMAC-SHA256 using RAZORPAY_KEY_SECRET)
+   * Strict Razorpay Order Payment Verification (HMAC-SHA256 + Timing-Safe Comparison + Duplicate Prevention)
    */
-  public verifyGatewayPayment(params: {
-    orderRef: string;
+  public async verifyGatewayPayment(params: {
+    orderRef?: string;
     gatewayOrderId: string;
     gatewayPaymentId: string;
     gatewaySignature: string;
+    leadId?: string;
+    bookingId?: string;
     ipAddress: string;
-  }): { success: boolean; payment?: PaymentRecord; message: string } {
+  }): Promise<{
+    success: boolean;
+    alreadyProcessed?: boolean;
+    conflict?: boolean;
+    notConfigured?: boolean;
+    linkedLeadId?: string | null;
+    payment?: PaymentRecord;
+    message: string;
+  }> {
     const secret = (process.env.RAZORPAY_KEY_SECRET || '').trim();
     if (!secret) {
       return {
         success: false,
+        notConfigured: true,
         message: 'Razorpay key secret is not configured on the server.'
       };
     }
 
+    if (!params.gatewayOrderId || !params.gatewayPaymentId || !params.gatewaySignature) {
+      return {
+        success: false,
+        message: 'Missing required payment verification parameters (order_id, payment_id, signature).'
+      };
+    }
+
     const payments = readJsonArray<PaymentRecord>(PAYMENTS_FILE);
-    const index = payments.findIndex(
+    let index = payments.findIndex(
       (p) =>
-        p.orderRef === params.orderRef ||
-        p.id === params.orderRef ||
+        (params.orderRef && (p.orderRef === params.orderRef || p.id === params.orderRef)) ||
         (params.gatewayOrderId && p.gatewayOrderId === params.gatewayOrderId)
     );
 
-    if (index === -1) {
-      return { success: false, message: 'Order reference not found.' };
+    let payment: PaymentRecord | undefined = index !== -1 ? payments[index] : undefined;
+
+    // Vercel serverless cold-start fallback: inspect Firestore `orders` collection
+    if (!payment) {
+      const firestoreOrder = await firebaseCRM.getOrderByGatewayOrRef(
+        params.orderRef,
+        params.gatewayOrderId
+      );
+      if (firestoreOrder) {
+        payment = firestoreOrder as PaymentRecord;
+        payments.unshift(payment);
+        index = 0;
+      }
     }
 
-    const payment = payments[index];
-    const orderIdToVerify = payment.gatewayOrderId || params.gatewayOrderId;
+    if (!payment) {
+      return { success: false, message: 'Matching order reference not found.' };
+    }
 
+    const orderIdToVerify = payment.gatewayOrderId || params.gatewayOrderId;
+    if (payment.gatewayOrderId && params.gatewayOrderId && payment.gatewayOrderId !== params.gatewayOrderId) {
+      return {
+        success: false,
+        message: 'Razorpay order ID does not match the recorded order.'
+      };
+    }
+
+    // Strict HMAC-SHA256 + timing-safe comparison BEFORE mutating any state
     const valid = verifyRazorpayOrderSignature(
       orderIdToVerify,
       params.gatewayPaymentId,
@@ -727,7 +1011,7 @@ export class PaymentManager {
     if (!valid) {
       crmStorage.addAuditLog({
         userId: 'gateway_system',
-        userEmail: payment.customerEmail,
+        userEmail: payment.customerEmail || 'unknown@rubitechpark.com',
         userRole: 'developer',
         action: 'PAYMENT_SIGNATURE_INVALID',
         ipAddress: params.ipAddress,
@@ -737,13 +1021,66 @@ export class PaymentManager {
       return { success: false, message: 'Payment signature verification failed (HMAC mismatch).' };
     }
 
+    // Prevent duplicate payment ID reuse across different orders
+    const localPaymentConflict = payments.find(
+      (p) =>
+        p.gatewayPaymentId === params.gatewayPaymentId &&
+        p.orderRef !== payment!.orderRef
+    );
+    const remotePaymentConflict = !localPaymentConflict
+      ? await firebaseCRM.findOrderByGatewayPaymentId(params.gatewayPaymentId)
+      : null;
+    const conflictOrderRef = localPaymentConflict?.orderRef || remotePaymentConflict?.orderRef;
+
+    if (conflictOrderRef && conflictOrderRef !== payment.orderRef) {
+      return {
+        success: false,
+        conflict: true,
+        message: `Duplicate payment rejected: payment ID ${params.gatewayPaymentId} is already bound to order ${conflictOrderRef}.`
+      };
+    }
+
+    // Idempotent duplicate handling for already-paid same order
+    if (payment.status === 'paid') {
+      if (!payment.gatewayPaymentId || payment.gatewayPaymentId === params.gatewayPaymentId) {
+        const linkResult = await firebaseCRM.linkVerifiedPaymentToLead({
+          orderRef: payment.orderRef,
+          leadId: payment.leadId || params.leadId,
+          bookingId: payment.bookingId || params.bookingId,
+          customerEmail: payment.customerEmail,
+          customerPhone: payment.customerPhone,
+          gatewayPaymentId: payment.gatewayPaymentId || params.gatewayPaymentId,
+          receiptNumber: payment.receiptNumber,
+          paidAmountINR: payment.totalAmountINR,
+          verifiedAt: payment.verifiedAt || payment.updatedAt
+        });
+        return {
+          success: true,
+          alreadyProcessed: true,
+          linkedLeadId: linkResult.linkedLeadId,
+          payment,
+          message: 'Payment already verified and recorded.'
+        };
+      }
+
+      return {
+        success: false,
+        conflict: true,
+        message: `Order ${payment.orderRef} is already settled with another payment ID.`
+      };
+    }
+
     const now = new Date().toISOString();
     const year = new Date().getFullYear();
     const receiptNum =
       payment.receiptNumber ||
       `RTP-REC-${year}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
 
+    if (params.leadId && !payment.leadId) payment.leadId = params.leadId.trim();
+    if (params.bookingId && !payment.bookingId) payment.bookingId = params.bookingId.trim();
+
     payment.status = 'paid';
+    payment.signatureVerified = true;
     payment.gatewayProvider = 'razorpay';
     payment.gatewayOrderId = orderIdToVerify;
     payment.gatewayPaymentId = params.gatewayPaymentId;
@@ -752,21 +1089,38 @@ export class PaymentManager {
     payment.verifiedAt = now;
     payment.updatedAt = now;
 
-    this.persistOrder(payment, payments);
+    await this.persistOrderDurable(payment, payments);
     this.activateLinkedSubscriptionIfNeeded(payment, now);
+
+    // Only link booking/lead AFTER verification & persistence succeed
+    const linkResult = await firebaseCRM.linkVerifiedPaymentToLead({
+      orderRef: payment.orderRef,
+      leadId: payment.leadId,
+      bookingId: payment.bookingId,
+      customerEmail: payment.customerEmail,
+      customerPhone: payment.customerPhone,
+      gatewayPaymentId: payment.gatewayPaymentId,
+      receiptNumber: receiptNum,
+      paidAmountINR: payment.totalAmountINR,
+      verifiedAt: now
+    });
 
     crmStorage.addAuditLog({
       userId: 'gateway_system',
-      userEmail: payment.customerEmail,
+      userEmail: payment.customerEmail || 'checkout@rubitechpark.com',
       userRole: 'developer',
       action: 'PAYMENT_VERIFIED_SUCCESS',
       ipAddress: params.ipAddress,
-      resource: `${payment.orderRef} | ${receiptNum}`,
+      resource: `${payment.orderRef} | ${receiptNum}${
+        linkResult.linkedLeadId ? ` | Lead:${linkResult.linkedLeadId}` : ''
+      }`,
       success: true
     });
 
     return {
       success: true,
+      alreadyProcessed: false,
+      linkedLeadId: linkResult.linkedLeadId,
       payment,
       message: 'Payment signature verified successfully.'
     };
@@ -1039,6 +1393,19 @@ export class PaymentManager {
 
     this.persistOrder(payment, payments);
     this.activateLinkedSubscriptionIfNeeded(payment, now);
+    firebaseCRM
+      .linkVerifiedPaymentToLead({
+        orderRef: payment.orderRef,
+        leadId: payment.leadId,
+        bookingId: payment.bookingId,
+        customerEmail: payment.customerEmail,
+        customerPhone: payment.customerPhone,
+        gatewayPaymentId: payment.upiTransactionRef || payment.gatewayPaymentId,
+        receiptNumber: receiptNum,
+        paidAmountINR: payment.totalAmountINR,
+        verifiedAt: now
+      })
+      .catch(() => {});
 
     crmStorage.addAuditLog({
       userId: adminName,
@@ -1250,13 +1617,21 @@ export class PaymentManager {
         const gatewayOrderId = paymentEntity?.order_id;
         const gatewayPaymentId = paymentEntity?.id;
         const orderRefNote = paymentEntity?.notes?.orderRef;
-        const target = payments.find(
+        let target = payments.find(
           (p) =>
             (gatewayOrderId && p.gatewayOrderId === gatewayOrderId) ||
             (orderRefNote && p.orderRef === orderRefNote)
         );
+        if (!target && (gatewayOrderId || orderRefNote)) {
+          const remoteOrder = await firebaseCRM.getOrderByGatewayOrRef(orderRefNote, gatewayOrderId);
+          if (remoteOrder) {
+            target = remoteOrder as PaymentRecord;
+            payments.unshift(target);
+          }
+        }
         if (target) {
           target.status = 'paid';
+          target.signatureVerified = true;
           target.gatewayProvider = 'razorpay';
           if (gatewayPaymentId) target.gatewayPaymentId = gatewayPaymentId;
           if (!target.receiptNumber) {
@@ -1265,10 +1640,21 @@ export class PaymentManager {
               .toString('hex')
               .toUpperCase()}`;
           }
-          target.verifiedAt = now;
+          target.verifiedAt = target.verifiedAt || now;
           target.updatedAt = now;
-          this.persistOrder(target, payments);
+          await this.persistOrderDurable(target, payments);
           this.activateLinkedSubscriptionIfNeeded(target, now);
+          await firebaseCRM.linkVerifiedPaymentToLead({
+            orderRef: target.orderRef,
+            leadId: target.leadId || paymentEntity?.notes?.leadId,
+            bookingId: target.bookingId || paymentEntity?.notes?.bookingId,
+            customerEmail: target.customerEmail,
+            customerPhone: target.customerPhone,
+            gatewayPaymentId: target.gatewayPaymentId,
+            receiptNumber: target.receiptNumber,
+            paidAmountINR: target.totalAmountINR,
+            verifiedAt: now
+          });
           summary = `Marked order ${target.orderRef} paid via webhook payment.captured (${gatewayPaymentId || 'n/a'}).`;
         }
         break;

@@ -48,11 +48,14 @@ declare global {
   }
 }
 
+const ENV_RAZORPAY_KEY_ID = (import.meta.env.VITE_RAZORPAY_KEY_ID || '').trim();
+
 interface CheckoutPageProps {
   onNavigate: (route: PageRoute) => void;
   preselectedPlanId?: string;
   initialMode?: 'one_time' | 'subscription';
   initialBillingCycle?: BillingCycle;
+  leadId?: string;
 }
 
 function loadRazorpayCheckoutScript(): Promise<boolean> {
@@ -82,7 +85,8 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   onNavigate,
   preselectedPlanId = 'starter-web',
   initialMode = 'one_time',
-  initialBillingCycle = 'monthly'
+  initialBillingCycle = 'monthly',
+  leadId
 }) => {
   const { language, t } = useLanguage();
   const isTa = language === 'ta';
@@ -119,16 +123,20 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerBusiness, setCustomerBusiness] = useState('');
 
-  // Server Payment Gateway Config
-  const [gatewayConfigured, setGatewayConfigured] = useState(false);
-  const [gatewayMode, setGatewayMode] = useState<'test' | 'live'>('test');
-  const [razorpayKeyId, setRazorpayKeyId] = useState<string | null>(null);
+  // Server Payment Gateway Config (reads public VITE_RAZORPAY_KEY_ID first)
+  const [gatewayConfigured, setGatewayConfigured] = useState(Boolean(ENV_RAZORPAY_KEY_ID));
+  const [gatewayMode, setGatewayMode] = useState<'test' | 'live'>(
+    ENV_RAZORPAY_KEY_ID.startsWith('rzp_live_') ? 'live' : 'test'
+  );
+  const [razorpayKeyId, setRazorpayKeyId] = useState<string | null>(ENV_RAZORPAY_KEY_ID || null);
   const [businessUpiId, setBusinessUpiId] = useState<string>(BUSINESS_UPI_ID);
 
   // Processing & Order States
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRechecking, setIsRechecking] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [paymentStatusNotice, setPaymentStatusNotice] = useState<string | null>(null);
+  const [modalDismissed, setModalDismissed] = useState(false);
   const [currentOrder, setCurrentOrder] = useState<PaymentRecord | null>(null);
   const [currentSubscription, setCurrentSubscription] = useState<CustomerSubscription | null>(null);
   const [upiQrDataUrl, setUpiQrDataUrl] = useState<string>('');
@@ -140,7 +148,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const [utrInput, setUtrInput] = useState('');
   const [isSubmittingUtr, setIsSubmittingUtr] = useState(false);
 
-  // Fetch gateway config on mount
+  // Fetch gateway config on mount (keeps public key in sync without ever exposing secrets)
   useEffect(() => {
     fetch('/api/payments/config')
       .then((res) => (res.ok ? res.json() : null))
@@ -148,7 +156,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
         if (data && data.success) {
           setGatewayConfigured(Boolean(data.gatewayConfigured));
           setGatewayMode(data.mode === 'live' ? 'live' : 'test');
-          setRazorpayKeyId(data.razorpayKeyId || null);
+          setRazorpayKeyId(ENV_RAZORPAY_KEY_ID || data.razorpayKeyId || null);
           if (data.businessUpiId) setBusinessUpiId(data.businessUpiId);
         }
       })
@@ -237,12 +245,25 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
     setTimeout(() => setCopiedOrderRef(false), 2500);
   };
 
-  // Launch official Razorpay Checkout Modal (Only when gatewayConfigured is true)
+  // Launch official Razorpay Standard Checkout Modal (only after backend order creation)
   const launchRazorpayCheckout = async (
     order: PaymentRecord,
     sub: CustomerSubscription | null,
     keyId: string
   ) => {
+    setModalDismissed(false);
+    setPaymentStatusNotice(null);
+
+    const publicKeyId = ENV_RAZORPAY_KEY_ID || keyId;
+    if (!publicKeyId) {
+      setErrorMessage(
+        isTa
+          ? 'Razorpay பொது சாவி (VITE_RAZORPAY_KEY_ID) கட்டமைக்கப்படவில்லை. UPI QR மூலம் தொடரலாம்.'
+          : 'Razorpay public Key ID is not configured. Please complete payment via Business UPI QR below.'
+      );
+      return;
+    }
+
     const loaded = await loadRazorpayCheckoutScript();
     if (!loaded || !window.Razorpay) {
       setErrorMessage(
@@ -255,10 +276,10 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
     const isSubMandate = Boolean(sub && sub.gatewaySubscriptionId);
     const rzpOptions: Record<string, any> = {
-      key: keyId,
+      key: publicKeyId,
       name: 'RUBI TECH PARK',
       description: order.serviceTitle,
-      currency: 'INR',
+      currency: order.currency || 'INR',
       prefill: {
         name: order.customerName,
         email: order.customerEmail,
@@ -266,10 +287,22 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
       },
       notes: {
         orderRef: order.orderRef,
+        ...(order.leadId || leadId ? { leadId: order.leadId || leadId } : {}),
         ...(sub ? { subscriptionRef: sub.subscriptionRef } : {})
       },
       theme: {
         color: '#315D82'
+      },
+      modal: {
+        ondismiss: () => {
+          setIsSubmitting(false);
+          setModalDismissed(true);
+          setPaymentStatusNotice(
+            isTa
+              ? 'கட்டண சாளரம் மூடப்பட்டது. உங்கள் ஆர்டர் இன்னும் செலுத்தப்படவில்லை (Unpaid). மீண்டும் முயற்சிக்கவும் அல்லது UPI QR மூலம் செலுத்தவும்.'
+              : 'Razorpay checkout modal was dismissed before completion. Your order remains unpaid — click Pay via Razorpay below to retry or use UPI QR.'
+          );
+        }
       },
       handler: async (resp: {
         razorpay_payment_id: string;
@@ -278,7 +311,11 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
         razorpay_signature: string;
       }) => {
         setIsSubmitting(true);
+        setModalDismissed(false);
         setErrorMessage(null);
+        setPaymentStatusNotice(
+          isTa ? 'சேவையகத்தில் கட்டண கையொப்பம் சரிபார்க்கப்படுகிறது...' : 'Verifying payment signature securely on server...'
+        );
         try {
           if (sub) {
             const verifyRes = await fetch('/api/subscriptions/verify-mandate', {
@@ -299,24 +336,28 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
             }
             if (verifyData.subscription) setCurrentSubscription(verifyData.subscription);
             if (verifyData.payment) setCurrentOrder(verifyData.payment);
+            setPaymentStatusNotice(null);
           } else {
-            const verifyRes = await fetch('/api/payments/verify-gateway', {
+            const verifyRes = await fetch('/api/verify-payment', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 orderRef: order.orderRef,
-                gatewayOrderId: resp.razorpay_order_id || order.gatewayOrderId,
-                gatewayPaymentId: resp.razorpay_payment_id,
-                gatewaySignature: resp.razorpay_signature
+                razorpay_order_id: resp.razorpay_order_id || order.gatewayOrderId,
+                razorpay_payment_id: resp.razorpay_payment_id,
+                razorpay_signature: resp.razorpay_signature,
+                leadId: order.leadId || leadId
               })
             });
             const verifyData = await verifyRes.json();
-            if (!verifyRes.ok || !verifyData.success) {
+            if (!verifyRes.ok || !verifyData.success || verifyData.payment?.status !== 'paid') {
               throw new Error(verifyData.message || 'Payment signature verification failed.');
             }
             setCurrentOrder(verifyData.payment);
+            setPaymentStatusNotice(null);
           }
         } catch (verifyErr: any) {
+          setPaymentStatusNotice(null);
           setErrorMessage(verifyErr.message || 'Could not verify gateway signature.');
         } finally {
           setIsSubmitting(false);
@@ -328,7 +369,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
       rzpOptions.subscription_id = sub.gatewaySubscriptionId;
     } else if (order.gatewayOrderId && order.gatewayOrderId.startsWith('order_')) {
       rzpOptions.order_id = order.gatewayOrderId;
-      rzpOptions.amount = Math.round(order.totalAmountINR * 100);
+      rzpOptions.amount = order.amountPaise || Math.round(order.totalAmountINR * 100);
     } else {
       setErrorMessage(
         isTa
@@ -340,18 +381,22 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
     const instance = new window.Razorpay(rzpOptions);
     instance.on('payment.failed', (failureResp: any) => {
+      setIsSubmitting(false);
+      setPaymentStatusNotice(null);
       const reason =
         failureResp?.error?.description ||
-        (isTa ? 'கட்டணம் ரத்து செய்யப்பட்டது அல்லது தோல்வியடைந்தது.' : 'Payment declined by issuing bank.');
+        (isTa ? 'கட்டணம் ரத்து செய்யப்பட்டது அல்லது தோல்வியடைந்தது.' : 'Payment failed or declined by issuing bank.');
       setErrorMessage(reason);
     });
     instance.open();
   };
 
-  // Step 1: Create Trusted Order or Subscription Order
+  // Step 1: Create Trusted Order or Subscription Order BEFORE opening checkout
   const handleInitiateOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
+    setPaymentStatusNotice(null);
+    setModalDismissed(false);
 
     if (!customerName.trim() || !customerEmail.trim() || !customerPhone.trim()) {
       setErrorMessage(
@@ -397,45 +442,80 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
         setCurrentOrder(data.order);
         if (data.businessUpiId) setBusinessUpiId(data.businessUpiId);
         if (typeof data.gatewayConfigured === 'boolean') setGatewayConfigured(data.gatewayConfigured);
-        if (data.razorpayKeyId) setRazorpayKeyId(data.razorpayKeyId);
+        const effectiveKey = ENV_RAZORPAY_KEY_ID || data.razorpayKeyId || razorpayKeyId;
+        if (effectiveKey) setRazorpayKeyId(effectiveKey);
 
         if (
           data.gatewayConfigured &&
-          data.razorpayKeyId &&
+          effectiveKey &&
           (activeMethod === 'card' || activeMethod === 'netbanking' || activeMethod === 'razorpay_checkout')
         ) {
-          await launchRazorpayCheckout(data.order, data.subscription, data.razorpayKeyId);
+          await launchRazorpayCheckout(data.order, data.subscription, effectiveKey);
         }
       } else {
-        const response = await fetch('/api/payments/create-order', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            planId: selectedOneTimeId,
-            customerName,
-            customerEmail,
-            customerPhone,
-            customerBusiness,
-            paymentMethod: activeMethod
-          })
-        });
-        const data = await response.json();
-        if (!response.ok || !data.success) {
-          throw new Error(data.message || 'Order creation failed.');
-        }
+        const useRazorpayStandard =
+          gatewayConfigured &&
+          (activeMethod === 'card' || activeMethod === 'netbanking' || activeMethod === 'razorpay_checkout');
 
-        setCurrentSubscription(null);
-        setCurrentOrder(data.order);
-        if (data.businessUpiId) setBusinessUpiId(data.businessUpiId);
-        if (typeof data.gatewayConfigured === 'boolean') setGatewayConfigured(data.gatewayConfigured);
-        if (data.razorpayKeyId) setRazorpayKeyId(data.razorpayKeyId);
+        if (useRazorpayStandard) {
+          const createRes = await fetch('/api/create-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              planId: selectedOneTimeId,
+              amount: Math.round(totalAmount * 100),
+              currency: 'INR',
+              customerName,
+              customerEmail,
+              customerPhone,
+              customerBusiness,
+              leadId,
+              paymentMethod: activeMethod
+            })
+          });
+          const data = await createRes.json();
+          if (!createRes.ok || !data.success || !data.orderId) {
+            throw new Error(data.message || 'Unable to create Razorpay checkout order.');
+          }
+          setCurrentSubscription(null);
+          setCurrentOrder(data.order);
+          const effectiveKey = ENV_RAZORPAY_KEY_ID || razorpayKeyId;
+          if (effectiveKey) {
+            await launchRazorpayCheckout(data.order, null, effectiveKey);
+          }
+        } else {
+          const response = await fetch('/api/payments/create-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              planId: selectedOneTimeId,
+              customerName,
+              customerEmail,
+              customerPhone,
+              customerBusiness,
+              leadId,
+              paymentMethod: activeMethod
+            })
+          });
+          const data = await response.json();
+          if (!response.ok || !data.success) {
+            throw new Error(data.message || 'Order creation failed.');
+          }
 
-        if (
-          data.gatewayConfigured &&
-          data.razorpayKeyId &&
-          (activeMethod === 'card' || activeMethod === 'netbanking' || activeMethod === 'razorpay_checkout')
-        ) {
-          await launchRazorpayCheckout(data.order, null, data.razorpayKeyId);
+          setCurrentSubscription(null);
+          setCurrentOrder(data.order);
+          if (data.businessUpiId) setBusinessUpiId(data.businessUpiId);
+          if (typeof data.gatewayConfigured === 'boolean') setGatewayConfigured(data.gatewayConfigured);
+          const effectiveKey = ENV_RAZORPAY_KEY_ID || data.razorpayKeyId || razorpayKeyId;
+          if (effectiveKey) setRazorpayKeyId(effectiveKey);
+
+          if (
+            data.gatewayConfigured &&
+            effectiveKey &&
+            (activeMethod === 'card' || activeMethod === 'netbanking' || activeMethod === 'razorpay_checkout')
+          ) {
+            await launchRazorpayCheckout(data.order, null, effectiveKey);
+          }
         }
       }
     } catch (err: any) {
@@ -516,6 +596,8 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
     setCurrentSubscription(null);
     setUtrInput('');
     setErrorMessage(null);
+    setPaymentStatusNotice(null);
+    setModalDismissed(false);
   };
 
   // -------------------------------------------------------------
@@ -871,6 +953,13 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
         <div className="mb-6 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-500/40 text-rose-700 dark:text-rose-300 text-sm flex items-start gap-2.5">
           <AlertCircle className="w-5 h-5 shrink-0 text-rose-600 dark:text-rose-400 mt-0.5" />
           <span>{errorMessage}</span>
+        </div>
+      )}
+
+      {paymentStatusNotice && !errorMessage && (
+        <div className="mb-6 p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-500/40 text-amber-800 dark:text-amber-200 text-sm flex items-start gap-2.5">
+          <Clock className="w-5 h-5 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
+          <span>{paymentStatusNotice}</span>
         </div>
       )}
 
@@ -1241,6 +1330,18 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     <span className="text-xs text-[#526477] dark:text-[#B8C5D4]">{t.checkout.amountPayable}</span>
                     <div className="text-2xl font-bold font-mono text-[#182638] dark:text-[#F1F5F9]">
                       ₹{currentOrder.totalAmountINR.toLocaleString('en-IN')}
+                    </div>
+                    <div className="mt-1 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-mono font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-700/50">
+                      <Clock className="w-3 h-3" />
+                      <span>
+                        {modalDismissed
+                          ? isTa
+                            ? 'சாளரம் மூடப்பட்டது • செலுத்தப்படவில்லை'
+                            : 'Checkout Dismissed • Unpaid'
+                          : isTa
+                          ? 'கட்டணம் நிலுவையில் உள்ளது'
+                          : 'Order Created • Awaiting Payment'}
+                      </span>
                     </div>
                   </div>
                 </div>

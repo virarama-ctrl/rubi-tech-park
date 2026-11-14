@@ -35,6 +35,7 @@ function AppContent() {
     planId: string;
     mode: 'one_time' | 'subscription';
     billingCycle: BillingCycle;
+    leadId?: string;
   }>({
     planId: 'starter-web',
     mode: 'one_time',
@@ -47,11 +48,26 @@ function AppContent() {
     const handleRouteChange = () => {
       const rawHash = window.location.hash.replace(/^#\/?/, '');
       const rawPath = window.location.pathname.replace(/^\//, '');
-      const target = rawHash || rawPath;
+      const rawTarget = rawHash || rawPath;
+      const [target, queryStr] = rawTarget.split('?');
 
       if (!target) {
         setCurrentRoute('home');
         return;
+      }
+
+      if (target === 'checkout' && queryStr) {
+        const params = new URLSearchParams(queryStr);
+        const qPlan = params.get('plan');
+        const qMode = params.get('mode') === 'subscription' ? 'subscription' : 'one_time';
+        const qCycle = params.get('cycle') === 'yearly' ? 'yearly' : 'monthly';
+        const qLeadId = params.get('leadId') || params.get('bookingId') || undefined;
+        setCheckoutConfig((prev) => ({
+          planId: qPlan || prev.planId,
+          mode: qMode,
+          billingCycle: qCycle,
+          leadId: qLeadId
+        }));
       }
 
       // Map friendly aliases
@@ -330,6 +346,7 @@ function AppContent() {
             preselectedPlanId={checkoutConfig.planId}
             initialMode={checkoutConfig.mode}
             initialBillingCycle={checkoutConfig.billingCycle}
+            leadId={checkoutConfig.leadId}
           />
         );
       case 'admin-login':

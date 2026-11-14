@@ -1,5 +1,38 @@
 [
   {
+    "id": "audit_1794678236035_5545a7",
+    "userId": "public_customer",
+    "userEmail": "suresh@example.in",
+    "userRole": "developer",
+    "action": "PAYMENT_ORDER_CREATED",
+    "ipAddress": "127.0.0.1",
+    "resource": "RTP-ORD-2026-ED594B (upi_direct)",
+    "timestamp": "2026-11-14T17:43:56.035Z",
+    "success": true
+  },
+  {
+    "id": "audit_1794678205442_a2d3a8",
+    "userId": "public_customer",
+    "userEmail": "suresh@example.in",
+    "userRole": "developer",
+    "action": "PAYMENT_ORDER_CREATED",
+    "ipAddress": "127.0.0.1",
+    "resource": "RTP-ORD-2026-037A04 (upi_direct)",
+    "timestamp": "2026-11-14T17:43:25.442Z",
+    "success": true
+  },
+  {
+    "id": "audit_1794678123426_b9c84c",
+    "userId": "public_customer",
+    "userEmail": "suresh@example.in",
+    "userRole": "developer",
+    "action": "PAYMENT_ORDER_CREATED",
+    "ipAddress": "127.0.0.1",
+    "resource": "RTP-ORD-2026-D8A14B (upi_direct)",
+    "timestamp": "2026-11-14T17:42:03.426Z",
+    "success": true
+  },
+  {
     "id": "audit_1794675036552_fb74fd",
     "userId": "payment_webhook",
     "userEmail": "system@rubitechpark.com",

@@ -141,8 +141,8 @@ interface CachedSubmission {
 }
 const recentSubmissions = new Map<string, CachedSubmission>();
 
-// Cleanup old cache entries every 5 minutes
-setInterval(() => {
+// Cleanup old cache entries every 5 minutes (unref so tests & serverless shut down cleanly)
+const cleanupTimer = setInterval(() => {
   const now = Date.now();
   for (const [key, val] of recentSubmissions.entries()) {
     if (now - val.timestamp > 60000) {
@@ -150,6 +150,7 @@ setInterval(() => {
     }
   }
 }, 300000);
+cleanupTimer.unref?.();
 
 /**
  * Common lead submission processor supporting both camelCase and snake_case payloads
@@ -459,12 +460,92 @@ app.get('/api/subscriptions/catalog', (_req: Request, res: Response) => {
 });
 
 /**
+ * Razorpay Standard Checkout Order Endpoint
+ * POST /api/create-order
+ * Validates amount (>= 100 paise), currency (INR), and receipt, creates Razorpay order via server keys,
+ * and returns order ID, amount (paise), and currency without exposing secrets.
+ */
+app.post('/api/create-order', async (req: Request, res: Response) => {
+  const ip = getClientIp(req);
+  const {
+    planId,
+    amount,
+    currency,
+    receipt,
+    customerName,
+    customerEmail,
+    customerPhone,
+    customerBusiness,
+    leadId,
+    bookingId,
+    paymentMethod
+  } = req.body || {};
+
+  try {
+    const result = await paymentManager.createStandardRazorpayOrder({
+      planId: typeof planId === 'string' && planId.trim() ? planId.trim() : undefined,
+      amount,
+      currency,
+      receipt,
+      customerName: customerName ? sanitizeText(String(customerName)) : undefined,
+      customerEmail: customerEmail ? sanitizeEmail(String(customerEmail)) : undefined,
+      customerPhone: customerPhone ? sanitizePhone(String(customerPhone)) : undefined,
+      customerBusiness: customerBusiness ? sanitizeText(String(customerBusiness)) : undefined,
+      leadId: typeof leadId === 'string' && leadId.trim() ? sanitizeText(leadId) : undefined,
+      bookingId: typeof bookingId === 'string' && bookingId.trim() ? sanitizeText(bookingId) : undefined,
+      paymentMethod: paymentMethod || 'razorpay_checkout',
+      ipAddress: ip
+    });
+
+    res.status(201).json({
+      success: true,
+      id: result.id,
+      orderId: result.orderId,
+      amount: result.amount,
+      currency: result.currency,
+      receipt: result.receipt,
+      order: result.order
+    });
+  } catch (err: any) {
+    const msg = String(err?.message || 'Unable to create Razorpay order.');
+    if (msg.startsWith('RAZORPAY_NOT_CONFIGURED:')) {
+      res.status(503).json({
+        error: 'Gateway Not Configured',
+        message: 'Razorpay server credentials (RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET) are not configured.'
+      });
+      return;
+    }
+    if (msg.startsWith('VALIDATION_ERROR:')) {
+      res.status(400).json({
+        error: 'Validation Failed',
+        message: msg.replace('VALIDATION_ERROR:', '').trim()
+      });
+      return;
+    }
+    console.error('Error in POST /api/create-order:', err);
+    res.status(502).json({
+      error: 'Order Creation Failed',
+      message: msg
+    });
+  }
+});
+
+/**
  * Create Payment Order (Server calculates trusted amount + 18% GST)
  * POST /api/payments/create-order
  */
 app.post('/api/payments/create-order', async (req: Request, res: Response) => {
   const ip = getClientIp(req);
-  const { planId, customerName, customerEmail, customerPhone, customerBusiness, paymentMethod } = req.body;
+  const {
+    planId,
+    customerName,
+    customerEmail,
+    customerPhone,
+    customerBusiness,
+    leadId,
+    bookingId,
+    paymentMethod
+  } = req.body;
 
   if (!planId || !customerName || !customerEmail || !customerPhone) {
     res.status(400).json({
@@ -487,6 +568,8 @@ app.post('/api/payments/create-order', async (req: Request, res: Response) => {
       customerEmail: sanitizedEmail,
       customerPhone: sanitizedPhone,
       customerBusiness: sanitizedBusiness,
+      leadId: typeof leadId === 'string' && leadId.trim() ? sanitizeText(leadId) : undefined,
+      bookingId: typeof bookingId === 'string' && bookingId.trim() ? sanitizeText(bookingId) : undefined,
       paymentMethod: paymentMethod || 'upi_qr',
       ipAddress: ip
     });
@@ -496,6 +579,10 @@ app.post('/api/payments/create-order', async (req: Request, res: Response) => {
     res.status(201).json({
       success: true,
       order,
+      orderId: order.gatewayOrderId,
+      amount: order.amountPaise || Math.round(order.totalAmountINR * 100),
+      currency: order.currency || 'INR',
+      receipt: order.orderRef,
       upiIntentUri,
       businessUpiId: BUSINESS_UPI_ID,
       businessName: BUSINESS_NAME,
@@ -626,40 +713,74 @@ app.post('/api/payments/submit-manual-upi', (req: Request, res: Response) => {
 });
 
 /**
- * Verify Gateway Payment (Strict Razorpay HMAC-SHA256 verification)
- * POST /api/payments/verify-gateway
+ * Shared Razorpay Payment Signature Verification Handler
+ * Accepts both Razorpay standard keys (razorpay_order_id, razorpay_payment_id, razorpay_signature)
+ * and internal camelCase aliases (gatewayOrderId, gatewayPaymentId, gatewaySignature).
  */
-app.post('/api/payments/verify-gateway', (req: Request, res: Response) => {
+async function handleVerifyRazorpayPayment(req: Request, res: Response) {
   const ip = getClientIp(req);
-  const { orderRef, gatewayOrderId, gatewayPaymentId, gatewaySignature } = req.body;
+  const body = req.body || {};
+  const orderRef = typeof body.orderRef === 'string' ? body.orderRef.trim() : undefined;
+  const gatewayOrderId = String(body.razorpay_order_id || body.gatewayOrderId || '').trim();
+  const gatewayPaymentId = String(body.razorpay_payment_id || body.gatewayPaymentId || '').trim();
+  const gatewaySignature = String(body.razorpay_signature || body.gatewaySignature || '').trim();
+  const leadId = typeof body.leadId === 'string' ? sanitizeText(body.leadId) : undefined;
+  const bookingId = typeof body.bookingId === 'string' ? sanitizeText(body.bookingId) : undefined;
 
-  if (!orderRef || !gatewayOrderId || !gatewayPaymentId || !gatewaySignature) {
+  if (!gatewayOrderId || !gatewayPaymentId || !gatewaySignature) {
     res.status(400).json({
       error: 'Bad Request',
-      message: 'orderRef, gatewayOrderId, gatewayPaymentId, and gatewaySignature are required.'
+      message:
+        'razorpay_order_id, razorpay_payment_id, and razorpay_signature are required for backend verification.'
     });
     return;
   }
 
-  const result = paymentManager.verifyGatewayPayment({
-    orderRef,
-    gatewayOrderId,
-    gatewayPaymentId,
-    gatewaySignature,
-    ipAddress: ip
-  });
+  try {
+    const result = await paymentManager.verifyGatewayPayment({
+      orderRef,
+      gatewayOrderId,
+      gatewayPaymentId,
+      gatewaySignature,
+      leadId,
+      bookingId,
+      ipAddress: ip
+    });
 
-  if (!result.success) {
-    res.status(400).json({ error: 'Signature Verification Failed', message: result.message });
-    return;
+    if (!result.success) {
+      const statusCode = result.notConfigured ? 503 : result.conflict ? 409 : 400;
+      res.status(statusCode).json({
+        success: false,
+        error: result.conflict
+          ? 'Duplicate Payment Rejected'
+          : result.notConfigured
+          ? 'Gateway Not Configured'
+          : 'Signature Verification Failed',
+        message: result.message
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      verified: true,
+      alreadyProcessed: Boolean(result.alreadyProcessed),
+      linkedLeadId: result.linkedLeadId || null,
+      receiptNumber: result.payment?.receiptNumber,
+      payment: result.payment,
+      message: result.message
+    });
+  } catch (err: any) {
+    console.error('Error verifying payment signature:', err);
+    res.status(500).json({
+      error: 'Verification Error',
+      message: err?.message || 'Unable to verify payment signature.'
+    });
   }
+}
 
-  res.status(200).json({
-    success: true,
-    payment: result.payment,
-    message: result.message
-  });
-});
+app.post('/api/verify-payment', handleVerifyRazorpayPayment);
+app.post('/api/payments/verify-gateway', handleVerifyRazorpayPayment);
 
 /**
  * Verify Razorpay Subscription Mandate Signature
@@ -803,8 +924,9 @@ app.post('/api/subscriptions/:id/change-plan', (req: Request, res: Response) => 
  * Public Order Status & Printable Receipt Details
  * GET /api/payments/order/:orderRef
  */
-app.get('/api/payments/order/:orderRef', (req: Request, res: Response) => {
-  const order = paymentManager.getOrderByRef(req.params.orderRef);
+app.get('/api/payments/order/:orderRef', async (req: Request, res: Response) => {
+  const localOrder = paymentManager.getOrderByRef(req.params.orderRef);
+  const order = localOrder || (await firebaseCRM.getOrderByGatewayOrRef(req.params.orderRef));
   if (!order) {
     res.status(404).json({ error: 'Not Found', message: 'Order reference not found.' });
     return;
@@ -815,6 +937,7 @@ app.get('/api/payments/order/:orderRef', (req: Request, res: Response) => {
     order: {
       id: order.id,
       orderRef: order.orderRef,
+      leadId: order.leadId,
       customerName: order.customerName,
       customerEmail: order.customerEmail,
       customerPhone: order.customerPhone,
@@ -824,11 +947,14 @@ app.get('/api/payments/order/:orderRef', (req: Request, res: Response) => {
       orderType: order.orderType,
       subscriptionRef: order.subscriptionRef,
       billingCycle: order.billingCycle,
+      currency: order.currency || 'INR',
+      amountPaise: order.amountPaise,
       baseAmountINR: order.baseAmountINR,
       taxAmountINR: order.taxAmountINR,
       totalAmountINR: order.totalAmountINR,
       paymentMethod: order.paymentMethod,
       status: order.status,
+      signatureVerified: Boolean(order.signatureVerified),
       refundStatus: order.refundStatus || 'none',
       gatewayProvider: order.gatewayProvider,
       gatewayOrderId: order.gatewayOrderId,
@@ -843,17 +969,13 @@ app.get('/api/payments/order/:orderRef', (req: Request, res: Response) => {
 
 /**
  * Payment Gateway Webhook Receiver (Timing-Safe HMAC & Idempotency Protected)
- * POST /api/payments/webhook
+ * POST /api/payments/webhook and POST /api/webhook
  */
-app.post('/api/payments/webhook', async (req: any, res: Response) => {
+async function handleRazorpayWebhook(req: any, res: Response) {
   const ip = getClientIp(req);
   const signatureHeader = (req.headers['x-razorpay-signature'] ||
     req.headers['x-webhook-signature']) as string | undefined;
-  const webhookSecret = (
-    process.env.RAZORPAY_WEBHOOK_SECRET ||
-    process.env.PAYMENT_WEBHOOK_SECRET ||
-    ''
-  ).trim();
+  const webhookSecret = (process.env.RAZORPAY_WEBHOOK_SECRET || '').trim();
 
   if (!webhookSecret) {
     res.status(503).json({
@@ -893,7 +1015,10 @@ app.post('/api/payments/webhook', async (req: any, res: Response) => {
     console.error('Webhook processing error:', err);
     res.status(500).json({ error: 'Webhook Processing Failed', message: err?.message });
   }
-});
+}
+
+app.post('/api/payments/webhook', handleRazorpayWebhook);
+app.post('/api/webhook', handleRazorpayWebhook);
 
 // -------------------------------------------------------------
 // Admin Authentication Endpoints
@@ -1630,7 +1755,11 @@ async function startServer() {
   });
 }
 
-startServer().catch((err) => {
-  console.error('Fatal error during server startup:', err);
-  process.exit(1);
-});
+if (!process.env.VERCEL && !process.env.NODE_TEST_CONTEXT) {
+  startServer().catch((err) => {
+    console.error('Fatal error during server startup:', err);
+    process.exit(1);
+  });
+}
+
+export default app;
