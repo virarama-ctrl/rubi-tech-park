@@ -196,24 +196,227 @@ export function validateCreateOrderInput(input: {
   };
 }
 
-export function getRazorpayConfigStatus(): {
+export type RazorpayKeyType = 'test' | 'live' | 'invalid' | 'missing';
+export type RazorpayEffectiveMode = 'test' | 'live' | 'unconfigured';
+export type RazorpayIssueCode =
+  | 'CREDENTIALS_MISSING'
+  | 'KEY_ID_MISSING'
+  | 'KEY_SECRET_MISSING'
+  | 'INVALID_KEY_ID_FORMAT'
+  | 'INVALID_KEY_SECRET_FORMAT'
+  | 'MODE_MISMATCH'
+  | 'INVALID_MODE_ENV';
+
+export interface RazorpayHealthStatus {
   gatewayConfigured: boolean;
-  mode: 'test' | 'live';
+  canCreateOrder: boolean;
+  keyIdPresent: boolean;
+  keySecretPresent: boolean;
+  webhookSecretPresent: boolean;
+  keyType: RazorpayKeyType;
+  mode: RazorpayEffectiveMode;
+  configuredModeEnv: 'test' | 'live' | 'invalid' | null;
+  modeMatchesKey: boolean;
+  issueCode: RazorpayIssueCode | null;
+  status: 'ready_test' | 'ready_live' | 'pending_activation' | 'misconfigured';
+  message: string;
+}
+
+export function classifyRazorpayKeyId(keyIdRaw: string | undefined): RazorpayKeyType {
+  const keyId = (keyIdRaw || '').trim();
+  if (!keyId) return 'missing';
+  if (/^rzp_test_[A-Za-z0-9_]{4,}$/.test(keyId)) return 'test';
+  if (/^rzp_live_[A-Za-z0-9_]{4,}$/.test(keyId)) return 'live';
+  return 'invalid';
+}
+
+export function getRazorpayHealthStatus(env: NodeJS.ProcessEnv = process.env): RazorpayHealthStatus {
+  const keyId = (env.RAZORPAY_KEY_ID || '').trim();
+  const keySecret = (env.RAZORPAY_KEY_SECRET || '').trim();
+  const webhookSecret = (env.RAZORPAY_WEBHOOK_SECRET || '').trim();
+  const modeRaw = (env.RAZORPAY_MODE || '').trim().toLowerCase();
+
+  const keyType = classifyRazorpayKeyId(keyId);
+  const keyIdPresent = Boolean(keyId);
+  const keySecretPresent = Boolean(keySecret);
+  const keySecretValid = /^\S{6,}$/.test(keySecret);
+  const webhookSecretPresent = Boolean(webhookSecret);
+  const configuredModeEnv: 'test' | 'live' | 'invalid' | null = !modeRaw
+    ? null
+    : modeRaw === 'test' || modeRaw === 'live'
+    ? modeRaw
+    : 'invalid';
+
+  if (!keyIdPresent && !keySecretPresent) {
+    return {
+      gatewayConfigured: false,
+      canCreateOrder: false,
+      keyIdPresent: false,
+      keySecretPresent: false,
+      webhookSecretPresent,
+      keyType: 'missing',
+      mode: 'unconfigured',
+      configuredModeEnv,
+      modeMatchesKey: configuredModeEnv !== 'invalid',
+      issueCode: 'CREDENTIALS_MISSING',
+      status: 'pending_activation',
+      message: 'Razorpay server credentials (RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET) are not configured.'
+    };
+  }
+
+  if (!keyIdPresent) {
+    return {
+      gatewayConfigured: false,
+      canCreateOrder: false,
+      keyIdPresent: false,
+      keySecretPresent: true,
+      webhookSecretPresent,
+      keyType: 'missing',
+      mode: 'unconfigured',
+      configuredModeEnv,
+      modeMatchesKey: configuredModeEnv !== 'invalid',
+      issueCode: 'KEY_ID_MISSING',
+      status: 'misconfigured',
+      message: 'RAZORPAY_KEY_ID is missing on the server.'
+    };
+  }
+
+  if (!keySecretPresent) {
+    return {
+      gatewayConfigured: false,
+      canCreateOrder: false,
+      keyIdPresent: true,
+      keySecretPresent: false,
+      webhookSecretPresent,
+      keyType,
+      mode: 'unconfigured',
+      configuredModeEnv,
+      modeMatchesKey:
+        configuredModeEnv === null ||
+        ((keyType === 'test' || keyType === 'live') && configuredModeEnv === keyType),
+      issueCode: 'KEY_SECRET_MISSING',
+      status: 'misconfigured',
+      message: 'RAZORPAY_KEY_SECRET is missing on the server.'
+    };
+  }
+
+  if (keyType === 'invalid') {
+    return {
+      gatewayConfigured: false,
+      canCreateOrder: false,
+      keyIdPresent: true,
+      keySecretPresent: true,
+      webhookSecretPresent,
+      keyType: 'invalid',
+      mode: 'unconfigured',
+      configuredModeEnv,
+      modeMatchesKey: false,
+      issueCode: 'INVALID_KEY_ID_FORMAT',
+      status: 'misconfigured',
+      message: 'RAZORPAY_KEY_ID must start with rzp_test_ or rzp_live_ and contain valid key characters.'
+    };
+  }
+
+  if (!keySecretValid) {
+    return {
+      gatewayConfigured: false,
+      canCreateOrder: false,
+      keyIdPresent: true,
+      keySecretPresent: true,
+      webhookSecretPresent,
+      keyType,
+      mode: 'unconfigured',
+      configuredModeEnv,
+      modeMatchesKey: configuredModeEnv === null || configuredModeEnv === keyType,
+      issueCode: 'INVALID_KEY_SECRET_FORMAT',
+      status: 'misconfigured',
+      message: 'RAZORPAY_KEY_SECRET format is invalid on the server.'
+    };
+  }
+
+  if (configuredModeEnv === 'invalid') {
+    return {
+      gatewayConfigured: false,
+      canCreateOrder: false,
+      keyIdPresent: true,
+      keySecretPresent: true,
+      webhookSecretPresent,
+      keyType,
+      mode: 'unconfigured',
+      configuredModeEnv: 'invalid',
+      modeMatchesKey: false,
+      issueCode: 'INVALID_MODE_ENV',
+      status: 'misconfigured',
+      message: 'RAZORPAY_MODE must be either "test" or "live" when specified.'
+    };
+  }
+
+  if (configuredModeEnv && configuredModeEnv !== keyType) {
+    return {
+      gatewayConfigured: false,
+      canCreateOrder: false,
+      keyIdPresent: true,
+      keySecretPresent: true,
+      webhookSecretPresent,
+      keyType,
+      mode: 'unconfigured',
+      configuredModeEnv,
+      modeMatchesKey: false,
+      issueCode: 'MODE_MISMATCH',
+      status: 'misconfigured',
+      message:
+        configuredModeEnv === 'live'
+          ? 'RAZORPAY_MODE is set to "live", but RAZORPAY_KEY_ID is a test key (rzp_test_). Configure valid live credentials or set RAZORPAY_MODE="test".'
+          : 'RAZORPAY_MODE is set to "test", but RAZORPAY_KEY_ID is a live key (rzp_live_). Update RAZORPAY_MODE to "live" or configure test keys.'
+    };
+  }
+
+  const effectiveMode: 'test' | 'live' = keyType === 'live' ? 'live' : 'test';
+  return {
+    gatewayConfigured: true,
+    canCreateOrder: true,
+    keyIdPresent: true,
+    keySecretPresent: true,
+    webhookSecretPresent,
+    keyType,
+    mode: effectiveMode,
+    configuredModeEnv,
+    modeMatchesKey: true,
+    issueCode: null,
+    status: effectiveMode === 'live' ? 'ready_live' : 'ready_test',
+    message:
+      effectiveMode === 'live'
+        ? 'Razorpay Live Gateway is configured and ready for checkout order creation.'
+        : 'Razorpay Test Gateway (Sandbox) is configured and ready for checkout order creation.'
+  };
+}
+
+export function getRazorpayConfigStatus(env: NodeJS.ProcessEnv = process.env): {
+  gatewayConfigured: boolean;
+  canCreateOrder: boolean;
+  mode: RazorpayEffectiveMode;
+  keyType: RazorpayKeyType;
   keyId: string | null;
   webhookSecretConfigured: boolean;
+  modeMatchesKey: boolean;
+  issueCode: RazorpayIssueCode | null;
+  status: RazorpayHealthStatus['status'];
+  message: string;
 } {
-  const keyId = (process.env.RAZORPAY_KEY_ID || '').trim();
-  const keySecret = (process.env.RAZORPAY_KEY_SECRET || '').trim();
-  const webhookSecret = (process.env.RAZORPAY_WEBHOOK_SECRET || '').trim();
-  const modeRaw = (process.env.RAZORPAY_MODE || '').trim().toLowerCase();
-  const mode: 'test' | 'live' =
-    modeRaw === 'live' || keyId.startsWith('rzp_live_') ? 'live' : 'test';
+  const health = getRazorpayHealthStatus(env);
+  const keyId = (env.RAZORPAY_KEY_ID || '').trim();
 
   return {
-    gatewayConfigured: Boolean(keyId && keySecret),
-    mode,
-    keyId: keyId && keySecret ? keyId : null,
-    webhookSecretConfigured: Boolean(webhookSecret)
+    gatewayConfigured: health.gatewayConfigured,
+    canCreateOrder: health.canCreateOrder,
+    mode: health.mode,
+    keyType: health.keyType,
+    keyId: health.gatewayConfigured ? keyId : null,
+    webhookSecretConfigured: health.webhookSecretPresent,
+    modeMatchesKey: health.modeMatchesKey,
+    issueCode: health.issueCode,
+    status: health.status,
+    message: health.message
   };
 }
 
@@ -249,6 +452,14 @@ function readJsonArray<T>(filePath: string): T[] {
   }
 }
 
+function sanitizeGatewayErrorMessage(raw: string, keySecret?: string): string {
+  let clean = String(raw || '').trim();
+  if (keySecret && keySecret.trim()) {
+    clean = clean.split(keySecret.trim()).join('[REDACTED]');
+  }
+  return clean.replace(/Basic\s+[A-Za-z0-9+/=]+/gi, 'Basic [REDACTED]');
+}
+
 async function createRemoteRazorpayOrder(params: {
   amountINR?: number;
   amountPaise?: number;
@@ -256,9 +467,10 @@ async function createRemoteRazorpayOrder(params: {
   receipt: string;
   notes: Record<string, string>;
 }): Promise<{ id: string; amount?: number; currency?: string; receipt?: string } | null> {
+  const config = getRazorpayConfigStatus();
   const keyId = (process.env.RAZORPAY_KEY_ID || '').trim();
   const keySecret = (process.env.RAZORPAY_KEY_SECRET || '').trim();
-  if (!keyId || !keySecret) return null;
+  if (!config.canCreateOrder || !keyId || !keySecret) return null;
 
   const amountPaise =
     typeof params.amountPaise === 'number'
@@ -283,7 +495,14 @@ async function createRemoteRazorpayOrder(params: {
 
   if (!response.ok) {
     const errText = await response.text();
-    throw new Error(`Razorpay Order API error (${response.status}): ${errText}`);
+    let parsedMsg = errText;
+    try {
+      const parsed = JSON.parse(errText);
+      parsedMsg = parsed?.error?.description || parsed?.message || errText;
+    } catch {
+      // keep raw text if non-JSON
+    }
+    throw new Error(`Razorpay Order API error (${response.status}): ${sanitizeGatewayErrorMessage(parsedMsg, keySecret)}`);
   }
 
   return (await response.json()) as { id: string; amount?: number; currency?: string; receipt?: string };
@@ -439,8 +658,10 @@ export class PaymentManager {
     order: PaymentRecord;
   }> {
     const configStatus = getRazorpayConfigStatus();
-    if (!configStatus.gatewayConfigured) {
-      throw new Error('RAZORPAY_NOT_CONFIGURED: Server Razorpay API credentials are not configured.');
+    if (!configStatus.canCreateOrder) {
+      throw new Error(
+        `RAZORPAY_NOT_CONFIGURED:${configStatus.issueCode || 'CREDENTIALS_MISSING'}:${configStatus.message}`
+      );
     }
 
     const year = new Date().getFullYear();

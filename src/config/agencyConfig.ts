@@ -537,23 +537,6 @@ export const E_SERVICES: ServiceDetail[] = [
     complianceNotice: 'Book your e-service by paying ₹236 (₹200 + 18% GST). The remaining service charges will be communicated after reviewing your requirements and collected after completion of the work. Applicable government fees and additional charges, if any, will be informed separately.'
   },
   {
-    id: 'other-online-government-services',
-    slug: 'services',
-    title: 'Other Eligible Online Government Services',
-    category: 'eservices',
-    categoryTitle: 'E-Services (Citizen & Online Services)',
-    shortDescription: 'Assistance navigating digital government portals and public utility e-services available online.',
-    detailedScope: 'Portal account creation, service discovery, requirement verification, application submission, and tracking.',
-    whatsappMessage: 'Hello RUBI TECH PARK, I need assistance with an Online Government Service.',
-    whatsappUrl: buildServiceWhatsAppUrl('Hello RUBI TECH PARK, I need assistance with an Online Government Service.'),
-    isWorkBasedPricing: false,
-    isEService: true,
-    bookingBase: 200,
-    bookingGst: 36,
-    bookingAmount: 236,
-    complianceNotice: 'Book your e-service by paying ₹236 (₹200 + 18% GST). The remaining service charges will be communicated after reviewing your requirements and collected after completion of the work. Applicable government fees and additional charges, if any, will be informed separately.'
-  },
-  {
     id: 'ration-card-application-correction',
     slug: 'services',
     title: 'Ration Card Application / Correction Assistance',

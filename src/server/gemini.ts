@@ -64,9 +64,8 @@ CATEGORY C: E-SERVICES (For Individuals & Public)
 6. Document Application Support
 7. Online Form Filling
 8. Certificate Application Assistance (Community, Income, Nativity guidance)
-9. Other Eligible Online Government Services
-10. Ration Card Application / Correction Assistance
-11. EB New application / Correction Assistance
+9. Ration Card Application / Correction Assistance
+10. EB New application / Correction Assistance
 MANDATORY E-SERVICE BOOKING PAYMENT RULE:
 - For EVERY e-service booking:
   * Initial booking charge: ₹200

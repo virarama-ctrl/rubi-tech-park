@@ -11,6 +11,9 @@ service cloud.firestore {
       return isAuthenticated() && (
         request.auth.token.email == 'admin@rubitechpark.com' ||
         request.auth.token.email == 'admin@elloradigital.in' ||
+        request.auth.token.admin == true ||
+        request.auth.token.role == 'super_admin' ||
+        exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid)) ||
         exists(/databases/$(database)/documents/admin_roles/$(request.auth.token.email))
       );
     }
@@ -27,10 +30,15 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
-    // Admin Roles Collection
-    match /admin_roles/{email} {
-      allow read: if isAdmin();
-      allow write: if isAdmin();
+    // Admin Roles Collection (keyed by Firebase UID or administrator email)
+    match /admin_roles/{roleId} {
+      allow get: if isAdmin() || (
+        isAuthenticated() && (
+          roleId == request.auth.uid ||
+          roleId == request.auth.token.email
+        )
+      );
+      allow list, write: if isAdmin();
     }
 
     // Service Reference Images Collection

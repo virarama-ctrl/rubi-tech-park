@@ -56,13 +56,9 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ onNavigate, onLo
       let firebaseIdToken = '';
       try {
         const userCred = await signInWithEmailAndPassword(auth, cleanEmail, password);
-        firebaseIdToken = await userCred.user.getIdToken();
+        firebaseIdToken = await userCred.user.getIdToken(true);
       } catch (fbErr: any) {
-        console.warn('Direct Firebase Auth sign-in note:', fbErr.code, fbErr.message);
-        // If invalid credential, check with backend
-        if (fbErr.code === 'auth/wrong-password' || fbErr.code === 'auth/invalid-credential' || fbErr.code === 'auth/user-not-found') {
-          // Verify with server endpoint directly
-        }
+        console.warn('Direct Firebase Auth sign-in note:', fbErr.code);
       }
 
       // 2. Server-side Administrator Authorization Check
@@ -72,7 +68,7 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ onNavigate, onLo
         body: JSON.stringify({
           email: cleanEmail,
           password,
-          idToken: firebaseIdToken
+          idToken: firebaseIdToken || undefined
         })
       });
 
@@ -99,6 +95,10 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ onNavigate, onLo
       sessionStorage.setItem('edh_admin_token', data.token);
       sessionStorage.setItem('rtp_admin_user', JSON.stringify(data.user));
       sessionStorage.setItem('edh_admin_user', JSON.stringify(data.user));
+      const effectiveFbToken = firebaseIdToken || data.firebaseIdToken || '';
+      if (effectiveFbToken) {
+        sessionStorage.setItem('rtp_firebase_id_token', effectiveFbToken);
+      }
 
       onLoginSuccess(data.token, data.user);
       onNavigate('admin-dashboard');

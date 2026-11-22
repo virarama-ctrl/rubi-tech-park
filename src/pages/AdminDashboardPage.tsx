@@ -17,6 +17,8 @@ import {
   FALLBACK_SERVICE_IMAGE
 } from '../config/serviceImages';
 import { formatINR } from '../utils/pricing';
+import { auth } from '../lib/firebase';
+import { signOut } from 'firebase/auth';
 import {
   ShieldCheck,
   Search,
@@ -474,6 +476,32 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
     }
   };
 
+  const getAdminHeaders = async (authToken: string, includeJson = false): Promise<Record<string, string>> => {
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${authToken}`
+    };
+    if (includeJson) {
+      headers['Content-Type'] = 'application/json';
+    }
+    try {
+      const liveIdToken = auth.currentUser ? await auth.currentUser.getIdToken() : '';
+      const storedIdToken = sessionStorage.getItem('rtp_firebase_id_token') || '';
+      const fbToken = liveIdToken || storedIdToken;
+      if (fbToken) {
+        if (liveIdToken) {
+          sessionStorage.setItem('rtp_firebase_id_token', liveIdToken);
+        }
+        headers['X-Firebase-Id-Token'] = fbToken;
+      }
+    } catch {
+      const storedIdToken = sessionStorage.getItem('rtp_firebase_id_token');
+      if (storedIdToken) {
+        headers['X-Firebase-Id-Token'] = storedIdToken;
+      }
+    }
+    return headers;
+  };
+
   const fetchLeads = async (authToken?: string) => {
     const currentToken = authToken || token;
     if (!currentToken) return;
@@ -487,10 +515,9 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
       if (statusFilter && statusFilter !== 'All') queryParams.set('status', statusFilter);
       if (dateFilter && dateFilter !== 'all') queryParams.set('dateFilter', dateFilter);
 
+      const headers = await getAdminHeaders(currentToken);
       const res = await fetch(`/api/admin/leads?${queryParams.toString()}`, {
-        headers: {
-          Authorization: `Bearer ${currentToken}`
-        }
+        headers
       });
 
       if (!res.ok) {
@@ -499,6 +526,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
           sessionStorage.removeItem('edh_admin_token');
           sessionStorage.removeItem('rtp_admin_user');
           sessionStorage.removeItem('edh_admin_user');
+          sessionStorage.removeItem('rtp_firebase_id_token');
           onNavigate('admin-login');
           return;
         }
@@ -578,12 +606,10 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
     setIsUpdating(true);
 
     try {
+      const headers = await getAdminHeaders(token, true);
       const res = await fetch(`/api/admin/leads/${leadId}/status`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
+        headers,
         body: JSON.stringify({ status: newStatus })
       });
 
@@ -592,7 +618,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
         fetchLeads(token);
       } else {
         const d = await res.json();
-        alert(d.message || 'Status update failed.');
+        showToast(d.message || 'Status update failed.');
       }
     } catch (err) {
       console.error(err);
@@ -608,12 +634,10 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
     setIsUpdating(true);
 
     try {
+      const headers = await getAdminHeaders(token, true);
       const res = await fetch(`/api/admin/leads/${selectedLead.id}/notes`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
+        headers,
         body: JSON.stringify({ content: newNoteText.trim() })
       });
 
@@ -623,7 +647,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
         fetchLeads(token);
       } else {
         const d = await res.json();
-        alert(d.message || 'Failed to add note.');
+        showToast(d.message || 'Failed to add note.');
       }
     } catch (err) {
       console.error(err);
@@ -638,11 +662,10 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
     setIsDeleting(true);
 
     try {
+      const headers = await getAdminHeaders(token);
       const res = await fetch(`/api/admin/leads/${leadToDelete.id}`, {
         method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        headers
       });
 
       if (res.ok) {
@@ -726,6 +749,12 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
     sessionStorage.removeItem('edh_admin_token');
     sessionStorage.removeItem('rtp_admin_user');
     sessionStorage.removeItem('edh_admin_user');
+    sessionStorage.removeItem('rtp_firebase_id_token');
+    try {
+      await signOut(auth);
+    } catch {
+      // ignore Firebase signOut errors
+    }
     onLogout();
     onNavigate('home');
   };

@@ -172,11 +172,55 @@ export default async function handler(req: Req, res: ServerResponse) {
 
     const keyId = (process.env.RAZORPAY_KEY_ID || '').trim();
     const keySecret = (process.env.RAZORPAY_KEY_SECRET || '').trim();
-    if (!keyId || !keySecret) {
+    const modeRaw = (process.env.RAZORPAY_MODE || '').trim().toLowerCase();
+    const keyType = !keyId
+      ? 'missing'
+      : /^rzp_test_[A-Za-z0-9_]{4,}$/.test(keyId)
+      ? 'test'
+      : /^rzp_live_[A-Za-z0-9_]{4,}$/.test(keyId)
+      ? 'live'
+      : 'invalid';
+    const configuredModeEnv = !modeRaw
+      ? null
+      : modeRaw === 'test' || modeRaw === 'live'
+      ? modeRaw
+      : 'invalid';
+
+    let configErrorCode: string | null = null;
+    let configErrorMessage: string | null = null;
+
+    if (!keyId && !keySecret) {
+      configErrorCode = 'CREDENTIALS_MISSING';
+      configErrorMessage = 'Razorpay server credentials (RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET) are not configured.';
+    } else if (!keyId) {
+      configErrorCode = 'KEY_ID_MISSING';
+      configErrorMessage = 'RAZORPAY_KEY_ID is missing on the server.';
+    } else if (!keySecret) {
+      configErrorCode = 'KEY_SECRET_MISSING';
+      configErrorMessage = 'RAZORPAY_KEY_SECRET is missing on the server.';
+    } else if (keyType === 'invalid') {
+      configErrorCode = 'INVALID_KEY_ID_FORMAT';
+      configErrorMessage = 'RAZORPAY_KEY_ID must start with rzp_test_ or rzp_live_ and contain valid key characters.';
+    } else if (!/^\S{6,}$/.test(keySecret)) {
+      configErrorCode = 'INVALID_KEY_SECRET_FORMAT';
+      configErrorMessage = 'RAZORPAY_KEY_SECRET format is invalid on the server.';
+    } else if (configuredModeEnv === 'invalid') {
+      configErrorCode = 'INVALID_MODE_ENV';
+      configErrorMessage = 'RAZORPAY_MODE must be either "test" or "live" when specified.';
+    } else if (configuredModeEnv && configuredModeEnv !== keyType) {
+      configErrorCode = 'MODE_MISMATCH';
+      configErrorMessage =
+        configuredModeEnv === 'live'
+          ? 'RAZORPAY_MODE is set to "live", but RAZORPAY_KEY_ID is a test key (rzp_test_). Configure valid live credentials or set RAZORPAY_MODE="test".'
+          : 'RAZORPAY_MODE is set to "test", but RAZORPAY_KEY_ID is a live key (rzp_live_). Update RAZORPAY_MODE to "live" or configure test keys.';
+    }
+
+    if (configErrorCode && configErrorMessage) {
       sendJson(res, 503, {
         success: false,
         error: 'Gateway Not Configured',
-        message: 'Razorpay server credentials (RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET) are not configured.'
+        code: configErrorCode,
+        message: configErrorMessage
       });
       return;
     }
@@ -283,10 +327,14 @@ export default async function handler(req: Req, res: ServerResponse) {
     }
 
     if (!rzpRes.ok || typeof rzpData.id !== 'string' || !rzpData.id.startsWith('order_')) {
-      const upstreamMsg =
+      const rawUpstream =
         rzpData?.error?.description ||
         rzpData?.message ||
         `Razorpay Orders API returned HTTP ${rzpRes.status}.`;
+      const upstreamMsg = String(rawUpstream)
+        .split(keySecret)
+        .join('[REDACTED]')
+        .replace(/Basic\s+[A-Za-z0-9+/=]+/gi, 'Basic [REDACTED]');
       sendJson(res, rzpRes.status >= 400 && rzpRes.status < 500 ? 400 : 502, {
         success: false,
         error: 'Razorpay Order Creation Failed',
@@ -295,8 +343,7 @@ export default async function handler(req: Req, res: ServerResponse) {
       return;
     }
 
-    const modeRaw = (process.env.RAZORPAY_MODE || '').trim().toLowerCase();
-    const isLive = modeRaw === 'live' || keyId.startsWith('rzp_live_');
+    const isLive = keyType === 'live';
     const now = new Date().toISOString();
 
     const orderRecord = {
@@ -339,11 +386,15 @@ export default async function handler(req: Req, res: ServerResponse) {
       order: orderRecord
     });
   } catch (err: any) {
-    console.error('Unhandled /api/create-order error:', err?.message || err);
+    const rawMsg = String(err?.message || 'Unable to create Razorpay order.');
+    const activeSecret = (process.env.RAZORPAY_KEY_SECRET || '').trim();
+    const safeMsg = (activeSecret ? rawMsg.split(activeSecret).join('[REDACTED]') : rawMsg)
+      .replace(/Basic\s+[A-Za-z0-9+/=]+/gi, 'Basic [REDACTED]');
+    console.error('Unhandled /api/create-order error:', safeMsg);
     sendJson(res, 500, {
       success: false,
       error: 'Order Creation Failed',
-      message: err?.message || 'Unable to create Razorpay order.'
+      message: safeMsg
     });
   }
 }

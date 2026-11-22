@@ -28,7 +28,7 @@ export type LeadStatus =
   | 'Converted'
   | 'Not Interested';
 
-export type UserRole = 'super_admin' | 'crm_manager' | 'sales_executive' | 'developer';
+export type UserRole = 'super_admin' | 'admin' | 'crm_manager' | 'sales_executive' | 'developer';
 
 export interface CRMLeadNote {
   id: string;

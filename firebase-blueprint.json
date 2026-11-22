@@ -34,10 +34,13 @@
       "description": "Authorized administrative user profile and role definition",
       "type": "object",
       "properties": {
+        "uid": { "type": "string" },
         "email": { "type": "string", "format": "email" },
         "role": { "type": "string" },
         "name": { "type": "string" },
-        "createdAt": { "type": "string" }
+        "active": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
       },
       "required": ["email", "role"]
     },

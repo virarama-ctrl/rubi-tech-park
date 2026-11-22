@@ -242,12 +242,6 @@ export const DEFAULT_SERVICE_IMAGES: Record<string, ServiceImageMetadata> = {
     caption: 'Community, Income, Nativity & First Graduate certificate assistance',
     category: 'eservices'
   },
-  'other-online-government-services': {
-    url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=80',
-    alt: 'Digital India e-governance citizen assistance kiosk',
-    caption: 'State & central government portal verification & facilitation',
-    category: 'eservices'
-  },
   'ration-card-application-correction': {
     url: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80',
     alt: 'Smart Ration Card Application and Family Member Correction',

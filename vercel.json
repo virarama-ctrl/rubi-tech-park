@@ -17,7 +17,7 @@
   },
   "rewrites": [
     {
-      "source": "/api/((?!create-order$|verify-payment$|payments/config$).*)",
+      "source": "/api/((?!create-order$|verify-payment$|payments/config$|payments/health$).*)",
       "destination": "/api/index"
     },
     {

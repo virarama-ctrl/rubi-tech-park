@@ -551,7 +551,14 @@ export class CRMStorage {
 
   // --- Service Reference Images Management ---
   public getServiceImages(): Record<string, string> {
-    return readJson<Record<string, string>>(SERVICE_IMAGES_FILE, {});
+    const stored = readJson<Record<string, string>>(SERVICE_IMAGES_FILE, {});
+    const filtered: Record<string, string> = {};
+    for (const [serviceId, imageUrl] of Object.entries(stored)) {
+      if (serviceId !== 'other-online-government-services') {
+        filtered[serviceId] = imageUrl;
+      }
+    }
+    return filtered;
   }
 
   public setServiceImage(serviceId: string, imageUrl: string, updatedBy?: string): void {

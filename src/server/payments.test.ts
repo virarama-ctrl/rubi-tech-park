@@ -8,6 +8,7 @@ import vercelHandler from '../../api/index';
 import createOrderHandler from '../../api/create-order';
 import verifyPaymentHandler from '../../api/verify-payment';
 import paymentConfigHandler from '../../api/payments/config';
+import paymentHealthHandler from '../../api/payments/health';
 import {
   calculateGstBreakdown,
   calculateSubscriptionBreakdown,
@@ -15,12 +16,16 @@ import {
   SUBSCRIPTION_CATALOG
 } from '../config/pricingCatalog';
 import { CASE_STUDIES } from '../config/agencyConfig';
+import { reconcileGatewayActivation } from '../utils/paymentGatewayStatus';
 import {
   verifyRazorpayOrderSignature,
   verifyRazorpaySubscriptionSignature,
   verifyRazorpayWebhookSignature,
   validateCreateOrderInput,
   computeNextBillingDate,
+  classifyRazorpayKeyId,
+  getRazorpayHealthStatus,
+  getRazorpayConfigStatus,
   paymentManager
 } from './payments';
 import { crmStorage } from './storage';
@@ -648,3 +653,174 @@ describe('Vercel Serverless Handler & HTTP Method Routing (/api/create-order, /a
     }
   });
 });
+
+describe('Razorpay Key Classification, Live-Mode Guard & Secret-Free Health Telemetry', () => {
+  it('distinguishes rzp_test_ vs rzp_live_ vs invalid keys and rejects mismatched RAZORPAY_MODE', () => {
+    assert.equal(classifyRazorpayKeyId(''), 'missing');
+    assert.equal(classifyRazorpayKeyId('rzp_test_AbC12345'), 'test');
+    assert.equal(classifyRazorpayKeyId('rzp_live_XyZ98765'), 'live');
+    assert.equal(classifyRazorpayKeyId('rzp_test_'), 'invalid');
+    assert.equal(classifyRazorpayKeyId('invalid_placeholder_key'), 'invalid');
+
+    // Never activates live mode when RAZORPAY_MODE=live is set with missing keys
+    const unconfLive = getRazorpayHealthStatus({ RAZORPAY_MODE: 'live' } as any);
+    assert.equal(unconfLive.gatewayConfigured, false);
+    assert.equal(unconfLive.canCreateOrder, false);
+    assert.equal(unconfLive.mode, 'unconfigured');
+    assert.equal(unconfLive.issueCode, 'CREDENTIALS_MISSING');
+    assert.equal(unconfLive.status, 'pending_activation');
+
+    // Never activates live mode when RAZORPAY_MODE=live is paired with rzp_test_ key
+    const mismatchLive = getRazorpayHealthStatus({
+      RAZORPAY_KEY_ID: 'rzp_test_Sample123',
+      RAZORPAY_KEY_SECRET: 'secret_sample_123',
+      RAZORPAY_MODE: 'live'
+    } as any);
+    assert.equal(mismatchLive.gatewayConfigured, false);
+    assert.equal(mismatchLive.canCreateOrder, false);
+    assert.equal(mismatchLive.keyType, 'test');
+    assert.equal(mismatchLive.mode, 'unconfigured');
+    assert.equal(mismatchLive.modeMatchesKey, false);
+    assert.equal(mismatchLive.issueCode, 'MODE_MISMATCH');
+    assert.equal(mismatchLive.status, 'misconfigured');
+
+    // Valid test credentials activate strictly in test mode
+    const readyTest = getRazorpayConfigStatus({
+      RAZORPAY_KEY_ID: 'rzp_test_Sample123',
+      RAZORPAY_KEY_SECRET: 'secret_sample_123',
+      RAZORPAY_MODE: 'test'
+    } as any);
+    assert.equal(readyTest.gatewayConfigured, true);
+    assert.equal(readyTest.canCreateOrder, true);
+    assert.equal(readyTest.mode, 'test');
+    assert.equal(readyTest.keyType, 'test');
+    assert.equal(readyTest.keyId, 'rzp_test_Sample123');
+    assert.equal(readyTest.status, 'ready_test');
+
+    // Valid live credentials activate live mode only when both rzp_live_ key and secret are valid
+    const readyLive = getRazorpayConfigStatus({
+      RAZORPAY_KEY_ID: 'rzp_live_LiveMerchant123',
+      RAZORPAY_KEY_SECRET: 'live_secret_value_123',
+      RAZORPAY_MODE: 'live'
+    } as any);
+    assert.equal(readyLive.gatewayConfigured, true);
+    assert.equal(readyLive.canCreateOrder, true);
+    assert.equal(readyLive.mode, 'live');
+    assert.equal(readyLive.keyType, 'live');
+    assert.equal(readyLive.status, 'ready_live');
+  });
+
+  it('reconcileGatewayActivation disables checkout if frontend VITE_RAZORPAY_KEY_ID disagrees with backend', () => {
+    // Backend unconfigured while stale VITE_RAZORPAY_KEY_ID is set -> must NOT enable checkout
+    const pendingState = reconcileGatewayActivation({
+      frontendKeyId: 'rzp_test_FrontendOnly123',
+      health: { success: true, gatewayConfigured: false, canCreateOrder: false, mode: 'unconfigured', issueCode: 'CREDENTIALS_MISSING', status: 'pending_activation' },
+      config: { success: true, gatewayConfigured: false, razorpayKeyId: null, mode: 'unconfigured', status: 'pending_activation' }
+    });
+    assert.equal(pendingState.canEnableCheckout, false);
+    assert.equal(pendingState.publicKeyId, null);
+    assert.equal(pendingState.status, 'pending_activation');
+
+    // Frontend has test key while backend has live key -> must block mismatch
+    const modeMismatch = reconcileGatewayActivation({
+      frontendKeyId: 'rzp_test_Frontend123',
+      health: { success: true, gatewayConfigured: true, canCreateOrder: true, mode: 'live', status: 'ready_live' },
+      config: { success: true, gatewayConfigured: true, razorpayKeyId: 'rzp_live_Backend999', mode: 'live', status: 'ready_live' }
+    });
+    assert.equal(modeMismatch.canEnableCheckout, false);
+    assert.equal(modeMismatch.issueCode, 'FRONTEND_BACKEND_MODE_MISMATCH');
+    assert.equal(modeMismatch.status, 'misconfigured');
+
+    // Synchronized backend & frontend keys -> enables checkout in matching mode
+    const syncedTest = reconcileGatewayActivation({
+      frontendKeyId: 'rzp_test_Synced1234',
+      health: { success: true, gatewayConfigured: true, canCreateOrder: true, mode: 'test', status: 'ready_test' },
+      config: { success: true, gatewayConfigured: true, razorpayKeyId: 'rzp_test_Synced1234', mode: 'test', status: 'ready_test' }
+    });
+    assert.equal(syncedTest.canEnableCheckout, true);
+    assert.equal(syncedTest.mode, 'test');
+    assert.equal(syncedTest.publicKeyId, 'rzp_test_Synced1234');
+    assert.equal(syncedTest.status, 'ready_test');
+  });
+
+  it('GET /api/payments/health reports presence and mode with zero credential values on both standalone and Express handlers', async () => {
+    const prevKeyId = process.env.RAZORPAY_KEY_ID;
+    const prevKeySecret = process.env.RAZORPAY_KEY_SECRET;
+    const prevMode = process.env.RAZORPAY_MODE;
+    const prevWebhook = process.env.RAZORPAY_WEBHOOK_SECRET;
+
+    const standaloneServer = http.createServer((req, res) => {
+      if (req.url?.startsWith('/api/payments/health')) return paymentHealthHandler(req as any, res);
+      if (req.url?.startsWith('/api/create-order')) return createOrderHandler(req as any, res);
+      res.statusCode = 404;
+      res.end();
+    });
+    const expressServer = http.createServer((req, res) => vercelHandler(req as any, res as any));
+
+    await new Promise<void>((resolve) => standaloneServer.listen(0, '127.0.0.1', () => resolve()));
+    await new Promise<void>((resolve) => expressServer.listen(0, '127.0.0.1', () => resolve()));
+
+    const sAddr = standaloneServer.address() as { port: number };
+    const eAddr = expressServer.address() as { port: number };
+    const sBase = `http://127.0.0.1:${sAddr.port}`;
+    const eBase = `http://127.0.0.1:${eAddr.port}`;
+
+    try {
+      const secretSample = 'rzp_secret_NEVER_EXPOSE_ME_999';
+      const keySample = 'rzp_test_NeverInHealth999';
+      const webhookSample = 'whsec_NEVER_EXPOSE_ME_999';
+      process.env.RAZORPAY_KEY_ID = keySample;
+      process.env.RAZORPAY_KEY_SECRET = secretSample;
+      process.env.RAZORPAY_WEBHOOK_SECRET = webhookSample;
+      process.env.RAZORPAY_MODE = 'test';
+
+      for (const base of [sBase, eBase]) {
+        const healthRes = await fetch(`${base}/api/payments/health`);
+        assert.equal(healthRes.status, 200);
+        const rawText = await healthRes.text();
+        assert.equal(rawText.includes(keySample), false);
+        assert.equal(rawText.includes(secretSample), false);
+        assert.equal(rawText.includes(webhookSample), false);
+        const body = JSON.parse(rawText) as Record<string, any>;
+        assert.equal(body.gatewayConfigured, true);
+        assert.equal(body.canCreateOrder, true);
+        assert.equal(body.keyIdPresent, true);
+        assert.equal(body.keySecretPresent, true);
+        assert.equal(body.webhookSecretPresent, true);
+        assert.equal(body.keyType, 'test');
+        assert.equal(body.mode, 'test');
+        assert.equal('keyId' in body, false);
+        assert.equal('razorpayKeyId' in body, false);
+        assert.equal('keySecret' in body, false);
+      }
+
+      // Mode mismatch returns 503 JSON on POST /api/create-order with structured error code and zero secrets
+      process.env.RAZORPAY_MODE = 'live';
+      for (const base of [sBase, eBase]) {
+        const orderRes = await fetch(`${base}/api/create-order`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ planId: 'eservice-booking', amount: 23600, currency: 'INR' })
+        });
+        assert.equal(orderRes.status, 503);
+        const text = await orderRes.text();
+        assert.equal(text.includes(secretSample), false);
+        const json = JSON.parse(text) as Record<string, any>;
+        assert.equal(json.success, false);
+        assert.equal(json.code, 'MODE_MISMATCH');
+      }
+    } finally {
+      await new Promise<void>((resolve) => standaloneServer.close(() => resolve()));
+      await new Promise<void>((resolve) => expressServer.close(() => resolve()));
+      if (prevKeyId === undefined) delete process.env.RAZORPAY_KEY_ID;
+      else process.env.RAZORPAY_KEY_ID = prevKeyId;
+      if (prevKeySecret === undefined) delete process.env.RAZORPAY_KEY_SECRET;
+      else process.env.RAZORPAY_KEY_SECRET = prevKeySecret;
+      if (prevMode === undefined) delete process.env.RAZORPAY_MODE;
+      else process.env.RAZORPAY_MODE = prevMode;
+      if (prevWebhook === undefined) delete process.env.RAZORPAY_WEBHOOK_SECRET;
+      else process.env.RAZORPAY_WEBHOOK_SECRET = prevWebhook;
+    }
+  });
+});
+

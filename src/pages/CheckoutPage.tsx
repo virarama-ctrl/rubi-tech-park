@@ -17,6 +17,11 @@ import {
   CustomerSubscription
 } from '../types/crm';
 import {
+  reconcileGatewayActivation,
+  GatewayEffectiveMode,
+  GatewayActivationStatus
+} from '../utils/paymentGatewayStatus';
+import {
   ShieldCheck,
   CreditCard,
   QrCode,
@@ -159,12 +164,13 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerBusiness, setCustomerBusiness] = useState('');
 
-  // Server Payment Gateway Config (reads public VITE_RAZORPAY_KEY_ID first)
-  const [gatewayConfigured, setGatewayConfigured] = useState(Boolean(ENV_RAZORPAY_KEY_ID));
-  const [gatewayMode, setGatewayMode] = useState<'test' | 'live'>(
-    ENV_RAZORPAY_KEY_ID.startsWith('rzp_live_') ? 'live' : 'test'
-  );
-  const [razorpayKeyId, setRazorpayKeyId] = useState<string | null>(ENV_RAZORPAY_KEY_ID || null);
+  // Server Payment Gateway Config (Never enable Razorpay Checkout until backend health confirms readiness & matching mode)
+  const [gatewayConfigured, setGatewayConfigured] = useState(false);
+  const [gatewayMode, setGatewayMode] = useState<GatewayEffectiveMode>('unconfigured');
+  const [gatewayStatus, setGatewayStatus] = useState<GatewayActivationStatus>('pending_activation');
+  const [gatewayDiagnostic, setGatewayDiagnostic] = useState<string>('');
+  const [gatewayIssueCode, setGatewayIssueCode] = useState<string | null>(null);
+  const [razorpayKeyId, setRazorpayKeyId] = useState<string | null>(null);
   const [businessUpiId, setBusinessUpiId] = useState<string>(BUSINESS_UPI_ID);
 
   // Processing & Order States
@@ -184,21 +190,36 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const [utrInput, setUtrInput] = useState('');
   const [isSubmittingUtr, setIsSubmittingUtr] = useState(false);
 
-  // Fetch gateway config on mount (keeps public key in sync without ever exposing secrets)
+  // Fetch secret-free backend health + public config on mount to verify readiness & frontend/backend mode sync
   useEffect(() => {
-    fetch('/api/payments/config')
-      .then((res) => (res.ok ? parseJsonSafe(res) : null))
-      .then((data) => {
-        if (data && data.success) {
-          setGatewayConfigured(Boolean(data.gatewayConfigured));
-          setGatewayMode(data.mode === 'live' ? 'live' : 'test');
-          setRazorpayKeyId(ENV_RAZORPAY_KEY_ID || data.razorpayKeyId || null);
-          if (data.businessUpiId) setBusinessUpiId(data.businessUpiId);
-        }
-      })
-      .catch(() => {
-        // Fallback to default config state cleanly
+    let cancelled = false;
+
+    Promise.all([
+      fetch('/api/payments/health', { cache: 'no-store' })
+        .then((res) => (res.ok ? parseJsonSafe(res) : null))
+        .catch(() => null),
+      fetch('/api/payments/config', { cache: 'no-store' })
+        .then((res) => (res.ok ? parseJsonSafe(res) : null))
+        .catch(() => null)
+    ]).then(([healthData, configData]) => {
+      if (cancelled) return;
+      const reconciled = reconcileGatewayActivation({
+        frontendKeyId: ENV_RAZORPAY_KEY_ID,
+        health: healthData,
+        config: configData
       });
+      setGatewayConfigured(reconciled.canEnableCheckout);
+      setGatewayMode(reconciled.mode);
+      setGatewayStatus(reconciled.status);
+      setGatewayIssueCode(reconciled.issueCode);
+      setGatewayDiagnostic(reconciled.diagnosticMessage);
+      setRazorpayKeyId(reconciled.publicKeyId);
+      if (configData?.businessUpiId) setBusinessUpiId(configData.businessUpiId);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Derived Totals (Server still calculates & enforces authoritative amount)
@@ -290,12 +311,13 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
     setModalDismissed(false);
     setPaymentStatusNotice(null);
 
-    const publicKeyId = ENV_RAZORPAY_KEY_ID || keyId;
+    const publicKeyId = gatewayConfigured && keyId ? keyId : null;
     if (!publicKeyId) {
       setErrorMessage(
         isTa
-          ? 'Razorpay பொது சாவி (VITE_RAZORPAY_KEY_ID) கட்டமைக்கப்படவில்லை. UPI QR மூலம் தொடரலாம்.'
-          : 'Razorpay public Key ID is not configured. Please complete payment via Business UPI QR below.'
+          ? 'Razorpay பொது சாவி (Key ID) சேவையகத்துடன் இணைக்கப்படவில்லை. UPI QR மூலம் தொடரலாம்.'
+          : gatewayDiagnostic ||
+              'Razorpay Checkout is not active until backend credentials and key mode are verified. Please complete payment via Business UPI QR below.'
       );
       return;
     }
@@ -477,20 +499,20 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
         setCurrentSubscription(data.subscription);
         setCurrentOrder(data.order);
         if (data.businessUpiId) setBusinessUpiId(data.businessUpiId);
-        if (typeof data.gatewayConfigured === 'boolean') setGatewayConfigured(data.gatewayConfigured);
-        const effectiveKey = ENV_RAZORPAY_KEY_ID || data.razorpayKeyId || razorpayKeyId;
-        if (effectiveKey) setRazorpayKeyId(effectiveKey);
 
-        if (
-          data.gatewayConfigured &&
-          effectiveKey &&
-          (activeMethod === 'card' || activeMethod === 'netbanking' || activeMethod === 'razorpay_checkout')
-        ) {
-          await launchRazorpayCheckout(data.order, data.subscription, effectiveKey);
+        const canLaunchSub =
+          gatewayConfigured &&
+          Boolean(data.gatewayConfigured) &&
+          Boolean(razorpayKeyId) &&
+          (activeMethod === 'card' || activeMethod === 'netbanking' || activeMethod === 'razorpay_checkout');
+
+        if (canLaunchSub && razorpayKeyId) {
+          await launchRazorpayCheckout(data.order, data.subscription, razorpayKeyId);
         }
       } else {
         const useRazorpayStandard =
           gatewayConfigured &&
+          Boolean(razorpayKeyId) &&
           (activeMethod === 'card' || activeMethod === 'netbanking' || activeMethod === 'razorpay_checkout');
 
         if (useRazorpayStandard) {
@@ -510,14 +532,22 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
             })
           });
           const data = await parseJsonSafe(createRes);
+          if (createRes.status === 503) {
+            setGatewayConfigured(false);
+            setGatewayMode('unconfigured');
+            setGatewayStatus(data.code === 'CREDENTIALS_MISSING' ? 'pending_activation' : 'misconfigured');
+            setGatewayIssueCode(data.code || 'CREDENTIALS_MISSING');
+            setGatewayDiagnostic(data.message || 'Razorpay server credentials are not configured.');
+            setRazorpayKeyId(null);
+            throw new Error(data.message || 'Razorpay gateway is not active yet. Please use Business UPI QR.');
+          }
           if (!createRes.ok || !data.success || !data.orderId) {
             throw new Error(data.message || `Unable to create Razorpay checkout order (HTTP ${createRes.status}).`);
           }
           setCurrentSubscription(null);
           setCurrentOrder(data.order);
-          const effectiveKey = ENV_RAZORPAY_KEY_ID || razorpayKeyId;
-          if (effectiveKey) {
-            await launchRazorpayCheckout(data.order, null, effectiveKey);
+          if (razorpayKeyId) {
+            await launchRazorpayCheckout(data.order, null, razorpayKeyId);
           }
         } else {
           const response = await fetch('/api/payments/create-order', {
@@ -541,17 +571,6 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
           setCurrentSubscription(null);
           setCurrentOrder(data.order);
           if (data.businessUpiId) setBusinessUpiId(data.businessUpiId);
-          if (typeof data.gatewayConfigured === 'boolean') setGatewayConfigured(data.gatewayConfigured);
-          const effectiveKey = ENV_RAZORPAY_KEY_ID || data.razorpayKeyId || razorpayKeyId;
-          if (effectiveKey) setRazorpayKeyId(effectiveKey);
-
-          if (
-            data.gatewayConfigured &&
-            effectiveKey &&
-            (activeMethod === 'card' || activeMethod === 'netbanking' || activeMethod === 'razorpay_checkout')
-          ) {
-            await launchRazorpayCheckout(data.order, null, effectiveKey);
-          }
         }
       }
     } catch (err: any) {
@@ -1443,35 +1462,54 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   </div>
 
                   {gatewayConfigured && razorpayKeyId ? (
-                    <button
-                      type="button"
-                      disabled={isSubmitting}
-                      onClick={() => launchRazorpayCheckout(currentOrder, currentSubscription, razorpayKeyId)}
-                      className="w-full py-3.5 px-5 rounded-xl cyber-button-primary text-sm font-bold flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-                    >
-                      <Lock className="w-4 h-4" />
-                      <span>
-                        {isSubmitting
-                          ? '...'
-                          : isTa
-                          ? `Razorpay மூலம் ₹${currentOrder.totalAmountINR.toLocaleString('en-IN')} செலுத்தவும்`
-                          : `Pay ₹${currentOrder.totalAmountINR.toLocaleString('en-IN')} via Razorpay Checkout`}
-                      </span>
-                    </button>
+                    <div className="space-y-2.5">
+                      <div className="flex items-center justify-between text-[11px] font-mono text-[#526477] dark:text-[#B8C5D4] px-1">
+                        <span>
+                          {gatewayMode === 'live'
+                            ? isTa
+                              ? 'நேரடி Razorpay கட்டண நிலை (Live Mode)'
+                              : 'Razorpay Live Gateway Ready'
+                            : isTa
+                            ? 'சோதனை Razorpay கட்டண நிலை (Test Mode)'
+                            : 'Razorpay Test Mode Ready'}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        disabled={isSubmitting}
+                        onClick={() => launchRazorpayCheckout(currentOrder, currentSubscription, razorpayKeyId)}
+                        className="w-full py-3.5 px-5 rounded-xl cyber-button-primary text-sm font-bold flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                      >
+                        <Lock className="w-4 h-4" />
+                        <span>
+                          {isSubmitting
+                            ? '...'
+                            : isTa
+                            ? `Razorpay மூலம் ₹${currentOrder.totalAmountINR.toLocaleString('en-IN')} செலுத்தவும்`
+                            : `Pay ₹${currentOrder.totalAmountINR.toLocaleString('en-IN')} via Razorpay Checkout`}
+                        </span>
+                      </button>
+                    </div>
                   ) : (
                     <div className="p-4 rounded-xl bg-[#F2F5F8] dark:bg-[#17263A] border border-[#D5DEE8] dark:border-[#30445B] space-y-2.5 text-xs">
                       <div className="flex items-center gap-2 font-bold text-[#182638] dark:text-[#F1F5F9]">
                         <Info className="w-4 h-4 text-[#315D82] dark:text-[#6F9FC5]" />
                         <span>
-                          {isTa
+                          {gatewayStatus === 'misconfigured'
+                            ? isTa
+                              ? 'Razorpay கட்டமைப்பு சரிசெய்தல் தேவை (Gateway Configuration Mismatch)'
+                              : 'Razorpay Gateway Configuration Attention Needed'
+                            : isTa
                             ? 'Razorpay API சாவிகள் (Keys) இன்னும் சேவையகத்தில் இணைக்கப்படவில்லை'
                             : 'Razorpay Hosted Gateway Pending Merchant Key Activation'}
                         </span>
                       </div>
                       <p className="text-[#526477] dark:text-[#B8C5D4] leading-relaxed">
-                        {isTa
+                        {gatewayStatus === 'misconfigured' && gatewayDiagnostic
+                          ? `${gatewayDiagnostic}${gatewayIssueCode ? ` (${gatewayIssueCode})` : ''}`
+                          : isTa
                           ? 'சேவையகத்தில் RAZORPAY_KEY_ID மற்றும் RAZORPAY_KEY_SECRET சேர்க்கப்பட்டவுடன் கார்டு / நெட் பேங்கிங் / AutoPay நேரடியாக இயங்கும். தற்போது கீழே உள்ள UPI QR மூலம் உங்கள் ஆர்டர் கட்டணத்தைச் செலுத்தலாம்.'
-                          : 'Once RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are configured on the server, the live Razorpay Checkout modal will launch automatically here. Meanwhile, you can settle this exact order immediately via verified Business UPI QR below.'}
+                          : 'Once RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are configured on the server, the Razorpay Checkout modal will launch automatically here. Meanwhile, you can settle this exact order immediately via verified Business UPI QR below.'}
                       </p>
                       <button
                         type="button"

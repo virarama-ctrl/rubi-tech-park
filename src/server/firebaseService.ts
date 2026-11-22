@@ -69,13 +69,186 @@ export interface FirestoreLeadRecord {
   id?: string;
 }
 
+export const PRIMARY_ADMIN_EMAIL = 'admin@rubitechpark.com';
+export const PRIMARY_ADMIN_UID = 'xd60RtfunBd6mIOxLAdu6acegio1';
+export const HIDDEN_PUBLIC_SERVICE_IDS = new Set<string>(['other-online-government-services']);
+
+export interface VerifiedFirebaseUser {
+  uid: string;
+  email: string;
+  emailVerified: boolean;
+  disabled: boolean;
+  displayName?: string;
+  customClaims: Record<string, unknown>;
+}
+
+export interface FirestoreAdminRoleRecord {
+  uid?: string;
+  email?: string;
+  role?: string;
+  name?: string;
+  active?: boolean;
+}
+
+export interface AdminAuthorizationResult {
+  authorized: boolean;
+  role: 'super_admin' | 'admin' | null;
+  reason: string;
+  matchedBy?: 'uid_and_email' | 'email_allowlist' | 'custom_claims' | 'firestore_admin_roles';
+}
+
+export function getAuthorizedAdminEmails(): string[] {
+  const configured = (process.env.ADMIN_EMAIL || '').toLowerCase().trim();
+  const base = [PRIMARY_ADMIN_EMAIL, 'admin@elloradigital.in'];
+  if (configured && !base.includes(configured)) {
+    base.push(configured);
+  }
+  return base;
+}
+
+/**
+ * Pure, deterministic server-side administrator authorization evaluator.
+ * Never grants admin access to arbitrary authenticated users.
+ */
+export function evaluateAdminAuthorization(params: {
+  uid?: string;
+  email?: string;
+  disabled?: boolean;
+  customClaims?: Record<string, unknown>;
+  firestoreRole?: FirestoreAdminRoleRecord | null;
+  extraAuthorizedEmails?: string[];
+}): AdminAuthorizationResult {
+  if (params.disabled) {
+    return { authorized: false, role: null, reason: 'account_disabled' };
+  }
+
+  const normalizedEmail = (params.email || '').toLowerCase().trim();
+  const normalizedUid = (params.uid || '').trim();
+  const allowedEmails = new Set([
+    ...getAuthorizedAdminEmails(),
+    ...(params.extraAuthorizedEmails || []).map((e) => e.toLowerCase().trim()).filter(Boolean)
+  ]);
+
+  // 1. Primary administrator UID bound strictly to admin@rubitechpark.com
+  if (normalizedUid === PRIMARY_ADMIN_UID && normalizedEmail === PRIMARY_ADMIN_EMAIL) {
+    return {
+      authorized: true,
+      role: 'super_admin',
+      reason: 'verified_primary_admin_uid_and_email',
+      matchedBy: 'uid_and_email'
+    };
+  }
+
+  // 2. Verified authorized administrator email allowlist
+  if (normalizedEmail && allowedEmails.has(normalizedEmail)) {
+    return {
+      authorized: true,
+      role: 'super_admin',
+      reason: 'verified_admin_email',
+      matchedBy: 'email_allowlist'
+    };
+  }
+
+  // 3. Verified Firebase Custom Claims (set server-side on Firebase Auth)
+  const claims = params.customClaims || {};
+  if (
+    claims.admin === true ||
+    claims.super_admin === true ||
+    claims.role === 'super_admin' ||
+    claims.role === 'admin'
+  ) {
+    return {
+      authorized: true,
+      role: claims.role === 'admin' ? 'admin' : 'super_admin',
+      reason: 'verified_firebase_custom_claims',
+      matchedBy: 'custom_claims'
+    };
+  }
+
+  // 4. Verified Firestore admin_roles/{uid} or admin_roles/{email} record
+  const fsRole = params.firestoreRole;
+  if (fsRole && fsRole.active !== false) {
+    const roleVal = (fsRole.role || '').toLowerCase().trim();
+    if (roleVal === 'super_admin' || roleVal === 'admin') {
+      return {
+        authorized: true,
+        role: roleVal === 'admin' ? 'admin' : 'super_admin',
+        reason: 'verified_firestore_admin_role',
+        matchedBy: 'firestore_admin_roles'
+      };
+    }
+  }
+
+  return {
+    authorized: false,
+    role: null,
+    reason: 'not_authorized_admin'
+  };
+}
+
+function decodeFirestoreRestValue(val: any): any {
+  if (!val || typeof val !== 'object') return undefined;
+  if ('stringValue' in val) return val.stringValue;
+  if ('booleanValue' in val) return Boolean(val.booleanValue);
+  if ('integerValue' in val) return Number(val.integerValue);
+  if ('doubleValue' in val) return Number(val.doubleValue);
+  if ('nullValue' in val) return null;
+  if ('timestampValue' in val) return val.timestampValue;
+  if ('arrayValue' in val) {
+    return Array.isArray(val.arrayValue?.values)
+      ? val.arrayValue.values.map(decodeFirestoreRestValue)
+      : [];
+  }
+  if ('mapValue' in val) {
+    const out: Record<string, any> = {};
+    const fields = val.mapValue?.fields || {};
+    for (const [k, v] of Object.entries(fields)) {
+      out[k] = decodeFirestoreRestValue(v);
+    }
+    return out;
+  }
+  return undefined;
+}
+
+function encodeFirestoreRestValue(val: any): any {
+  if (val === null || val === undefined) return { nullValue: null };
+  if (typeof val === 'boolean') return { booleanValue: val };
+  if (typeof val === 'number') {
+    return Number.isInteger(val) ? { integerValue: String(val) } : { doubleValue: val };
+  }
+  if (typeof val === 'string') return { stringValue: val };
+  if (Array.isArray(val)) {
+    return { arrayValue: { values: val.map(encodeFirestoreRestValue) } };
+  }
+  if (typeof val === 'object') {
+    const fields: Record<string, any> = {};
+    for (const [k, v] of Object.entries(val)) {
+      if (v !== undefined) {
+        fields[k] = encodeFirestoreRestValue(v);
+      }
+    }
+    return { mapValue: { fields } };
+  }
+  return { stringValue: String(val) };
+}
+
+function decodeFirestoreRestDocument(docObj: any): Record<string, any> {
+  const out: Record<string, any> = {};
+  const fields = docObj?.fields || {};
+  for (const [k, v] of Object.entries(fields)) {
+    out[k] = decodeFirestoreRestValue(v);
+  }
+  return out;
+}
+
 export class FirebaseCRMService {
   private app: any = null;
   private db: Firestore | null = null;
   private auth: Auth | null = null;
-  private adminEmail = 'admin@rubitechpark.com';
+  private adminEmail = PRIMARY_ADMIN_EMAIL;
   private adminPassword = process.env.ADMIN_INITIAL_PASSWORD || 'ElloraAdmin2026!Secure';
   private isAuthenticated = false;
+  private adminAuthBackoffUntil = 0;
 
   constructor() {
     this.init();
@@ -96,31 +269,260 @@ export class FirebaseCRMService {
     }
   }
 
+  private getFirestoreRestBaseUrl(): string | null {
+    if (!firebaseConfig.projectId) return null;
+    const dbId = firebaseConfig.firestoreDatabaseId || '(default)';
+    return `https://firestore.googleapis.com/v1/projects/${encodeURIComponent(firebaseConfig.projectId)}/databases/${encodeURIComponent(dbId)}/documents`;
+  }
+
   /**
    * Ensure server has authenticated session as admin to satisfy Firestore rules
    */
   public async ensureAdminAuth(): Promise<boolean> {
     if (!this.auth) return false;
     if (this.auth.currentUser) return true;
+    if (Date.now() < this.adminAuthBackoffUntil) return false;
 
     try {
       await signInWithEmailAndPassword(this.auth, this.adminEmail, this.adminPassword);
       this.isAuthenticated = true;
+      this.adminAuthBackoffUntil = 0;
       return true;
     } catch (err: any) {
-      if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+      if (err.code === 'auth/user-not-found') {
         try {
           await createUserWithEmailAndPassword(this.auth, this.adminEmail, this.adminPassword);
           this.isAuthenticated = true;
+          this.adminAuthBackoffUntil = 0;
           return true;
-        } catch (createErr) {
-          console.error('Failed to create admin in Firebase Auth:', createErr);
+        } catch (createErr: any) {
+          this.adminAuthBackoffUntil = Date.now() + 10 * 60 * 1000;
+          console.warn('FirebaseCRMService admin bootstrap note:', createErr?.code || createErr?.message);
           return false;
         }
       }
-      console.error('Admin authentication error in FirebaseCRMService:', err.message);
+      // Back off for 10 minutes on credential mismatch or rate-limiting so Firebase Auth is never throttled
+      this.adminAuthBackoffUntil = Date.now() + 10 * 60 * 1000;
+      if (
+        err.code !== 'auth/invalid-credential' &&
+        err.code !== 'auth/wrong-password' &&
+        err.code !== 'auth/too-many-requests'
+      ) {
+        console.warn('Admin authentication note in FirebaseCRMService:', err.code || err.message);
+      }
       return false;
     }
+  }
+
+  /**
+   * Verify a Firebase ID token directly with Firebase Auth Identity Toolkit (accounts:lookup).
+   * Returns verified UID, email, disabled flag, and custom claims, or null if invalid/expired.
+   */
+  public async verifyFirebaseIdToken(idToken: string): Promise<VerifiedFirebaseUser | null> {
+    const cleanToken = (idToken || '').trim();
+    if (!cleanToken || !firebaseConfig.apiKey) {
+      return null;
+    }
+
+    try {
+      const url = `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${encodeURIComponent(firebaseConfig.apiKey)}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken: cleanToken })
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const data: any = await response.json();
+      const userRecord = Array.isArray(data?.users) ? data.users[0] : null;
+      if (!userRecord || !userRecord.localId) {
+        return null;
+      }
+
+      let customClaims: Record<string, unknown> = {};
+      if (typeof userRecord.customAttributes === 'string' && userRecord.customAttributes.trim()) {
+        try {
+          const parsed = JSON.parse(userRecord.customAttributes);
+          if (parsed && typeof parsed === 'object') {
+            customClaims = parsed;
+          }
+        } catch {
+          // Ignore malformed customAttributes JSON
+        }
+      }
+
+      return {
+        uid: String(userRecord.localId),
+        email: String(userRecord.email || '').toLowerCase().trim(),
+        emailVerified: Boolean(userRecord.emailVerified),
+        disabled: Boolean(userRecord.disabled),
+        displayName: userRecord.displayName ? String(userRecord.displayName) : undefined,
+        customClaims
+      };
+    } catch (err: any) {
+      console.warn('Firebase ID token verification failed:', err?.message || err);
+      return null;
+    }
+  }
+
+  /**
+   * Authenticate email + password directly against Firebase Auth Identity Toolkit REST API.
+   * Useful when a client submits credentials without a pre-fetched idToken.
+   */
+  public async signInWithFirebasePassword(
+    email: string,
+    password: string
+  ): Promise<{ idToken: string; uid: string; email: string } | null> {
+    if (!email || !password || !firebaseConfig.apiKey) return null;
+
+    try {
+      const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${encodeURIComponent(firebaseConfig.apiKey)}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+          returnSecureToken: true
+        })
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const data: any = await response.json();
+      if (!data?.idToken || !data?.localId) return null;
+
+      return {
+        idToken: String(data.idToken),
+        uid: String(data.localId),
+        email: String(data.email || email).toLowerCase().trim()
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Read a Firestore admin_roles document by UID or email using the caller's verified Firebase ID token.
+   */
+  public async getFirestoreAdminRole(
+    uid: string,
+    email: string,
+    idToken?: string
+  ): Promise<FirestoreAdminRoleRecord | null> {
+    const baseUrl = this.getFirestoreRestBaseUrl();
+    const candidates = [uid.trim(), email.toLowerCase().trim()].filter(Boolean);
+
+    if (baseUrl && idToken) {
+      for (const docId of candidates) {
+        try {
+          const res = await fetch(`${baseUrl}/admin_roles/${encodeURIComponent(docId)}`, {
+            headers: { Authorization: `Bearer ${idToken}` }
+          });
+          if (res.ok) {
+            const docJson = await res.json();
+            const decoded = decodeFirestoreRestDocument(docJson) as FirestoreAdminRoleRecord;
+            if (decoded && decoded.role) {
+              return decoded;
+            }
+          }
+        } catch {
+          // Try next candidate
+        }
+      }
+    }
+
+    if (this.db && (await this.ensureAdminAuth())) {
+      for (const docId of candidates) {
+        try {
+          const snap = await getDoc(doc(this.db, 'admin_roles', docId));
+          if (snap.exists()) {
+            return snap.data() as FirestoreAdminRoleRecord;
+          }
+        } catch {
+          // Try next candidate
+        }
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Ensure Firestore `admin_roles` records exist for both verified UID and email of an authorized admin.
+   * Non-blocking so transient network issues never lock out an authorized administrator.
+   */
+  public async syncAdminRoleRecords(
+    verifiedUser: VerifiedFirebaseUser,
+    role: 'super_admin' | 'admin',
+    idToken: string
+  ): Promise<void> {
+    const baseUrl = this.getFirestoreRestBaseUrl();
+    if (!baseUrl || !idToken || !verifiedUser.uid || !verifiedUser.email) return;
+
+    const now = new Date().toISOString();
+    const record = {
+      uid: verifiedUser.uid,
+      email: verifiedUser.email,
+      role,
+      name: verifiedUser.displayName || 'RUBI TECH PARK Admin',
+      active: true,
+      updatedAt: now
+    };
+
+    const fieldsPayload = {
+      fields: Object.fromEntries(
+        Object.entries(record).map(([k, v]) => [k, encodeFirestoreRestValue(v)])
+      )
+    };
+
+    const docIds = Array.from(new Set([verifiedUser.uid, verifiedUser.email]));
+    await Promise.allSettled(
+      docIds.map((docId) =>
+        fetch(`${baseUrl}/admin_roles/${encodeURIComponent(docId)}`, {
+          method: 'PATCH',
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(fieldsPayload)
+        })
+      )
+    );
+  }
+
+  /**
+   * Full server-side authorization check for a verified Firebase user.
+   */
+  public async authorizeFirebaseAdmin(
+    verifiedUser: VerifiedFirebaseUser,
+    idToken: string
+  ): Promise<AdminAuthorizationResult> {
+    const firestoreRole = await this.getFirestoreAdminRole(
+      verifiedUser.uid,
+      verifiedUser.email,
+      idToken
+    );
+
+    const decision = evaluateAdminAuthorization({
+      uid: verifiedUser.uid,
+      email: verifiedUser.email,
+      disabled: verifiedUser.disabled,
+      customClaims: verifiedUser.customClaims,
+      firestoreRole
+    });
+
+    if (decision.authorized && decision.role) {
+      // Keep Firestore admin_roles/{uid} and admin_roles/{email} synced for this authorized admin
+      this.syncAdminRoleRecords(verifiedUser, decision.role, idToken).catch(() => {});
+    }
+
+    return decision;
   }
 
   /**
@@ -129,11 +531,7 @@ export class FirebaseCRMService {
   public isAuthorizedAdmin(email: string): boolean {
     if (!email) return false;
     const lower = email.toLowerCase().trim();
-    return (
-      lower === 'admin@rubitechpark.com' ||
-      lower === 'admin@elloradigital.in' ||
-      lower === (process.env.ADMIN_EMAIL || '').toLowerCase().trim()
-    );
+    return getAuthorizedAdminEmails().includes(lower);
   }
 
   /**
@@ -193,19 +591,39 @@ export class FirebaseCRMService {
   /**
    * Get all Leads with Filters & Metrics from Firestore
    */
-  public async getLeads(filters: { searchTerm?: string; status?: string; dateFilter?: string; category?: string } = {}) {
-    await this.ensureAdminAuth();
-    if (!this.db) {
+  public async getLeads(
+    filters: { searchTerm?: string; status?: string; dateFilter?: string; category?: string } = {},
+    firebaseIdToken?: string
+  ) {
+    const sdkAuthed = await this.ensureAdminAuth();
+    let allLeads: FirestoreLeadRecord[] = [];
+
+    if (sdkAuthed && this.db) {
+      const leadsRef = collection(this.db, 'crm_leads');
+      const snapshot = await getDocs(leadsRef);
+      snapshot.forEach((docSnap) => {
+        allLeads.push(docSnap.data() as FirestoreLeadRecord);
+      });
+    } else if (firebaseIdToken && this.getFirestoreRestBaseUrl()) {
+      const baseUrl = this.getFirestoreRestBaseUrl()!;
+      const res = await fetch(`${baseUrl}/crm_leads?pageSize=500`, {
+        headers: { Authorization: `Bearer ${firebaseIdToken}` }
+      });
+      if (!res.ok) {
+        throw new Error(`Firestore REST getLeads failed (${res.status})`);
+      }
+      const data: any = await res.json();
+      const docs = Array.isArray(data?.documents) ? data.documents : [];
+      allLeads = docs.map((d: any) => decodeFirestoreRestDocument(d) as FirestoreLeadRecord);
+    } else if (this.db) {
+      const leadsRef = collection(this.db, 'crm_leads');
+      const snapshot = await getDocs(leadsRef);
+      snapshot.forEach((docSnap) => {
+        allLeads.push(docSnap.data() as FirestoreLeadRecord);
+      });
+    } else {
       throw new Error('Firestore is not initialized.');
     }
-
-    const leadsRef = collection(this.db, 'crm_leads');
-    const snapshot = await getDocs(leadsRef);
-
-    let allLeads: FirestoreLeadRecord[] = [];
-    snapshot.forEach((docSnap) => {
-      allLeads.push(docSnap.data() as FirestoreLeadRecord);
-    });
 
     // Sort by createdAt descending
     allLeads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -282,30 +700,52 @@ export class FirebaseCRMService {
   /**
    * Get single Lead by ID
    */
-  public async getLeadById(id: string): Promise<FirestoreLeadRecord | null> {
-    await this.ensureAdminAuth();
-    if (!this.db) return null;
+  public async getLeadById(id: string, firebaseIdToken?: string): Promise<FirestoreLeadRecord | null> {
+    const sdkAuthed = await this.ensureAdminAuth();
+    if (sdkAuthed && this.db) {
+      const docRef = doc(this.db, 'crm_leads', id);
+      const snap = await getDoc(docRef);
+      if (!snap.exists()) return null;
+      return snap.data() as FirestoreLeadRecord;
+    }
 
-    const docRef = doc(this.db, 'crm_leads', id);
-    const snap = await getDoc(docRef);
-    if (!snap.exists()) return null;
-    return snap.data() as FirestoreLeadRecord;
+    const baseUrl = this.getFirestoreRestBaseUrl();
+    if (firebaseIdToken && baseUrl) {
+      const res = await fetch(`${baseUrl}/crm_leads/${encodeURIComponent(id)}`, {
+        headers: { Authorization: `Bearer ${firebaseIdToken}` }
+      });
+      if (res.status === 404) return null;
+      if (res.ok) {
+        return decodeFirestoreRestDocument(await res.json()) as FirestoreLeadRecord;
+      }
+    }
+
+    if (!this.db) return null;
+    try {
+      const docRef = doc(this.db, 'crm_leads', id);
+      const snap = await getDoc(docRef);
+      if (!snap.exists()) return null;
+      return snap.data() as FirestoreLeadRecord;
+    } catch {
+      return null;
+    }
   }
 
   /**
    * Update Lead Status
    */
-  public async updateLeadStatus(id: string, newStatus: string, adminName = 'Admin'): Promise<FirestoreLeadRecord | null> {
-    await this.ensureAdminAuth();
-    if (!this.db) return null;
+  public async updateLeadStatus(
+    id: string,
+    newStatus: string,
+    adminName = 'Admin',
+    firebaseIdToken?: string
+  ): Promise<FirestoreLeadRecord | null> {
+    const sdkAuthed = await this.ensureAdminAuth();
+    const lead = await this.getLeadById(id, firebaseIdToken);
+    if (!lead) return null;
 
-    const leadRef = doc(this.db, 'crm_leads', id);
-    const snap = await getDoc(leadRef);
-    if (!snap.exists()) return null;
-
-    const lead = snap.data() as FirestoreLeadRecord;
     const now = new Date().toISOString();
-    const history = lead.activityHistory || [];
+    const history = Array.isArray(lead.activityHistory) ? [...lead.activityHistory] : [];
     history.unshift({
       id: `act_${Date.now()}`,
       action: 'STATUS_CHANGE',
@@ -313,11 +753,36 @@ export class FirebaseCRMService {
       timestamp: now
     });
 
-    await updateDoc(leadRef, {
-      status: newStatus,
-      updatedAt: now,
-      activityHistory: history
-    });
+    if (sdkAuthed && this.db) {
+      const leadRef = doc(this.db, 'crm_leads', id);
+      await updateDoc(leadRef, {
+        status: newStatus,
+        updatedAt: now,
+        activityHistory: history
+      });
+    } else if (firebaseIdToken && this.getFirestoreRestBaseUrl()) {
+      const baseUrl = this.getFirestoreRestBaseUrl()!;
+      const updateMask = 'updateMask.fieldPaths=status&updateMask.fieldPaths=updatedAt&updateMask.fieldPaths=activityHistory';
+      const res = await fetch(`${baseUrl}/crm_leads/${encodeURIComponent(id)}?${updateMask}`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${firebaseIdToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          fields: {
+            status: encodeFirestoreRestValue(newStatus),
+            updatedAt: encodeFirestoreRestValue(now),
+            activityHistory: encodeFirestoreRestValue(history)
+          }
+        })
+      });
+      if (!res.ok) {
+        return null;
+      }
+    } else {
+      return null;
+    }
 
     lead.status = newStatus;
     lead.updatedAt = now;
@@ -328,15 +793,16 @@ export class FirebaseCRMService {
   /**
    * Add Internal Note to Lead
    */
-  public async addNote(id: string, content: string, author = 'Admin'): Promise<{ id: string; content: string; author: string; createdAt: string } | null> {
-    await this.ensureAdminAuth();
-    if (!this.db) return null;
+  public async addNote(
+    id: string,
+    content: string,
+    author = 'Admin',
+    firebaseIdToken?: string
+  ): Promise<{ id: string; content: string; author: string; createdAt: string } | null> {
+    const sdkAuthed = await this.ensureAdminAuth();
+    const lead = await this.getLeadById(id, firebaseIdToken);
+    if (!lead) return null;
 
-    const leadRef = doc(this.db, 'crm_leads', id);
-    const snap = await getDoc(leadRef);
-    if (!snap.exists()) return null;
-
-    const lead = snap.data() as FirestoreLeadRecord;
     const now = new Date().toISOString();
     const noteId = `note_${Date.now()}`;
     const newNote = {
@@ -346,10 +812,10 @@ export class FirebaseCRMService {
       createdAt: now
     };
 
-    const notes = lead.notes || [];
+    const notes = Array.isArray(lead.notes) ? [...lead.notes] : [];
     notes.unshift(newNote);
 
-    const history = lead.activityHistory || [];
+    const history = Array.isArray(lead.activityHistory) ? [...lead.activityHistory] : [];
     history.unshift({
       id: `act_${Date.now()}`,
       action: 'NOTE_ADDED',
@@ -359,12 +825,39 @@ export class FirebaseCRMService {
 
     const combinedInternalNotes = notes.map((n) => `[${n.author}] ${n.content}`).join('\n');
 
-    await updateDoc(leadRef, {
-      notes,
-      internalNotes: combinedInternalNotes,
-      updatedAt: now,
-      activityHistory: history
-    });
+    if (sdkAuthed && this.db) {
+      const leadRef = doc(this.db, 'crm_leads', id);
+      await updateDoc(leadRef, {
+        notes,
+        internalNotes: combinedInternalNotes,
+        updatedAt: now,
+        activityHistory: history
+      });
+    } else if (firebaseIdToken && this.getFirestoreRestBaseUrl()) {
+      const baseUrl = this.getFirestoreRestBaseUrl()!;
+      const updateMask =
+        'updateMask.fieldPaths=notes&updateMask.fieldPaths=internalNotes&updateMask.fieldPaths=updatedAt&updateMask.fieldPaths=activityHistory';
+      const res = await fetch(`${baseUrl}/crm_leads/${encodeURIComponent(id)}?${updateMask}`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${firebaseIdToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          fields: {
+            notes: encodeFirestoreRestValue(notes),
+            internalNotes: encodeFirestoreRestValue(combinedInternalNotes),
+            updatedAt: encodeFirestoreRestValue(now),
+            activityHistory: encodeFirestoreRestValue(history)
+          }
+        })
+      });
+      if (!res.ok) {
+        return null;
+      }
+    } else {
+      return null;
+    }
 
     return newNote;
   }
@@ -470,10 +963,10 @@ export class FirebaseCRMService {
   /**
    * Delete single Lead by ID from Firestore and local backup
    */
-  public async deleteLead(id: string): Promise<boolean> {
-    await this.ensureAdminAuth();
+  public async deleteLead(id: string, firebaseIdToken?: string): Promise<boolean> {
+    const sdkAuthed = await this.ensureAdminAuth();
     let firestoreDeleted = false;
-    if (this.db) {
+    if (sdkAuthed && this.db) {
       try {
         const docRef = doc(this.db, 'crm_leads', id);
         await deleteDoc(docRef);
@@ -481,13 +974,25 @@ export class FirebaseCRMService {
       } catch (err: any) {
         console.warn('Could not delete lead from Firestore:', err.message);
       }
+    } else if (firebaseIdToken && this.getFirestoreRestBaseUrl()) {
+      try {
+        const baseUrl = this.getFirestoreRestBaseUrl()!;
+        const res = await fetch(`${baseUrl}/crm_leads/${encodeURIComponent(id)}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${firebaseIdToken}` }
+        });
+        firestoreDeleted = res.ok;
+      } catch (err: any) {
+        console.warn('Could not delete lead from Firestore REST:', err.message);
+      }
     }
     const localDeleted = crmStorage.deleteLead(id);
     return firestoreDeleted || localDeleted;
   }
 
   /**
-   * Fetch all custom service images from Firestore (with local fallback)
+   * Fetch all custom service images from Firestore (with local fallback).
+   * Hides deactivated public services without deleting unrelated Firestore records.
    */
   public async getServiceImages(): Promise<Record<string, string>> {
     const localImages = crmStorage.getServiceImages();
@@ -497,6 +1002,9 @@ export class FirebaseCRMService {
       const snap = await getDocs(collection(this.db, 'service_images'));
       const images: Record<string, string> = { ...localImages };
       snap.forEach((d) => {
+        if (HIDDEN_PUBLIC_SERVICE_IDS.has(d.id)) {
+          return;
+        }
         const data = d.data();
         if (data && data.imageUrl) {
           images[d.id] = data.imageUrl;

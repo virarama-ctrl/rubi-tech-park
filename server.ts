@@ -1,8 +1,8 @@
+import './src/server/env';
 import express, { Request, Response, NextFunction } from 'express';
 import http from 'node:http';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import dotenv from 'dotenv';
 import { crmStorage } from './src/server/storage';
 import {
   verifyPassword,
@@ -29,6 +29,7 @@ import {
   TRUSTED_PRICING_CATALOG,
   SUBSCRIPTION_CATALOG,
   getRazorpayConfigStatus,
+  getRazorpayHealthStatus,
   verifyRazorpayWebhookSignature
 } from './src/server/payments';
 import {
@@ -40,8 +41,6 @@ import {
 } from './src/server/notifications';
 import { processCustomerChat } from './src/server/gemini';
 import { firebaseCRM } from './src/server/firebaseService';
-
-dotenv.config();
 
 function resolveServerPort(): number {
   const args = process.argv.slice(2);
@@ -419,15 +418,44 @@ app.post('/api/chat', async (req: Request, res: Response) => {
 // -------------------------------------------------------------
 
 /**
+ * Safe Gateway Health & Configuration Check (Reports ONLY presence booleans & mode — NEVER returns credential values)
+ * GET /api/payments/health
+ */
+app.get('/api/payments/health', (_req: Request, res: Response) => {
+  res.setHeader('Cache-Control', 'no-store');
+  const health = getRazorpayHealthStatus();
+  res.status(200).json({
+    success: true,
+    ...health
+  });
+});
+
+app.all('/api/payments/health', (req: Request, res: Response) => {
+  res.setHeader('Allow', 'GET');
+  res.status(405).json({
+    success: false,
+    error: 'Method Not Allowed',
+    message: `Method ${req.method} is not allowed on /api/payments/health. Use HTTP GET.`
+  });
+});
+
+/**
  * Public Gateway Readiness Config (Never exposes secrets)
  * GET /api/payments/config
  */
 app.get('/api/payments/config', (_req: Request, res: Response) => {
+  res.setHeader('Cache-Control', 'no-store');
   const status = getRazorpayConfigStatus();
   res.status(200).json({
     success: true,
     gatewayConfigured: status.gatewayConfigured,
+    canCreateOrder: status.canCreateOrder,
     mode: status.mode,
+    keyType: status.keyType,
+    modeMatchesKey: status.modeMatchesKey,
+    issueCode: status.issueCode,
+    status: status.status,
+    message: status.message,
     razorpayKeyId: status.keyId,
     businessUpiId: BUSINESS_UPI_ID,
     businessName: BUSINESS_NAME
@@ -507,25 +535,38 @@ app.post('/api/create-order', async (req: Request, res: Response) => {
       order: result.order
     });
   } catch (err: any) {
-    const msg = String(err?.message || 'Unable to create Razorpay order.');
-    if (msg.startsWith('RAZORPAY_NOT_CONFIGURED:')) {
+    const rawMsg = String(err?.message || 'Unable to create Razorpay order.');
+    const activeSecret = (process.env.RAZORPAY_KEY_SECRET || '').trim();
+    const safeMsg = activeSecret ? rawMsg.split(activeSecret).join('[REDACTED]') : rawMsg;
+
+    if (safeMsg.startsWith('RAZORPAY_NOT_CONFIGURED:')) {
+      const rest = safeMsg.slice('RAZORPAY_NOT_CONFIGURED:'.length);
+      const colonIdx = rest.indexOf(':');
+      const issueCode = colonIdx !== -1 ? rest.slice(0, colonIdx).trim() : 'CREDENTIALS_MISSING';
+      const detail = colonIdx !== -1 ? rest.slice(colonIdx + 1).trim() : rest.trim();
       res.status(503).json({
+        success: false,
         error: 'Gateway Not Configured',
-        message: 'Razorpay server credentials (RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET) are not configured.'
+        code: issueCode,
+        message:
+          detail ||
+          'Razorpay server credentials (RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET) are not configured.'
       });
       return;
     }
-    if (msg.startsWith('VALIDATION_ERROR:')) {
+    if (safeMsg.startsWith('VALIDATION_ERROR:')) {
       res.status(400).json({
+        success: false,
         error: 'Validation Failed',
-        message: msg.replace('VALIDATION_ERROR:', '').trim()
+        message: safeMsg.replace('VALIDATION_ERROR:', '').trim()
       });
       return;
     }
-    console.error('Error in POST /api/create-order:', err);
+    console.error('Error in POST /api/create-order:', safeMsg);
     res.status(502).json({
+      success: false,
       error: 'Order Creation Failed',
-      message: msg
+      message: safeMsg
     });
   }
 });
@@ -1157,24 +1198,117 @@ app.get('/api/admin/me', requireAdminAuth, (req: AuthenticatedRequest, res: Resp
 // -------------------------------------------------------------
 
 /**
+ * Extract optional Firebase ID token passed by authenticated admin clients for Firestore REST sync
+ */
+function extractFirebaseIdToken(req: Request): string | undefined {
+  const raw = req.headers['x-firebase-id-token'];
+  if (typeof raw === 'string' && raw.trim()) {
+    return raw.trim();
+  }
+  return undefined;
+}
+
+/**
  * Firebase Admin Login & Role Authorization Check
  * POST /api/admin/firebase-login
  */
 app.post('/api/admin/firebase-login', async (req: Request, res: Response) => {
   const ip = getClientIp(req);
-  const { email, password, idToken } = req.body;
+  const { email, password, idToken } = req.body || {};
+  const cleanIdToken = typeof idToken === 'string' ? idToken.trim() : '';
+  const cleanEmail = typeof email === 'string' ? email.trim() : '';
+  const cleanPassword = typeof password === 'string' ? password : '';
 
-  if (!email || typeof email !== 'string') {
-    res.status(400).json({ error: 'Bad Request', message: 'Administrator email is required.' });
+  if (!cleanIdToken && !cleanEmail) {
+    res.status(400).json({
+      error: 'Bad Request',
+      message: 'Administrator email or Firebase ID token is required.'
+    });
     return;
   }
 
-  // 1. Authorised Admin Role Check - strictly enforced on server
-  const isAuthAdmin = firebaseCRM.isAuthorizedAdmin(email);
+  // Path A: Cryptographically verify Firebase ID token when provided
+  if (cleanIdToken) {
+    const verifiedUser = await firebaseCRM.verifyFirebaseIdToken(cleanIdToken);
+    if (!verifiedUser) {
+      crmStorage.addAuditLog({
+        userId: 'invalid_token',
+        userEmail: sanitizeEmail(cleanEmail || 'unknown@invalid'),
+        userRole: 'developer',
+        action: 'FIREBASE_TOKEN_INVALID',
+        ipAddress: ip,
+        resource: 'FIREBASE_AUTH',
+        success: false
+      });
+      res.status(401).json({
+        error: 'Unauthorized',
+        code: 'INVALID_FIREBASE_TOKEN',
+        message: 'Invalid or expired Firebase authentication token. Please sign in again.'
+      });
+      return;
+    }
+
+    const authz = await firebaseCRM.authorizeFirebaseAdmin(verifiedUser, cleanIdToken);
+    if (!authz.authorized || !authz.role) {
+      crmStorage.addAuditLog({
+        userId: verifiedUser.uid,
+        userEmail: sanitizeEmail(verifiedUser.email || cleanEmail),
+        userRole: 'developer',
+        action: 'ADMIN_ACCESS_DENIED',
+        ipAddress: ip,
+        resource: `FIREBASE_AUTH:${verifiedUser.uid}`,
+        success: false
+      });
+      res.status(403).json({
+        error: 'Forbidden',
+        code: 'ACCESS_DENIED',
+        message: 'Access Denied: Your account is authenticated with Firebase, but does not have administrator privileges for RUBI TECH PARK CRM.'
+      });
+      return;
+    }
+
+    const storedUser = crmStorage.getUserByEmail(verifiedUser.email);
+    const adminProfile = {
+      id: verifiedUser.uid,
+      email: verifiedUser.email,
+      name: storedUser?.name || verifiedUser.displayName || 'RUBI TECH PARK Admin',
+      role: authz.role,
+      firebaseUid: verifiedUser.uid
+    };
+
+    const session = createSession(adminProfile);
+    crmStorage.addAuditLog({
+      userId: verifiedUser.uid,
+      userEmail: adminProfile.email,
+      userRole: adminProfile.role,
+      action: 'FIREBASE_LOGIN_SUCCESS',
+      ipAddress: ip,
+      resource: `FIREBASE_AUTH:${authz.matchedBy || 'verified'}`,
+      success: true
+    });
+
+    res.status(200).json({
+      success: true,
+      token: session.token,
+      user: {
+        id: adminProfile.id,
+        uid: verifiedUser.uid,
+        email: adminProfile.email,
+        name: adminProfile.name,
+        role: adminProfile.role
+      },
+      expiresAt: session.expiresAt
+    });
+    return;
+  }
+
+  // Path B: Server-side credential verification when no idToken is provided
+  // 1. Check whether the requested account is an authorized administrator
+  const isAuthAdmin = firebaseCRM.isAuthorizedAdmin(cleanEmail);
   if (!isAuthAdmin) {
     crmStorage.addAuditLog({
       userId: 'unauthorized_attempt',
-      userEmail: sanitizeEmail(email),
+      userEmail: sanitizeEmail(cleanEmail),
       userRole: 'developer',
       action: 'ADMIN_ACCESS_DENIED',
       ipAddress: ip,
@@ -1189,19 +1323,75 @@ app.post('/api/admin/firebase-login', async (req: Request, res: Response) => {
     return;
   }
 
-  // 2. Issue authenticated admin session
-  const user = crmStorage.getUserByEmail(email) || {
-    id: 'usr_admin_rtp',
-    email: 'admin@rubitechpark.com',
+  if (!cleanPassword) {
+    res.status(401).json({
+      error: 'Unauthorized',
+      message: 'Administrator password or verified Firebase ID token is required.'
+    });
+    return;
+  }
+
+  // 2. Verify password via Firebase Auth Identity Toolkit first, then local hashed credentials
+  const fbSignIn = await firebaseCRM.signInWithFirebasePassword(cleanEmail, cleanPassword);
+  let verifiedUid: string | undefined;
+  let verifiedRole: 'super_admin' | 'admin' = 'super_admin';
+
+  if (fbSignIn) {
+    const verifiedUser = await firebaseCRM.verifyFirebaseIdToken(fbSignIn.idToken);
+    if (verifiedUser) {
+      const authz = await firebaseCRM.authorizeFirebaseAdmin(verifiedUser, fbSignIn.idToken);
+      if (!authz.authorized || !authz.role) {
+        res.status(403).json({
+          error: 'Forbidden',
+          code: 'ACCESS_DENIED',
+          message: 'Access Denied: Your account is authenticated with Firebase, but does not have administrator privileges for RUBI TECH PARK CRM.'
+        });
+        return;
+      }
+      verifiedUid = verifiedUser.uid;
+      verifiedRole = authz.role;
+    }
+  } else {
+    const storedUser = crmStorage.getUserByEmail(cleanEmail);
+    const passwordValid = storedUser ? verifyPassword(cleanPassword, storedUser.passwordHash) : false;
+    if (!passwordValid) {
+      crmStorage.addAuditLog({
+        userId: 'unknown',
+        userEmail: sanitizeEmail(cleanEmail),
+        userRole: 'developer',
+        action: 'LOGIN_FAILURE',
+        ipAddress: ip,
+        resource: 'FIREBASE_AUTH',
+        success: false
+      });
+      res.status(401).json({
+        error: 'Invalid Credentials',
+        message: 'Incorrect administrator email or password.'
+      });
+      return;
+    }
+  }
+
+  // 3. Issue authenticated admin session
+  const user = crmStorage.getUserByEmail(cleanEmail) || {
+    id: verifiedUid || 'usr_admin_rtp',
+    email: cleanEmail.toLowerCase(),
     name: 'RUBI TECH PARK Admin',
-    role: 'super_admin'
+    role: verifiedRole
   };
 
-  const session = createSession(user as any);
+  const session = createSession({
+    id: verifiedUid || user.id,
+    email: user.email,
+    name: user.name,
+    role: verifiedRole,
+    firebaseUid: verifiedUid
+  });
+
   crmStorage.addAuditLog({
-    userId: user.id,
+    userId: session.userId,
     userEmail: user.email,
-    userRole: user.role,
+    userRole: session.userRole,
     action: 'FIREBASE_LOGIN_SUCCESS',
     ipAddress: ip,
     resource: 'FIREBASE_AUTH',
@@ -1211,11 +1401,13 @@ app.post('/api/admin/firebase-login', async (req: Request, res: Response) => {
   res.status(200).json({
     success: true,
     token: session.token,
+    firebaseIdToken: fbSignIn?.idToken,
     user: {
-      id: user.id,
+      id: session.userId,
+      uid: verifiedUid,
       email: user.email,
       name: user.name,
-      role: user.role
+      role: session.userRole
     },
     expiresAt: session.expiresAt
   });
@@ -1267,13 +1459,17 @@ app.post('/api/admin/migrate-json', requireAdminAuth, async (_req: Authenticated
 app.get('/api/admin/leads', requireAdminAuth, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { searchTerm, status, category, dateFilter } = req.query;
+    const fbToken = extractFirebaseIdToken(req);
 
-    const result = await firebaseCRM.getLeads({
-      searchTerm: typeof searchTerm === 'string' ? searchTerm : undefined,
-      status: typeof status === 'string' ? status : undefined,
-      category: typeof category === 'string' ? category : undefined,
-      dateFilter: typeof dateFilter === 'string' ? dateFilter : undefined
-    });
+    const result = await firebaseCRM.getLeads(
+      {
+        searchTerm: typeof searchTerm === 'string' ? searchTerm : undefined,
+        status: typeof status === 'string' ? status : undefined,
+        category: typeof category === 'string' ? category : undefined,
+        dateFilter: typeof dateFilter === 'string' ? dateFilter : undefined
+      },
+      fbToken
+    );
 
     res.status(200).json(result);
   } catch (err: any) {
@@ -1290,7 +1486,10 @@ app.get('/api/admin/leads', requireAdminAuth, async (req: AuthenticatedRequest, 
  */
 app.get('/api/admin/leads/:id', requireAdminAuth, async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const lead = await firebaseCRM.getLeadById(req.params.id) || crmStorage.getLeadById(req.params.id);
+    const fbToken = extractFirebaseIdToken(req);
+    const lead =
+      (await firebaseCRM.getLeadById(req.params.id, fbToken)) ||
+      crmStorage.getLeadById(req.params.id);
     if (!lead) {
       res.status(404).json({ error: 'Not Found', message: 'Lead not found in Firestore.' });
       return;
@@ -1331,23 +1530,27 @@ app.patch('/api/admin/leads/:id/status', requireAdminAuth, async (req: Authentic
     return;
   }
 
+  const fbToken = extractFirebaseIdToken(req);
   const updated = await firebaseCRM.updateLeadStatus(
     req.params.id,
     status,
-    req.adminSession!.userName
+    req.adminSession!.userName,
+    fbToken
   );
 
   // Mirror update to local crmStorage
+  let localUpdated: any = null;
   try {
-    crmStorage.updateLeadStatus(req.params.id, status as any, req.adminSession!.userName);
-  } catch (e) {}
+    localUpdated = crmStorage.updateLeadStatus(req.params.id, status as any, req.adminSession!.userName);
+  } catch {}
 
-  if (!updated) {
+  const finalLead = updated || localUpdated;
+  if (!finalLead) {
     res.status(404).json({ error: 'Not Found', message: 'Lead not found in Firestore.' });
     return;
   }
 
-  res.status(200).json({ success: true, lead: updated, storage: 'firestore' });
+  res.status(200).json({ success: true, lead: finalLead, storage: updated ? 'firestore' : 'local_fallback' });
 });
 
 /**
@@ -1365,22 +1568,26 @@ app.post('/api/admin/leads/:id/notes', requireAdminAuth, async (req: Authenticat
   }
 
   const session = req.adminSession!;
+  const fbToken = extractFirebaseIdToken(req);
   const note = await firebaseCRM.addNote(
     req.params.id,
     content,
-    session.userName
+    session.userName,
+    fbToken
   );
 
+  let localNote: any = null;
   try {
-    crmStorage.addLeadNote(req.params.id, session.userId, session.userName, content);
-  } catch (e) {}
+    localNote = crmStorage.addLeadNote(req.params.id, session.userId, session.userName, content);
+  } catch {}
 
-  if (!note) {
+  const finalNote = note || localNote;
+  if (!finalNote) {
     res.status(404).json({ error: 'Not Found', message: 'Lead not found in Firestore.' });
     return;
   }
 
-  res.status(201).json({ success: true, note, storage: 'firestore' });
+  res.status(201).json({ success: true, note: finalNote, storage: note ? 'firestore' : 'local_fallback' });
 });
 
 /**
@@ -1388,7 +1595,8 @@ app.post('/api/admin/leads/:id/notes', requireAdminAuth, async (req: Authenticat
  * DELETE /api/admin/leads/:id
  */
 app.delete('/api/admin/leads/:id', requireAdminAuth, async (req: AuthenticatedRequest, res: Response) => {
-  const success = await firebaseCRM.deleteLead(req.params.id);
+  const fbToken = extractFirebaseIdToken(req);
+  const success = await firebaseCRM.deleteLead(req.params.id, fbToken);
   if (!success) {
     res.status(404).json({ error: 'Not Found', message: 'Lead not found or could not be deleted.' });
     return;
